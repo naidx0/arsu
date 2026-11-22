@@ -1079,6 +1079,81 @@ function SwarmScale({
   );
 }
 
+// ---- Inspector mini dependency graph ---------------------------------------
+function DepsGraph({
+  id,
+  deps,
+  dependents,
+  severed,
+  nodes,
+  onInspect,
+}: {
+  id: string;
+  deps: string[];
+  dependents: string[];
+  severed: Set<string>;
+  nodes: Map<string, NodeDoc>;
+  onInspect: (id: string) => void;
+}) {
+  const CX = 190;
+  const CY = 70;
+  const col = (list: string[], x: number) => {
+    const gap = Math.min(34, 120 / Math.max(1, list.length - 1 || 1));
+    const start = CY - ((list.length - 1) * gap) / 2;
+    return list.map((n, i) => ({ n, x, y: start + i * gap }));
+  };
+  const left = col(deps, 56);
+  const right = col(dependents, 324);
+  const health = (n: string) => nodes.get(n)?.health ?? "up";
+  const centerHealth = health(id);
+  return (
+    <svg className="deps-graph" viewBox="0 0 380 140" role="img" aria-label={`Dependency graph for ${id}`}>
+      {left.map(({ n, x, y }) => (
+        <path
+          key={`in-${n}`}
+          d={`M${x + 34},${y} C${x + 70},${y} ${CX - 70},${CY} ${CX - 34},${CY}`}
+          fill="none"
+          stroke={severed.has(`${id}-${n}`) ? "#f87171" : health(n) === "up" ? "#3b4b5c" : "#fbbf24"}
+          strokeWidth="1.4"
+          strokeDasharray={severed.has(`${id}-${n}`) ? "5 4" : undefined}
+          markerEnd="url(#deps-arrow)"
+        />
+      ))}
+      {right.map(({ n, x, y }) => (
+        <path
+          key={`out-${n}`}
+          d={`M${CX + 34},${CY} C${CX + 70},${CY} ${x - 70},${y} ${x - 34},${y}`}
+          fill="none"
+          stroke={severed.has(`${n}-${id}`) ? "#f87171" : health(id) === "up" ? "#3b4b5c" : "#fbbf24"}
+          strokeWidth="1.4"
+          strokeDasharray={severed.has(`${n}-${id}`) ? "5 4" : undefined}
+          markerEnd="url(#deps-arrow)"
+        />
+      ))}
+      <defs>
+        <marker id="deps-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" markerUnits="userSpaceOnUse" orient="auto">
+          <path d="M0 0 L10 5 L0 10 z" fill="#64748b" />
+        </marker>
+      </defs>
+      {[...left, ...right].map(({ n, x, y }) => (
+        <g key={n} role="button" tabIndex={0} style={{ cursor: "pointer" }} onClick={() => onInspect(n)} onKeyDown={(e) => { if (e.key === "Enter") onInspect(n); }}>
+          <rect x={x - 34} y={y - 13} width="68" height="26" rx="5" fill="#0f151c" stroke={HEALTH_COLOR[health(n)]} strokeOpacity={health(n) === "up" ? 0.45 : 0.95} />
+          <text x={x} y={y + 3.5} textAnchor="middle" fill="#cbd5e1" fontSize="8.5" fontFamily="var(--font-mono)">
+            {n.length > 11 ? `${n.slice(0, 10)}…` : n}
+          </text>
+        </g>
+      ))}
+      <g>
+        <rect x={CX - 40} y={CY - 17} width="80" height="34" rx="6" fill="#152230" stroke="#7dd3fc" strokeWidth="1.4" />
+        <circle cx={CX - 28} cy={CY - 7} r="3.5" fill={HEALTH_COLOR[centerHealth]} />
+        <text x={CX} y={CY + 4} textAnchor="middle" fill="#f1f5f9" fontSize="9.5" fontWeight="700" fontFamily="var(--font-mono)">
+          {id.length > 12 ? `${id.slice(0, 11)}…` : id}
+        </text>
+      </g>
+    </svg>
+  );
+}
+
 // ---------------------------------------------------------------------------
 // App
 // ---------------------------------------------------------------------------
@@ -1133,12 +1208,12 @@ export default function App() {
   baseRef.current = base;
   const localOverride = !localMode && !patchIsEmpty(patch);
   const dataMode = example
-    ? "LOCAL SIM · EXAMPLE DATA"
+    ? "EXAMPLE DATA · LOCAL SIM"
     : coldFallback
-      ? "LOCAL SIM FALLBACK"
+      ? "HOST OFFLINE · LOCAL SIM"
       : localOverride
-        ? "LIVE HOST TELEMETRY · LOCAL OVERRIDE"
-        : "LIVE HOST TELEMETRY";
+        ? "HOST SIM · LOCAL OVERRIDE"
+        : "HOST SIM · LIVE FEED";
 
   // ---- derived -------------------------------------------------------------
   const nodes = orderNodes([...board.nodes.values()]);
@@ -1621,33 +1696,6 @@ export default function App() {
         </div>
       </section>
 
-      <section className="chaos-command-strip" aria-label="Chaos and operations commands">
-        <span className="strip-label">
-          <HugeiconsIcon icon={FlashIcon} size={14} />
-          CHAOS & OPS COMMAND
-          <small>{localMode ? "local sim" : "live host · auto-fallback"}</small>
-        </span>
-        {FAULTS.map((f) => (
-          <button
-            key={f.type}
-            className={`chaos-action-btn ${f.danger ? "danger" : ""}`}
-            disabled={busy}
-            title={f.hint}
-            onClick={() => inject(f.type, f.target, f.dep)}
-          >
-            {f.cta}
-          </button>
-        ))}
-        <button className="chaos-action-btn adsb" disabled={busy} onClick={syncAdsb}>
-          <HugeiconsIcon icon={Radar01Icon} size={14} />
-          SYNC LIVE OPEN-SOURCE ADS-B
-        </button>
-        <button className="chaos-action-btn reset" disabled={busy} onClick={reset}>
-          <HugeiconsIcon icon={RefreshIcon} size={14} />
-          RESET ESTATE
-        </button>
-      </section>
-
       <div className="mc-grid">
         <section className="mc-panel systems-matrix" aria-label="Aviation estate systems">
           <header className="mc-panel-header">
@@ -2009,7 +2057,13 @@ export default function App() {
                 <small>
                   {s.node} · authored by {s.authoredBy}
                 </small>
-                <pre>{s.body}</pre>
+                <div className="spec-plain">
+                  {s.invariants.length} executable invariant{s.invariants.length === 1 ? "" : "s"} · {s.invariants.filter((id) => board.invariants.get(id)?.lastResult === "pass").length} passing · {s.invariants.filter((id) => board.invariants.get(id)?.lastResult === "fail").length} failing
+                </div>
+                <details className="spec-contract">
+                  <summary>Contract text · v{s.version}</summary>
+                  <pre>{s.body}</pre>
+                </details>
                 <div className="spec-invariants">
                   {s.invariants.map((id) => {
                     const inv = board.invariants.get(id);
@@ -2151,7 +2205,10 @@ export default function App() {
       <aside className="app-sidebar">
         <button className="workspace-brand breadcrumb-btn" aria-label="ARSU — return to Mission Control" onClick={goHome}>
           <span className="brand-symbol">
-            <HugeiconsIcon icon={Layers01Icon} size={19} />
+            <svg width="17" height="17" viewBox="0 0 20 20" aria-hidden="true">
+              <path d="M10 1.5 17.5 5.5v9L10 18.5 2.5 14.5v-9Z" fill="none" stroke="currentColor" strokeWidth="1.4" />
+              <path d="M5.5 10h2.4l1.2-3.2 1.8 6.4 1.2-3.2h2.4" fill="none" stroke="#38bdf8" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
           </span>
           <span>
             ARSU<span className="brand-workspace">Attack Response Swarm Unit</span>
@@ -2218,7 +2275,7 @@ export default function App() {
             }}
           >
             <HugeiconsIcon icon={Database01Icon} size={15} />
-            <span>{example ? "Example data" : "Host telemetry"}</span>
+            <span>{example ? "Example data" : "Host sim feed"}</span>
             <HugeiconsIcon icon={ArrowDown01Icon} size={12} />
           </button>
           <div className="sidebar-connection">
@@ -2382,35 +2439,18 @@ export default function App() {
                       <dt>Discovered by</dt>
                       <dd>{node.discoveredBy}</dd>
                     </div>
-                    <div>
-                      <dt>Upstream</dt>
-                      <dd>
-                        <span className="inspector-deps">
-                          {depsOf(node.id).length
-                            ? depsOf(node.id).map((d) => (
-                                <button key={d} className={`dep-chip ${board.nodes.get(d)?.health ?? "up"}`} onClick={() => inspect(d)}>
-                                  {d}
-                                </button>
-                              ))
-                            : <span className="dep-chip root">ROOT</span>}
-                        </span>
-                      </dd>
-                    </div>
-                    <div>
-                      <dt>Downstream</dt>
-                      <dd>
-                        <span className="inspector-deps">
-                          {dependentsOf(node.id).length
-                            ? dependentsOf(node.id).map((d) => (
-                                <button key={d} className={`dep-chip ${board.nodes.get(d)?.health ?? "up"}`} onClick={() => inspect(d)}>
-                                  {d}
-                                </button>
-                              ))
-                            : "—"}
-                        </span>
-                      </dd>
-                    </div>
                   </dl>
+                  <div className="inspector-section">
+                    <h3>Connections</h3>
+                    <DepsGraph
+                      id={node.id}
+                      deps={depsOf(node.id)}
+                      dependents={dependentsOf(node.id)}
+                      severed={severed}
+                      nodes={board.nodes}
+                      onInspect={inspect}
+                    />
+                  </div>
                   <p className="inspector-description">{SYSTEMS[node.id]?.fn ?? node.description}</p>
                   <div className="inspector-section">
                     <h3>

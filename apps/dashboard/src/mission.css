@@ -172,8 +172,8 @@ pre {
   width: 28px;
   height: 28px;
   border-radius: 5px;
-  border: 1px solid var(--glass-border);
-  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  background: rgba(56, 189, 248, 0.08);
   color: var(--ink);
 }
 
@@ -916,17 +916,24 @@ pre {
 }
 
 .workspace-app .map-toolbar button {
-  display: grid;
-  place-items: center;
-  padding: 5px 7px;
-  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 11px;
+  color: var(--ink-secondary);
   border-radius: 4px;
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .workspace-app .map-toolbar button.active {
   color: var(--ink);
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.28);
+  background: rgba(56, 189, 248, 0.14);
+  border-color: rgba(56, 189, 248, 0.4);
 }
 
 .airspace-hud-bar {
@@ -1078,8 +1085,29 @@ pre {
 .overview-metrics {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  margin-top: 18px;
-  gap: 6px;
+  margin-top: 16px;
+  gap: 10px;
+}
+
+.overview-metrics > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 9px 10px;
+  border-radius: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+  min-width: 0;
+}
+
+.overview-metrics > div > span {
+  font-family: var(--font-display);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
 }
 
 .workspace-app .overview-metrics button {
@@ -1278,15 +1306,20 @@ pre {
 
 .map-bottom-label {
   position: absolute;
-  left: 24px;
+  left: 20px;
   bottom: 62px;
   display: flex;
   align-items: center;
   gap: 8px;
-  color: var(--muted);
+  padding: 6px 11px;
+  border-radius: 4px;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  color: var(--ink-secondary);
   font-family: var(--font-mono);
   font-size: 9px;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   pointer-events: none;
   z-index: 8;
@@ -1531,9 +1564,7 @@ pre {
 .triage-feed-panel {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  max-height: 360px;
-  overflow-y: auto;
+  gap: 12px;
 }
 
 .blackboard-summary-grid {
@@ -2324,7 +2355,7 @@ pre {
   right: 20px;
   top: 18px;
   bottom: 128px;
-  width: 336px;
+  width: 430px;
   z-index: 16;
   padding: 16px;
   overflow-y: auto;
@@ -2674,7 +2705,7 @@ pre {
   .object-inspector {
     right: 26px;
     top: 22px;
-    width: 360px;
+    width: 460px;
   }
 }
 
@@ -2732,7 +2763,7 @@ pre {
   }
   .object-inspector {
     right: 16px;
-    width: 304px;
+    width: 370px;
   }
 }
 
@@ -3402,6 +3433,24 @@ button.dep-chip:hover { border-color: var(--ink); color: var(--ink); }
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+.spec-plain {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--ink-secondary);
+}
+
+.spec-contract summary {
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.spec-contract summary:hover { color: var(--ink); }
+.spec-contract pre { margin-top: 8px; }
+
 .spec-invariants {
   display: flex;
   flex-wrap: wrap;
@@ -3679,6 +3728,15 @@ button.dep-chip:hover { border-color: var(--ink); color: var(--ink); }
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
+}
+
+.deps-graph {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 5px;
+  background: rgba(0, 0, 0, 0.35);
 }
 
 @media (max-width: 1150px) {

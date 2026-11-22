@@ -28,6 +28,12 @@ function RadarControls({ region = "regional", comms, toggle }: { region: Airspac
 export default function OpsMap({ flights, nodes, selected, onSelect, onSelectNode, region = "regional" }: AirspaceProps) {
   const [comms, setComms] = useState(true);
   const airports = useMemo(() => [...new Map(flights.flights.flatMap(f => [[f.from.code, f.from] as const, [f.to.code, f.to] as const])).values()], [flights.flights]);
+  const routeSignature = flights.flights.map(f => `${f.id}:${f.from.code}:${f.to.code}`).join("|");
+  const routes = useMemo(
+    () => flights.flights.filter(f => f.status !== "arrived").map(f => ({ id: f.id, pts: Array.from({ length: 65 }, (_, i) => { const [lon, lat] = routePoint(f.from, f.to, i / 64); return [lat, lon] as [number, number]; }) })),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [routeSignature],
+  );
   const home = REGIONS[region];
   return <div className="map-wrap" style={{ position: "relative", background: "#061019" }}>
     {flights.groundStop && <div className="map-banner stop">GROUND STOP</div>}
@@ -37,7 +43,7 @@ export default function OpsMap({ flights, nodes, selected, onSelect, onSelectNod
       {Array.from({ length: 11 }, (_, i) => <Polyline key={`lat${i}`} positions={[[-75 + i * 15, -180], [-75 + i * 15, 180]]} pathOptions={{ color: "#244250", weight: 0.5, opacity: 0.4 }} />)}
       {outlines.map((line, i) => <Polyline key={`coast${i}`} positions={line.map(([lon, lat]) => [lat, lon] as [number, number])} pathOptions={{ color: "#537e91", weight: 1.25, opacity: 0.8 }} />)}
       <RadarControls region={region} comms={comms} toggle={() => setComms(v => !v)} />
-      {flights.flights.filter(f => f.status !== "arrived").map(f => <Polyline key={`route${f.id}`} positions={Array.from({ length: 65 }, (_, i) => { const [lon, lat] = routePoint(f.from, f.to, i / 64); return [lat, lon] as [number, number]; })} pathOptions={{ color: selected === f.id ? "#e7f3fb" : "#5d92ac", weight: selected === f.id ? 2 : 1, opacity: 0.45 }} />)}
+      {routes.map(r => <Polyline key={`route${r.id}`} positions={r.pts} pathOptions={{ color: selected === r.id ? "#e7f3fb" : "#5d92ac", weight: selected === r.id ? 2 : 1, opacity: 0.45 }} />)}
       {comms && COMMS.map(({ from, to }) => <Polyline key={`${from.id}-${to.id}`} positions={Array.from({ length: 65 }, (_, i) => { const [lon, lat] = routePoint(from, to, i / 64); return [lat, lon] as [number, number]; })} pathOptions={{ color: healthColor(nodes, to.id), weight: 2, opacity: 0.85, dashArray: nodes?.get(to.id)?.health === "down" ? "6 7" : undefined }} />)}
       {airports.filter(a => !SERVICE_HUBS.some(h => h.code === a.code)).map(a => <CircleMarker key={a.code} center={[a.lat, a.lon]} radius={3} pathOptions={{ color: "#38bdf8", weight: 1, fillOpacity: 0.5 }}><Tooltip permanent direction="right" className="ap">{a.code}</Tooltip></CircleMarker>)}
       {SERVICE_HUBS.map(h => <CircleMarker key={h.id} center={[h.lat, h.lon]} radius={6} pathOptions={{ color: healthColor(nodes, h.id), fillColor: "#061019", fillOpacity: 1, weight: 2 }} eventHandlers={{ click: () => onSelectNode?.(h.id) }}><Tooltip permanent direction={h.id === "notam" || h.id === "dispatch" ? "right" : "left"} className="ap"><strong>{h.code} · {h.short}</strong><br />{h.city} · {nodes?.get(h.id)?.health ?? "undiscovered"}</Tooltip></CircleMarker>)}
