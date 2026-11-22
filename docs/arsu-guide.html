@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ARSU — How the swarm maps, proves, and repairs a system</title>
+<style>
+  :root {
+    --bg: #07090c; --card: #0e1319; --line: #1e2a33;
+    --ink: #e8f0f5; --ink2: #9db3c1; --muted: #5b7080;
+    --accent: #38bdf8; --ok: #34d399; --warn: #fbbf24; --bad: #f87171;
+    --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink);
+    font: 16px/1.6 system-ui, "Segoe UI", sans-serif; }
+  .deck { height: 100%; display: grid; place-items: center; padding: 24px; }
+  .slide { display: none; width: min(920px, 100%); }
+  .slide.on { display: block; animation: in .2s ease; }
+  @keyframes in { from { opacity: 0; transform: translateY(6px); } }
+  .kicker { font: 600 11px/1 var(--mono); letter-spacing: .22em; color: var(--accent); text-transform: uppercase; }
+  h1 { font-size: clamp(34px, 5vw, 52px); line-height: 1.08; margin: 14px 0 10px; letter-spacing: -.02em; }
+  h2 { font-size: clamp(24px, 3.4vw, 34px); line-height: 1.15; margin: 14px 0 14px; letter-spacing: -.015em; }
+  p { color: var(--ink2); max-width: 62ch; margin: 0 0 14px; }
+  ul { color: var(--ink2); margin: 0 0 14px; padding-left: 20px; }
+  li { margin: 6px 0; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; margin: 12px 0; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  @media (max-width: 700px) { .grid2, .grid3 { grid-template-columns: 1fr; } }
+  .tag { font: 600 10px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase;
+    padding: 4px 9px; border-radius: 999px; border: 1px solid var(--line); color: var(--ink2); }
+  .tag.ok { color: var(--ok); border-color: #34d39955; } .tag.bad { color: var(--bad); border-color: #f8717155; }
+  code, pre { font-family: var(--mono); }
+  code { color: var(--accent); font-size: .9em; }
+  pre { background: #080d12; border: 1px solid var(--line); border-radius: 10px;
+    padding: 14px 16px; overflow-x: auto; font-size: 12.5px; line-height: 1.55; color: #b8ccda; margin: 12px 0; }
+  .flow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 16px 0; }
+  .flow span { background: var(--card); border: 1px solid var(--line); border-radius: 9px;
+    padding: 8px 12px; font: 600 12px/1.3 var(--mono); color: var(--ink); }
+  .flow i { color: var(--accent); font-style: normal; }
+  .truth { border-left: 3px solid var(--accent); padding: 10px 16px; background: #0b141c;
+    color: var(--ink2); font-size: 14px; margin: 14px 0; border-radius: 0 8px 8px 0; }
+  .truth b { color: var(--ink); }
+  .nav { position: fixed; bottom: 18px; left: 0; right: 0; display: flex; justify-content: center;
+    gap: 10px; align-items: center; font: 12px var(--mono); color: var(--muted); }
+  .nav button { background: var(--card); color: var(--ink); border: 1px solid var(--line);
+    border-radius: 8px; padding: 8px 14px; font: 600 12px var(--mono); cursor: pointer; }
+  .nav button:hover { border-color: var(--accent); }
+  .dots { position: fixed; top: 18px; left: 0; right: 0; display: flex; justify-content: center; gap: 6px; }
+  .dots i { width: 18px; height: 3px; border-radius: 2px; background: var(--line); }
+  .dots i.on { background: var(--accent); }
+  .foot { margin-top: 18px; font-size: 12.5px; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="dots" id="dots"></div>
+<main class="deck" id="deck">
+
+<section class="slide">
+  <span class="kicker">ARSU · Attack Response Swarm Unit</span>
+  <h1>How a swarm maps, proves,<br>and repairs a system</h1>
+  <p>A guided tour of the ontology, the three practice layers, the communication faults, and what "verified recovery" actually means.</p>
+  <p class="foot">Use ← → arrow keys, space, or the buttons below. ~5 minutes.</p>
+</section>
+
+<section class="slide">
+  <span class="kicker">01 · The one rule</span>
+  <h2>Agents never talk to each other.<br>They talk to the Blackboard.</h2>
+  <p>Every agent reads work from the board and writes receipts back to it. No direct agent-to-agent messages, no hidden shared memory.</p>
+  <div class="flow"><span>agent</span><i>→ writes →</i><span>blackboard</span><i>→ read by →</i><span>agent</span></div>
+  <div class="truth"><b>Why it matters:</b> everything the swarm believes is a record you can open — in the Blackboard view or the Pipeline walkthrough. That's the whole audit trail.</div>
+</section>
+
+<section class="slide">
+  <span class="kicker">02 · The ontology</span>
+  <h2>Four record types become the map</h2>
+  <div class="grid2">
+    <div class="card"><b>Nodes</b><p>Discovered systems. Each has health, receipts, provenance, and which agent found it.</p></div>
+    <div class="card"><b>Edges</b><p>Directed dependencies — "release-gate <i>depends on</i> message-consumer". This is the graph the orchestrator reasons over.</p></div>
+    <div class="card"><b>Specs</b><p>Human-readable contracts authored per system by verification agents through the ModelProvider.</p></div>
+    <div class="card"><b>Invariants</b><p>Executable checks derived from specs — the runner fires them on an interval and records pass/fail receipts.</p></div>
+  </div>
+  <div class="truth">Discovery writes nodes + edges. Verification agents write specs + invariants. The runner turns invariants into evidence.</div>
+</section>
+
+<section class="slide">
+  <span class="kicker">03 · Three layers only</span>
+  <h2>The practice environment, in one picture</h2>
+  <div class="grid3">
+    <div class="card"><span class="tag">Layer 1</span><h3 style="margin:8px 0 4px">Infrastructure</h3><p>Modeled hosts: gateway, broker, consumer. The machines things run on.</p></div>
+    <div class="card"><span class="tag">Layer 2</span><h3 style="margin:8px 0 4px">Communications</h3><p>publisher → broker → consumer. Educational message receipts you can open and inspect.</p></div>
+    <div class="card"><span class="tag">Layer 3</span><h3 style="margin:8px 0 4px">Operations</h3><p>A release decision that can only act on messages it can trust.</p></div>
+  </div>
+  <div class="truth">The point of the demo: a host can be perfectly healthy while the <b>data flowing through it</b> is corrupted, replayed, missing, or stale. That's what the swarm is for.</div>
+</section>
+
+<section class="slide">
+  <span class="kicker">04 · The message</span>
+  <h2>What a communications envelope looks like</h2>
+  <pre>{
+  "id": "notam-0007",
+  "sequence": 7,
+  "topic": "notam.runway",
+  "publisher": "notam-source",
+  "sentAt": "2026-11-22T14:02:11Z",
+  "receivedAt": "2026-11-22T14:02:12Z",
+  "payload": { "runway": "09L", "status": "CLOSED", "reason": "WIP" },
+  "hash": "sha256:9c1f…",
+  "freshnessMs": 1040
+}</pre>
+  <p>Modeled after the public FAA SWIM/JMS publish–broker–consume pattern. It's an educational receipt — <b>not</b> a real NOTAM, JMS, or ASTERIX implementation.</p>
+</section>
+
+<section class="slide">
+  <span class="kicker">05 · The four faults</span>
+  <h2>How communication breaks</h2>
+  <div class="grid2">
+    <div class="card"><span class="tag bad">payload-corruption</span><p>Body changes after publish. Hash mismatch proves tampering, not a network hiccup.</p></div>
+    <div class="card"><span class="tag bad">sequence-gap</span><p>A delivery never arrives. The consumer sees sequence jump 7 → 9.</p></div>
+    <div class="card"><span class="tag bad">message-replay</span><p>An old envelope comes back as new. Duplicate sequence exposes it.</p></div>
+    <div class="card"><span class="tag bad">stale-message</span><p>Traffic flows, but it's too old to act on. FreshnessMs blows the budget.</p></div>
+  </div>
+  <div class="truth">Each fault is injected into the simulation only — and each has a check that watches for exactly that failure shape.</div>
+</section>
+
+<section class="slide">
+  <span class="kicker">06 · Detection</span>
+  <h2>Invariants fire, violations open</h2>
+  <div class="flow"><span>runner executes check</span><i>→</i><span>FAIL</span><i>→</i><span>violation opens</span><i>→</i><span>orchestrator triages</span></div>
+  <p>The proof runner runs every invariant on its interval and writes receipts. A fail doesn't just turn a dot red — it opens a violation record with the check, the node, and the failing detail.</p>
+  <div class="truth"><b>The orchestrator's job:</b> separate the <b>root failure</b> from collateral effects. A broken link fails the consumer AND everything downstream — only the root gets a remediation task.</div>
+</section>
+
+<section class="slide">
+  <span class="kicker">07 · Response</span>
+  <h2>Tasks dispatch to skills</h2>
+  <div class="flow"><span>triage</span><i>→</i><span>remediation task</span><i>→</i><span>response agent claims it</span><i>→</i><span>skill executes</span></div>
+  <p>Response units claim tasks through the board and run a skill — for the comms slice that's things like <code>reconnect-subscription</code> or <code>purge-stale-queue</code>. Every step lands as an event receipt.</p>
+  <div class="truth">You can watch this live in the Swarm view — the incident trace lights up DETECTION → TRIAGE → DISPATCH → RESPONSE → RESOLVED.</div>
+</section>
+
+<section class="slide">
+  <span class="kicker">08 · Verification</span>
+  <h2>"Recovered" means the checks say so</h2>
+  <p>A scenario only closes when <b>every covered check passes again after the response</b> — not when a banner turns green, not when the agent says it's done.</p>
+  <div class="card"><b>Verified recovery</b> = fault detected + response executed + fresh pass on all 34 checks + evidence JSON you can download.</div>
+  <div class="truth"><b>Honest limit:</b> verification proves the <b>covered</b> checks passed. It can't claim universal correctness beyond them. The UI says exactly this.</div>
+</section>
+
+<section class="slide">
+  <span class="kicker">09 · Provenance</span>
+  <h2>What's real and what's modeled</h2>
+  <div class="grid2">
+    <div class="card"><span class="tag">Simulated</span><p>The 8-component estate, traffic, faults, and agent behavior in SIM mode.</p></div>
+    <div class="card"><span class="tag">Public reference</span><p>FAA SWIM/JMS distribution concepts and EUROCONTROL ASTERIX as format inspiration — cited, never claimed as implementation.</p></div>
+    <div class="card"><span class="tag">ModelProvider</span><p><code>GEMINI_API_KEY</code> flips contract authoring and triage reasoning to Gemini. SIM is the deterministic default.</p></div>
+    <div class="card"><span class="tag">Firestore</span><p>Optional persistence for the Blackboard via Firebase env vars — otherwise local-only.</p></div>
+  </div>
+  <div class="truth">Nothing implies access to real FAA, ADS-B, or private aviation networks. Live data only appears when you wire it.</div>
+</section>
+
+<section class="slide">
+  <span class="kicker">10 · Try it</span>
+  <h2>The 60-second demo loop</h2>
+  <ul>
+    <li><b>Launch</b> — Swarm view → <code>Launch environment</code>. Watch 8 systems, 7 links, 34 checks get authored.</li>
+    <li><b>Map</b> — Pipeline view walks each stage: discovery → ontology → contracts → detection → triage → skills → outcome, with the raw board record under every claim.</li>
+    <li><b>Break it</b> — <code>Change a message payload</code>. The trace lights up and a violation opens.</li>
+    <li><b>Watch it heal</b> — response executes, all 34 checks pass again, outcome marked <span class="tag ok">VERIFIED</span>.</li>
+    <li><b>Keep the receipt</b> — Download evidence JSON on the recorded run.</li>
+  </ul>
+  <div class="truth">Run it: <code>npm run dev:practice</code> → open the printed URL. Ephemeral board, nothing saved is touched.</div>
+</section>
+
+<section class="slide">
+  <span class="kicker">Done</span>
+  <h2>You now know more than the demo audience</h2>
+  <p>Same material lives in the PDF guide (<code>docs/ARSU-Ontology-Guide.pdf</code>) and interactively in the app's Pipeline view.</p>
+  <p class="foot">Built for Hack @ DevFest Sudbury · SIM mode · Arrow keys to go back</p>
+</section>
+
+</main>
+<nav class="nav">
+  <button id="prev">← Prev</button><span id="count">1 / 12</span><button id="next">Next →</button>
+</nav>
+<script>
+const slides=[...document.querySelectorAll('.slide')];let i=0;
+const dots=document.getElementById('dots'),count=document.getElementById('count');
+slides.forEach(()=>{const d=document.createElement('i');dots.appendChild(d)});
+function show(n){i=Math.max(0,Math.min(slides.length-1,n));
+  slides.forEach((s,j)=>s.classList.toggle('on',j===i));
+  [...dots.children].forEach((d,j)=>d.classList.toggle('on',j===i));
+  count.textContent=(i+1)+' / '+slides.length;}
+document.getElementById('prev').onclick=()=>show(i-1);
+document.getElementById('next').onclick=()=>show(i+1);
+addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' ')show(i+1);if(e.key==='ArrowLeft')show(i-1)});
+show(0);
+</script>
+</body>
+</html>
