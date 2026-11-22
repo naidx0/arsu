@@ -1830,6 +1830,25 @@ export default function App() {
                 </span>
               </div>
             )}
+            {(() => {
+              const active = [...board.tasks.values()].filter((t) => t.status !== "done" && t.status !== "failed").sort((a, b) => b.priority - a.priority).slice(0, 4);
+              if (!active.length) return null;
+              return (
+                <div className="response-strip">
+                  <span className="response-strip-label">ACTIVE RESPONSE</span>
+                  {active.map((t) => (
+                    <div key={t.id} className={`response-task ${t.status}`}>
+                      <span className={`health-dot ${t.status === "failed" ? "down" : t.status === "claimed" ? "degraded" : "idle"}`} />
+                      <span className="response-task-main">
+                        <strong>{t.skill ?? t.kind}</strong>
+                        <small>{t.target}{t.claimedBy ? ` · ${t.claimedBy}` : " · unclaimed"}</small>
+                      </span>
+                      <span className="status-pill">{t.status.toUpperCase()}</span>
+                    </div>
+                  ))}
+                </div>
+              );
+            })()}
             <div className="activity-stream compact">{board.events.slice(0, 6).map((e) => eventRow(e, true))}</div>
             <button className="incident-link" onClick={() => openView("Blackboard")}>
               Open full activity stream

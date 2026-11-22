@@ -1246,17 +1246,23 @@ pre {
 .globe-controls {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   position: absolute;
   left: 20px;
   bottom: 20px;
-  padding: 4px;
-  border-radius: 5px;
+  z-index: 9;
+}
+
+.globe-controls .ctl-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 6px;
   border: 1px solid var(--glass-border);
   background: var(--glass-bg);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  z-index: 9;
 }
 
 .globe-controls > span {
@@ -1264,12 +1270,34 @@ pre {
 }
 
 .workspace-app .globe-controls button {
-  display: grid;
-  place-items: center;
-  padding: 5px 9px;
-  font-family: var(--font-mono);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 9px;
+  border-radius: 4px;
+  font-family: var(--font-display);
   font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
   color: var(--ink-secondary);
+}
+
+.workspace-app .globe-controls button:hover {
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.workspace-app .globe-controls button[aria-pressed="true"] {
+  color: var(--accent-2, #7dd3fc);
+  background: rgba(56, 189, 248, 0.15);
+  border-color: rgba(56, 189, 248, 0.35);
+}
+
+.workspace-app .globe-controls button[aria-pressed="false"] {
+  color: var(--muted);
 }
 
 .earth-credit {
@@ -3450,6 +3478,58 @@ button.dep-chip:hover { border-color: var(--ink); color: var(--ink); }
 
 .spec-contract summary:hover { color: var(--ink); }
 .spec-contract pre { margin-top: 8px; }
+
+.response-strip {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid rgba(251, 191, 36, 0.25);
+  background: rgba(251, 191, 36, 0.05);
+}
+
+.response-strip-label {
+  font-family: var(--font-display);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: #fbbf24;
+}
+
+.response-task {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 6px 8px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.response-task-main {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+  min-width: 0;
+}
+
+.response-task-main strong {
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+
+.response-task-main small {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 .spec-invariants {
   display: flex;

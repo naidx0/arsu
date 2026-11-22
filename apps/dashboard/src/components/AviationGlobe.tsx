@@ -402,21 +402,15 @@ export default function AviationGlobe(props: AirspaceProps) {
       </div>
       <span className="earth-credit">PROCEDURAL VECTOR EARTH · SIMULATED TRAFFIC</span>
       <div className="globe-controls">
-        <button aria-pressed={commsVisible} onClick={() => setCommsVisible(v => !v)}>COMMS LINKS</button>
-        <button aria-pressed={landmarksVisible} onClick={() => setLandmarksVisible(v => !v)}>LANDMARKS</button>
-        <button onClick={() => controller.current?.reset()}>Recenter</button>
-        <button
-          aria-label="Zoom in"
-          onClick={() => controller.current?.zoom(-0.25)}
-        >
-          +
-        </button>
-        <button
-          aria-label="Zoom out"
-          onClick={() => controller.current?.zoom(0.25)}
-        >
-          −
-        </button>
+        <div className="ctl-group" role="group" aria-label="Layers">
+          <button aria-pressed={commsVisible} onClick={() => setCommsVisible(v => !v)}>Comms links</button>
+          <button aria-pressed={landmarksVisible} onClick={() => setLandmarksVisible(v => !v)}>Landmarks</button>
+        </div>
+        <div className="ctl-group" role="group" aria-label="Camera">
+          <button aria-label="Zoom out" onClick={() => controller.current?.zoom(0.25)}>−</button>
+          <button aria-label="Zoom in" onClick={() => controller.current?.zoom(-0.25)}>+</button>
+          <button onClick={() => controller.current?.reset()}>Recenter</button>
+        </div>
       </div>
       <label className="aircraft-picker">
         Flight
