@@ -709,7 +709,7 @@ pre {
 
 .arc-gauge-unit {
   font-family: var(--font-mono);
-  font-size: 8px;
+  font-size: 9px;
   font-weight: 500;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -1638,7 +1638,7 @@ pre {
 .systems-matrix {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
 .system-row-card {
@@ -2856,8 +2856,8 @@ pre {
   position: absolute;
   right: 0;
   top: 40px;
-  width: 244px;
-  padding: 6px;
+  width: 268px;
+  padding: 8px;
   z-index: 40;
   background: var(--glass-bg-elevated);
   border-radius: var(--radius-lg);
@@ -2879,10 +2879,10 @@ pre {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 8px 10px;
+  padding: 10px 12px;
   text-align: left;
   width: 100%;
-  font-size: 11px;
+  font-size: 11.5px;
   background: transparent;
   border-color: transparent;
   border-radius: 8px;
@@ -3871,7 +3871,7 @@ button.dep-chip:hover { border-color: var(--ink); color: var(--ink); }
 .assistant-tag {
   flex-shrink: 0;
   font-family: var(--font-mono);
-  font-size: 8.5px;
+  font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.12em;
   padding: 2px 7px;
@@ -4082,7 +4082,7 @@ button.dep-chip:hover { border-color: var(--ink); color: var(--ink); }
 
 .swarm-scale-metrics dt {
   font-family: var(--font-mono);
-  font-size: 8px;
+  font-size: 9px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--muted);
