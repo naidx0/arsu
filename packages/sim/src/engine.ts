@@ -17,6 +17,8 @@ import {
   ServiceState,
 } from '@arsu/core';
 import { bearing, slerp } from './geo.js';
+import { CommunicationReplay } from './communications.js';
+import { PRACTICE_IDENTITY, PRACTICE_SERVICES } from './practice.js';
 
 export interface ServiceRec extends ServiceInfo {
   state: ServiceState;
@@ -107,9 +109,13 @@ export class SimEngine {
   /** per-flight dwell countdowns (ms) for status transitions */
   private dwell = new Map<string, number>();
 
-  constructor(seedFile = 'data/flights.seed.json') {
+  private communications: CommunicationReplay | null;
+
+  constructor(seedFile = 'data/flights.seed.json', practice = false) {
+    this.communications = practice ? new CommunicationReplay() : null;
+    this.communications?.tick();
     this.seedFile = seedFile;
-    for (const def of SERVICE_DEFS) {
+    for (const def of practice ? PRACTICE_SERVICES : SERVICE_DEFS) {
       this.services.set(def.id, {
         ...def,
         state: 'up',
@@ -127,13 +133,10 @@ export class SimEngine {
 
   registry(): ServiceInfo[] {
     return [...this.services.values()].map(
-      ({ id, name, kind, deps, description, standby }) => ({
-        id,
-        name,
-        kind,
-        deps,
-        description,
-        standby,
+      ({ id, name, kind, deps, description, standby, layer, provenance }) => ({
+        id, name, kind, deps, description, standby,
+        ...(layer ? { layer } : {}),
+        ...(provenance ? { provenance } : {}),
       }),
     );
   }
@@ -150,7 +153,8 @@ export class SimEngine {
     seen.add(id);
     const s = this.services.get(id);
     if (!s) return 'down';
-    let h: Health = s.state;
+    const channel = id === 'message-consumer' ? this.communications?.snapshot() : undefined;
+    let h: Health = channel && !(channel.integrityOk && channel.sequenceOk && channel.freshnessOk) && s.state === 'up' ? 'degraded' : s.state;
     for (const dep of s.activeDeps) {
       const dh = this.effective(dep, seen);
       if (dh === 'down') h = 'down';
@@ -238,6 +242,14 @@ export class SimEngine {
   chaos(req: ChaosRequest): Record<string, unknown> {
     const s = this.svc(req.target);
     switch (req.type) {
+      case 'packet_corrupt':
+      case 'packet_drop':
+      case 'packet_replay':
+      case 'packet_stale':
+        if (!this.communications || req.target !== 'message-consumer') throw new SimError(400, 'Packet faults apply only to the local practice message consumer');
+        this.communications.inject(req.type);
+        this.communications.tick();
+        break;
       case 'kill':
         s.state = 'down';
         break;
@@ -303,6 +315,7 @@ export class SimEngine {
       default:
         throw new SimError(400, `unknown action type ${req.type}`);
     }
+    if (req.target === 'message-consumer' && (req.type === 'restart' || req.type === 'repair')) this.communications?.repair();
     return { ok: true, target: s.id, effective: this.effective(s.id) };
   }
 
@@ -316,6 +329,7 @@ export class SimEngine {
       s.latencyMs = BASE_LATENCY;
     }
     this.rev++;
+    this.communications?.repair();
     this.loadFlights();
   }
 
@@ -348,15 +362,20 @@ export class SimEngine {
     this.resetFlightState();
   }
 
+  practiceSnapshot() {
+    return this.communications ? { ...PRACTICE_IDENTITY, communications: this.communications.snapshot() } : undefined;
+  }
+
   groundStop(): boolean {
-    return this.effective('dispatch') !== 'up';
+    return this.effective(this.communications ? 'release-gate' : 'dispatch') !== 'up';
   }
 
   staleFeed(): boolean {
-    return this.effective('ops-radar') !== 'up';
+    return this.effective(this.communications ? 'message-consumer' : 'ops-radar') !== 'up';
   }
 
   tick(dtMs: number): FlightsPayload {
+    if (this.communications && this.effective('notam-source') === 'up' && this.effective('message-broker') === 'up') this.communications.tick();
     const dt = dtMs / 1000;
     const groundStop = this.groundStop();
     const stale = this.staleFeed();

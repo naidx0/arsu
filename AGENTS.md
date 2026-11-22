@@ -34,6 +34,7 @@ npm run dev:ui       # dashboard dev server on :5173 (proxies /api + /ws)
 npm run typecheck    # all workspaces
 npm run seed         # regenerate data/flights.seed.json
 npm run dev:recording
+npm run dev:practice
 npm run test:mission
 ```
 

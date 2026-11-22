@@ -6,12 +6,13 @@ import test from 'node:test';
 import type { RehearsalRun, StateSnapshot } from '@arsu/core';
 
 const delay = (ms: number) => new Promise(r => setTimeout(r, ms));
-test('recording environment discovers, verifies, stress-tests and exports four real swarm responses', { timeout: 180_000 }, async () => {
+for (const profile of ['recording', 'practice'] as const) {
+test(`${profile} environment discovers, verifies, stress-tests and exports four real swarm responses`, { timeout: 180_000 }, async () => {
   const reservation = net.createServer();
   await new Promise<void>(resolve => reservation.listen(0, '127.0.0.1', resolve));
   const port = (reservation.address() as net.AddressInfo).port;
   await new Promise<void>(resolve => reservation.close(() => resolve()));
-  const host = spawn(process.execPath, ['--import', 'tsx', 'packages/server/src/index.ts', '--recording'], { env: { ...process.env, ARSU_PORT: String(port), ARSU_PROVIDER: 'sim' }, stdio: ['ignore', 'pipe', 'pipe'] });
+  const host = spawn(process.execPath, ['--import', 'tsx', 'packages/server/src/index.ts', `--${profile}`], { env: { ...process.env, ARSU_PORT: String(port), ARSU_PROVIDER: 'sim' }, stdio: ['ignore', 'pipe', 'pipe'] });
   let log = '';
   host.stdout.on('data', d => { log = (log + String(d)).slice(-8000); });
   host.stderr.on('data', d => { log = (log + String(d)).slice(-8000); });
@@ -37,7 +38,7 @@ test('recording environment discovers, verifies, stress-tests and exports four r
     assert.equal(empty.mission.launched, false);
     assert.ok(empty.flights.flights.length > 0);
     assert.equal(empty.rehearsal?.recording, true);
-    const refused = await fetch(`${base}/api/rehearsal`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ scenario: 'hub-outage' }) });
+    const refused = await fetch(`${base}/api/rehearsal`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ scenario: empty.rehearsal!.scenarios[0].id }) });
     assert.equal(refused.status, 409);
     await request('/api/launch', {});
     const growing = await waitFor(s => s.nodes.length > 0 && s.nodes.length < 8, 'progressive discovery');
@@ -46,6 +47,13 @@ test('recording environment discovers, verifies, stress-tests and exports four r
     assert.equal(ready.nodes.length, ready.rehearsal?.expectedSystems);
     assert.equal(ready.edges.length, ready.rehearsal?.expectedLinks);
     assert.ok(ready.agents.some(a => a.role === 'runner' && a.state === 'working'));
+    if (profile === 'practice') {
+      assert.deepEqual([...new Set(ready.nodes.map(n => n.layer))].sort(), ['communications', 'infrastructure', 'operations']);
+      assert.ok(ready.nodes.every(n => n.provenance?.basis === 'modeled'));
+      assert.equal(ready.practice?.references.length, 4);
+      assert.equal(ready.practice?.observer?.source, 'observed ARSU host process');
+      for (const field of ['integrityOk', 'sequenceOk', 'freshnessOk']) assert.ok(ready.invariants.some(i => i.params.field === field && i.params.equals === true));
+    }
     for (const scenario of ready.rehearsal!.scenarios) {
       const run = await request<RehearsalRun>('/api/rehearsal', { scenario: scenario.id });
       const done = await waitFor(s => s.rehearsal!.runs.some(r => r.id === run.id && r.outcome !== 'running'), scenario.id);
@@ -63,3 +71,4 @@ test('recording environment discovers, verifies, stress-tests and exports four r
     if (host.exitCode === null) { host.kill(); await once(host, 'exit'); }
   }
 });
+}

@@ -1,5 +1,6 @@
 import { useId, useState } from 'react';
 import { post, type Board } from '../api';
+import PracticeLayers from './PracticeLayers';
 
 export default function RehearsalConsole({ board, enabled, onLaunch, onInspect }: {
   board: Board; enabled: boolean; onLaunch: () => void; onInspect: (id: string) => void;
@@ -10,7 +11,11 @@ export default function RehearsalConsole({ board, enabled, onLaunch, onInspect }
   const rehearsal = board.rehearsal;
   const latest = rehearsal?.runs[0];
   const nodes = [...board.nodes.values()];
-  const points = new Map(nodes.map((n, i) => [n.id, { x: 115 + (i % 4) * 195, y: 50 + Math.floor(i / 4) * 140 }]));
+  const points = new Map(nodes.map((n, i) => {
+    const row = n.layer && board.practice ? board.practice.layers.indexOf(n.layer) : Math.floor(i / 4);
+    const col = n.layer && board.practice ? nodes.filter(other => other.layer === n.layer).findIndex(other => other.id === n.id) : i % 4;
+    return [n.id, { x: 115 + col * 195, y: 50 + row * 140 }];
+  }));
   const checks = [...board.invariants.values()];
   const events = board.events.filter(e => ['planning', 'probe', 'recon', 'verify', 'violation', 'triage', 'remediate', 'action', 'resolved', 'chaos', 'rehearsal'].includes(e.type)).slice(0, 20);
   async function stress(scenario: string) {
@@ -24,6 +29,7 @@ export default function RehearsalConsole({ board, enabled, onLaunch, onInspect }
       <button className="mini-btn" disabled={!enabled || busy || board.mission.launched} onClick={onLaunch}>{board.mission.launched ? 'Swarm launched' : 'Launch environment'}</button></header>
     {!enabled && <p role="status">Connect to the host to run the real swarm. Example data cannot run a verified rehearsal.</p>}
     {!rehearsal?.recording && <p>For a clean recording, start <code>npm run dev:recording</code>. It waits for launch and leaves your saved board untouched.</p>}
+    <PracticeLayers board={board} onInspect={onInspect} />
     <div className="rehearsal-metrics">
       <div><strong>{nodes.length}<small> / {rehearsal?.expectedSystems ?? '—'}</small></strong><span>Systems discovered</span></div>
       <div><strong>{board.edges.size}<small> / {rehearsal?.expectedLinks ?? '—'}</small></strong><span>Dependency links</span></div>
@@ -31,7 +37,7 @@ export default function RehearsalConsole({ board, enabled, onLaunch, onInspect }
       <div><strong>{rehearsal?.runs.filter(r => r.outcome === 'verified').length ?? 0}</strong><span>Verified stress tests</span></div>
     </div>
     <div className="rehearsal-grid"><div className="rehearsal-map"><header><h3>Discovered dependency graph</h3><span>Click a component</span></header>
-      {nodes.length ? <svg viewBox={`0 0 820 ${Math.max(280, Math.ceil(nodes.length / 4) * 140)}`} aria-label="Live discovered systems and dependency links">
+      {nodes.length ? <svg viewBox={`0 0 820 ${Math.max(280, (board.practice ? 3 : Math.ceil(nodes.length / 4)) * 140)}`} aria-label="Live discovered systems and dependency links">
         <defs><marker id={marker} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="var(--muted)" /></marker></defs>
         {[...board.edges.values()].map(edge => {
           const a = points.get(edge.from), b = points.get(edge.to);

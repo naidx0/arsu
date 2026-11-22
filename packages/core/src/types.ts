@@ -6,11 +6,60 @@ export type Health = ServiceState;
 export type Severity = 'info' | 'warn' | 'crit';
 
 export type NodeKind = 'hub' | 'worker' | 'feed' | 'store';
+export type SystemLayer = 'infrastructure' | 'communications' | 'operations';
+export interface Provenance {
+  basis: 'modeled';
+  manifestPath: string;
+  sourceIds: string[];
+}
+export interface PublicReference {
+  id: string;
+  title: string;
+  url: string;
+  fact: string;
+}
+export interface MessageReceipt {
+  id: string;
+  sequence: number;
+  epoch: number;
+  sentAt: number;
+  receivedAt: number;
+  source: string;
+  destination: string;
+  topic: string;
+  payload: { noticeId: string; airport: string; text: string };
+  digest: string;
+  outcome: 'accepted' | 'rejected' | 'omitted';
+  integrityOk: boolean;
+  sequenceOk: boolean;
+  freshnessOk: boolean;
+}
+export interface CommunicationSnapshot {
+  transport: 'in-process educational JSON replay';
+  integrityOk: boolean;
+  sequenceOk: boolean;
+  freshnessOk: boolean;
+  published: number;
+  received: number;
+  epoch: number;
+  receipts: MessageReceipt[];
+}
+export interface PracticeSnapshot {
+  id: 'communications-lab';
+  title: string;
+  manifestPath: string;
+  layers: SystemLayer[];
+  references: PublicReference[];
+  communications: CommunicationSnapshot;
+  observer?: { source: 'observed ARSU host process'; uptimeSeconds: number; processMemoryMb: number; logicalCpuCount: number };
+}
 
 export interface NodeDoc {
   id: string;
   name: string;
   kind: NodeKind;
+  layer?: SystemLayer;
+  provenance?: Provenance;
   health: Health;
   discoveredBy: string;
   firstSeen: number;
@@ -195,12 +244,14 @@ export interface ServiceInfo {
   id: string;
   name: string;
   kind: NodeKind;
+  layer?: SystemLayer;
+  provenance?: Provenance;
   deps: string[];
   description: string;
   standby?: string;
 }
 
-export type ChaosType = 'kill' | 'degrade' | 'cut_dep' | 'corrupt';
+export type ChaosType = 'kill' | 'degrade' | 'cut_dep' | 'corrupt' | 'packet_corrupt' | 'packet_drop' | 'packet_replay' | 'packet_stale';
 export type ActionType = 'restart' | 'failover' | 'reroute' | 'repair';
 
 export interface ChaosRequest {
@@ -218,6 +269,7 @@ export interface ActionRequest {
 // ---- API / WS shapes ----
 
 export type WsMessage =
+  | { type: 'practice'; data: PracticeSnapshot }
   | { type: 'rehearsal'; data: RehearsalState }
   | { type: 'event'; data: EventDoc }
   | { type: 'invariant'; data: InvariantDoc }
@@ -267,6 +319,7 @@ export interface RehearsalState {
 }
 
 export interface StateSnapshot {
+  practice?: PracticeSnapshot;
   rehearsal?: RehearsalState;
   events?: EventDoc[];
   nodes: NodeDoc[];

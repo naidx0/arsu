@@ -8,6 +8,7 @@ import express from 'express';
 import fs from 'node:fs';
 import http from 'node:http';
 import path from 'node:path';
+import os from 'node:os';
 import { WebSocket, WebSocketServer } from 'ws';
 import {
   AgentDoc,
@@ -27,7 +28,7 @@ import {
   ViolationDoc,
   WsMessage,
 } from '@arsu/core';
-import { createSimApp, fetchLiveFlights, SimEngine, SimError } from '@arsu/sim';
+import { createSimApp, fetchLiveFlights, PRACTICE_SCENARIOS, SimEngine, SimError } from '@arsu/sim';
 import {
   AgentRuntime,
   loadSkills,
@@ -46,12 +47,13 @@ const BOARD_FILE = path.resolve('data/blackboard.json');
 const SKILLS_DIR = path.resolve('skills');
 const DASH_DIST = path.resolve('apps/dashboard/dist');
 
-const recording = process.argv.includes('--recording');
-const engine = new SimEngine(SEED);
+const practiceMode = process.argv.includes('--practice');
+const recording = practiceMode || process.argv.includes('--recording');
+const engine = new SimEngine(SEED, practiceMode);
 const board = recording ? new LocalBlackboard() : createBlackboard(BOARD_FILE);
 const provider = selectProvider();
 const ctx: SwarmCtx = { board, provider, simBase: SELF, stepDelayMs: recording ? 900 : 0 };
-const rehearsal = new RehearsalController(board, engine.registry(), recording, fault => { engine.chaos(fault); });
+const rehearsal = new RehearsalController(board, engine.registry(), recording, fault => { engine.chaos(fault); }, practiceMode ? PRACTICE_SCENARIOS : undefined);
 const runtime = new AgentRuntime(ctx);
 const orchestrator = new Orchestrator(ctx);
 
@@ -173,6 +175,8 @@ async function snapshot(): Promise<StateSnapshot> {
       launchedAt: mission.launchedAt || undefined,
     },
   };
+  const practice = engine.practiceSnapshot();
+  if (practice) state.practice = { ...practice, observer: { source: 'observed ARSU host process', uptimeSeconds: Math.floor(process.uptime()), processMemoryMb: Math.round(process.memoryUsage().rss / 1048576), logicalCpuCount: os.cpus().length } };
   state.rehearsal = await rehearsal.status(state);
   return state;
 }
@@ -347,7 +351,9 @@ setInterval(() => {
     void (async () => {
       try {
         await rehearsal.advance(await snapshot());
-        broadcast({ type: 'rehearsal', data: (await snapshot()).rehearsal! });
+        const current = await snapshot();
+        broadcast({ type: 'rehearsal', data: current.rehearsal! });
+        if (current.practice) broadcast({ type: 'practice', data: current.practice });
       } finally { samplingRehearsal = false; }
     })();
   }

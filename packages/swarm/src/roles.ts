@@ -76,6 +76,8 @@ export async function doRecon(
       id: svc.id,
       name: svc.name,
       kind: svc.kind,
+      ...(svc.layer ? { layer: svc.layer } : {}),
+      ...(svc.provenance ? { provenance: svc.provenance } : {}),
       health,
       discoveredBy: agentId,
       firstSeen: existing?.data.firstSeen ?? Date.now(),
@@ -149,7 +151,8 @@ export async function doVerify(
   }>(
     `Author an executable invariant set for component '${node.id}'. ` +
       `Kinds: http_status{url} · latency_lt{url,ms} · dep_health{dep} · ` +
-      `data_field{url,field,equals} · consistency{url,field,via,viaField}.`,
+      `data_field{url,field,equals} · consistency{url,field,via,viaField}.` +
+      (node.id === 'message-consumer' ? ` Include three data_field checks against ${ctx.simBase}/sim/communications/status: integrityOk, sequenceOk, freshnessOk must each equal boolean true.` : ''),
     'invariants',
     { service, simBase: ctx.simBase, health: node.health },
   );

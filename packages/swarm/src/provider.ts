@@ -43,7 +43,7 @@ const SHAPE_SCHEMAS: Record<PlanShape, object> = {
     type: 'object',
     required: ['kind', 'description', 'deps'],
     properties: {
-      kind: { type: 'string', enum: ['feed', 'hub', 'db', 'api', 'comms', 'ops'] },
+      kind: { type: 'string', enum: ['feed', 'hub', 'worker', 'store'] },
       description: { type: 'string' },
       deps: { type: 'array', items: { type: 'string' } },
     },
@@ -62,7 +62,11 @@ const SHAPE_SCHEMAS: Record<PlanShape, object> = {
               type: 'string',
               enum: ['http_status', 'latency_lt', 'data_field', 'dep_health', 'consistency'],
             },
-            params: { type: 'object' },
+            params: { type: 'object', properties: {
+              url: { type: 'string' }, ms: { type: 'number' }, dep: { type: 'string' },
+              field: { type: 'string' }, equals: { type: 'boolean' },
+              via: { type: 'string' }, viaField: { type: 'string' },
+            } },
             intervalMs: { type: 'integer', minimum: 500 },
           },
         },
@@ -252,6 +256,11 @@ export class SimulatedProvider implements ModelProvider {
         kind: 'dep_health',
         params: { dep },
         intervalMs: 2000,
+      });
+    }
+    if (s.id === 'message-consumer') {
+      for (const field of ['integrityOk', 'sequenceOk', 'freshnessOk']) drafts.push({
+        kind: 'data_field', params: { url: `${base}/sim/communications/status`, field, equals: true }, intervalMs: 1000,
       });
     }
     if (s.id === 'unimatic') {

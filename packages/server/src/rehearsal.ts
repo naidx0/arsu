@@ -34,20 +34,20 @@ type StoredRun = RehearsalRun & { baseline?: Omit<StateSnapshot, 'rehearsal'>; e
 export class RehearsalController {
   private starting = false;
   private advancing = false;
-  constructor(private board: Blackboard, private services: ServiceInfo[], private recording: boolean, private inject: (fault: ChaosRequest) => void) {}
+  constructor(private board: Blackboard, private services: ServiceInfo[], private recording: boolean, private inject: (fault: ChaosRequest) => void, private scenarioList = scenarios) {}
 
   async status(state: StateSnapshot): Promise<RehearsalState> {
     const runs = (await this.board.query<StoredRun>('rehearsals')).map(({ data: { baseline: _baseline, evidence: _evidence, ...run } }) => run).sort((a, b) => b.startedAt - a.startedAt);
     const blockers = readiness(state, this.services);
     if (this.starting || runs.some(r => r.outcome === 'running')) blockers.push('A stress test is already running');
-    return { recording: this.recording, expectedSystems: this.services.length, expectedLinks: this.services.reduce((n, s) => n + s.deps.length, 0), ready: blockers.length === 0, blockers, scenarios, runs };
+    return { recording: this.recording, expectedSystems: this.services.length, expectedLinks: this.services.reduce((n, s) => n + s.deps.length, 0), ready: blockers.length === 0, blockers, scenarios: this.scenarioList, runs };
   }
 
   async start(scenarioId: string, state: StateSnapshot): Promise<RehearsalRun> {
     if (this.starting) throw new Error('A stress test is already starting');
     this.starting = true;
     try {
-      const scenario = scenarios.find(s => s.id === scenarioId);
+      const scenario = this.scenarioList.find(s => s.id === scenarioId);
       if (!scenario) throw new Error('Unknown stress scenario');
       const runs = await this.board.query<StoredRun>('rehearsals');
       if (runs.some(r => r.data.outcome === 'running')) throw new Error('A stress test is already running');

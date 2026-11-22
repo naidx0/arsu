@@ -16,6 +16,12 @@ export function createSimApp(engine: SimEngine): Router {
     res.json({ services: engine.registry() });
   });
 
+  app.get('/communications/status', (_req, res) => {
+    const practice = engine.practiceSnapshot();
+    if (!practice) { res.status(404).json({ error: 'Communications practice profile is not active' }); return; }
+    res.json(practice.communications);
+  });
+
   app.get('/health/:id', async (req, res) => {
     try {
       await delay(engine.latency(req.params.id));

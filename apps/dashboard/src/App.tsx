@@ -2532,6 +2532,12 @@ export default function App() {
                       <dt>Ontology</dt>
                       <dd>{node.kind} block · blackboard node</dd>
                     </div>
+                    {node.layer && <div><dt>System layer</dt><dd>{node.layer}</dd></div>}
+                    {node.provenance && <>
+                      <div><dt>Evidence basis</dt><dd>{node.provenance.basis} · public-reference practice</dd></div>
+                      <div><dt>Manifest</dt><dd>{node.provenance.manifestPath}</dd></div>
+                      <div><dt>References</dt><dd>{node.provenance.sourceIds.join(', ')}</dd></div>
+                    </>}
                     <div>
                       <dt>Discovered by</dt>
                       <dd>{node.discoveredBy}</dd>

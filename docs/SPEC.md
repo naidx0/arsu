@@ -198,6 +198,25 @@ steps:
 Human-readable rationale shown in SWARM panel while the agent works.
 ```
 
+## Three-layer communications practice
+
+`npm run dev:practice` runs an ephemeral, manually launched practice profile.
+Its checked-in service manifest is `packages/sim/src/practice.ts`. Exactly three
+layers are exposed: infrastructure, communications, operations. Public references
+support architectural concepts, not claims about actual FAA server addresses,
+private links, or live NOTAM content. Node provenance distinguishes modeled
+services from the separate observed ARSU-process telemetry.
+
+The communication harness replays educational JSON envelopes in-process. HTTP
+exposes observations; it is not a JMS transport, ASTERIX decoder, RF capture, or
+real aviation control link. Receipts retain payloads, timestamps, sequence,
+stream epoch, checksum, and validation outcomes. Payload hashes detect accidental
+corruption, not sender authenticity. Four allowlisted packet faults affect only
+this harness: corruption, omitted delivery, replay, and stale timestamp.
+Message-consumer contracts check integrity, continuity, and freshness flags.
+Repairs reset the stream epoch and require newly passing checks before recovery.
+Practice snapshots and receipt history are included in rehearsal evidence.
+
 ## Recording rehearsal
 
 `npm run dev:recording` starts the host with `--recording`: an empty, ephemeral
