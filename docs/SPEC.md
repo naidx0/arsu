@@ -198,6 +198,18 @@ steps:
 Human-readable rationale shown in SWARM panel while the agent works.
 ```
 
+## Operational summaries
+
+`POST /api/summary` accepts no user prompt. The server derives bounded context
+from its current Blackboard snapshot and calls `ModelProvider.planJSON` with
+shape `summary`. The response is `OperationalSummary`: generatedAt, provider
+(actual `gemini|sim`, including fallback), headline, risks, nextAction, and
+evidence record paths. Summaries are advisory, never execute actions, and are
+cached for 20 seconds with one shared in-flight generation. Unknown evidence
+paths or malformed output trigger deterministic SIM fallback. Simulation health
+is not external aviation telemetry. The Pipeline view reads existing board
+records; selecting a stage does not execute or fabricate agent work.
+
 ## 4. Server (`packages/server`)
 
 ```

@@ -235,6 +235,15 @@ export interface MissionState {
   launchedAt?: number;
 }
 
+export interface OperationalSummary {
+  generatedAt: number;
+  provider: 'gemini' | 'sim';
+  headline: string;
+  risks: string[];
+  nextAction: string;
+  evidence: string[];
+}
+
 export interface StateSnapshot {
   events?: EventDoc[];
   nodes: NodeDoc[];

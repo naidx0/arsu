@@ -35,6 +35,8 @@ import {
   SwarmCtx,
 } from '@arsu/swarm';
 
+import { createSummaryService } from './summary.js';
+
 const PORT = Number(process.env.ARSU_PORT ?? 4780);
 const SELF = `http://localhost:${PORT}`;
 const SEED = path.resolve('data/flights.seed.json');
@@ -168,6 +170,15 @@ async function snapshot(): Promise<StateSnapshot> {
     },
   };
 }
+
+const summarize = createSummaryService(provider, snapshot);
+app.post('/api/summary', async (_req, res) => {
+  try {
+    res.json(await summarize());
+  } catch {
+    res.status(503).json({ error: 'Operational summary unavailable; inspect the Blackboard directly.' });
+  }
+});
 
 app.get('/api/state', async (_req, res) => {
   res.json(await snapshot());

@@ -3,7 +3,7 @@
 // writing, triage planning) goes through complete()/planJSON(). All
 // provider/key env reads happen in this file — nowhere else (SPEC §6).
 
-export type PlanShape = 'node' | 'invariants' | 'triage' | 'spec';
+export type PlanShape = 'node' | 'invariants' | 'triage' | 'spec' | 'summary';
 
 export interface ModelProvider {
   name: 'gemini' | 'sim';
@@ -28,6 +28,17 @@ function stripFences(text: string): string {
 // Structured-output contracts per PlanShape — Gemini's responseSchema keeps
 // responses shaped; ResilientProvider still covers any malformed output.
 const SHAPE_SCHEMAS: Record<PlanShape, object> = {
+  summary: {
+    type: 'object',
+    required: ['provider', 'headline', 'risks', 'nextAction', 'evidence'],
+    properties: {
+      provider: { type: 'string', enum: ['gemini'] },
+      headline: { type: 'string' },
+      risks: { type: 'array', items: { type: 'string' }, maxItems: 4 },
+      nextAction: { type: 'string' },
+      evidence: { type: 'array', items: { type: 'string' }, maxItems: 8 },
+    },
+  },
   node: {
     type: 'object',
     required: ['kind', 'description', 'deps'],
@@ -92,6 +103,7 @@ export class GeminiProvider implements ModelProvider {
   private async generate(prompt: string, schema?: object): Promise<string> {
     const res = await fetch(GEMINI_URL(this.model, this.key), {
       method: 'POST',
+      signal: AbortSignal.timeout(20_000),
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
@@ -164,6 +176,22 @@ export class SimulatedProvider implements ModelProvider {
   ): Promise<T> {
     const ctx = (context ?? {}) as Record<string, unknown>;
     switch (shape) {
+      case 'summary': {
+        const counts = ctx.counts as { nodes: number; failing: number; pending: number; open: number };
+        const flights = ctx.flights as { groundStop: boolean; staleFeed: boolean };
+        return {
+          provider: 'sim',
+          headline: !counts.nodes ? 'Estate not mapped yet.' : `${counts.nodes} mapped systems · ${counts.failing} failing checks · ${counts.open} unresolved violations.`,
+          risks: [
+            ...(flights.groundStop ? ['Ground stop reported by the simulation.'] : []),
+            ...(flights.staleFeed ? ['Position feed is stale; do not rely on displayed aircraft positions.'] : []),
+            ...(counts.pending ? [`${counts.pending} checks have not run yet.`] : []),
+            ...(counts.open ? [`${counts.open} violations need response or confirmation.`] : []),
+          ],
+          nextAction: !counts.nodes ? 'Launch discovery to map the simulated estate.' : counts.open ? 'Inspect violations and response tasks before confirming recovery.' : 'Continue monitoring executable checks; this is not external aviation telemetry.',
+          evidence: (ctx.recordPaths as string[]).slice(0, 8),
+        } as T;
+      }
       case 'node':
         return this.planNode(ctx as unknown as SimServiceCtx) as T;
       case 'invariants':

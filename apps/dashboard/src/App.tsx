@@ -52,6 +52,8 @@ import type {
 import { post, useBoard, type Board } from "./api";
 import MissionGlobe, { type RegionId } from "./components/MissionGlobe";
 import OpsMap from "./components/OpsMap";
+import OperationalSummary from "./components/OperationalSummary";
+import PipelineWalkthrough from "./components/PipelineWalkthrough";
 import { missionCondition, missionStage } from "./mission-state";
 import { routePoint } from "./geometry";
 import { showcaseBoard } from "./showcase";
@@ -86,6 +88,7 @@ const navigation = [
   { id: "Topology", icon: WorkflowSquare01Icon },
   { id: "Verification", icon: Shield01Icon },
   { id: "Swarm", icon: AiNetworkIcon },
+  { id: "Pipeline", icon: PlayIcon },
   { id: "Blackboard", icon: Database01Icon },
 ] as const;
 type View = (typeof navigation)[number]["id"];
@@ -1846,12 +1849,7 @@ export default function App() {
               </h2>
               <span className={open.length ? "text-alert" : ""}>{open.length} OPEN</span>
             </header>
-            <p className="assistant-line">
-              <span className="assistant-tag">{board.provider === "gemini" ? "GEMINI" : "SIM"}</span>
-              {open.length
-                ? `${open.length} open violation${open.length === 1 ? "" : "s"} — root cause ${open[0].node}. Response ${board.tasks.size ? "dispatched" : "queued"}; watch the trace below.`
-                : "No active risk — all proofs satisfied across the estate."}
-            </p>
+            <OperationalSummary enabled={live.connected && !localMode && !localOverride} />
             <ResponseTrace events={board.events} />
             {open.map((v) => (
               <div key={v.id} className={`violation-row ${v.status}`}>
@@ -2011,6 +2009,7 @@ export default function App() {
             {board.flights.groundStop ? "Ground stop — dispatch unavailable" : "Releases flowing"}
             <span>{board.flights.staleFeed ? "Radar feed STALE" : "Radar feed 1 Hz"}</span>
           </div>
+          <OperationalSummary enabled={live.connected && !localMode && !localOverride} />
           <div className="overview-actions">
             <button className="mini-btn" onClick={goHome}>
               Mission Control
@@ -2456,6 +2455,8 @@ export default function App() {
                     ? `${nodes.length} systems · ${edgesList.length} comms links · 4 tiers`
                     : view === "Verification"
                       ? `${passed}/${checks.length} passing · ${board.specs.size} specs`
+                      : view === "Pipeline"
+                        ? "7 stages · live Blackboard records"
                       : view === "Swarm"
                         ? `${board.agents.size} live agents · 1,000-agent scale model`
                         : `${board.events.length} events · ${COLLECTIONS.length} collections`}
@@ -2474,6 +2475,7 @@ export default function App() {
               </div>
               {view === "Topology" && topology}
               {view === "Verification" && verification}
+              {view === "Pipeline" && <PipelineWalkthrough board={board} hostEnabled={live.connected && !localMode && !localOverride} onInspect={inspect} onLaunch={launch} />}
               {view === "Swarm" && swarm}
               {view === "Blackboard" && blackboard}
             </>
