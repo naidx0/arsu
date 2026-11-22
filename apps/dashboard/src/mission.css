@@ -4467,9 +4467,14 @@ button.dep-chip:hover { border-color: var(--ink); color: var(--ink); }
 .pipeline-workspace h2, .operational-summary h2 { font: 600 19px/1.4 var(--font-sans); margin: 8px 0; letter-spacing: -.02em; }
 .pipeline-workspace p, .operational-summary p, .operational-summary li { font: 400 13px/1.7 var(--font-sans); color: var(--ink-secondary); }
 .pipeline-eyebrow { font: 500 10px/1.6 var(--font-mono); letter-spacing: .08em; color: var(--accent); }
+.pipeline-vitals { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 4px; }
+.pipeline-vitals span { font: 11px/1.6 var(--font-mono); color: var(--ink-secondary); padding: 5px 12px; border: 1px solid var(--hairline); border-radius: 999px; background: var(--bg-card); }
+.pipeline-vitals span.alert { color: var(--critical); border-color: rgba(248,113,113,.4); }
 .pipeline-steps { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; margin: 24px 0; }
 .pipeline-steps button { display: flex; flex-direction: column; align-items: flex-start; text-align: left; gap: 12px; padding: 16px 12px; color: var(--ink-secondary); border: 1px solid var(--hairline); background: var(--bg-card); border-radius: 10px; cursor: pointer; }
 .pipeline-steps button[aria-current="step"] { border-color: var(--accent); background: #152a35; color: var(--ink); }
+.pipeline-steps button[data-live] { border-color: rgba(52,211,153,.5); }
+.pipeline-steps button[data-live] span { color: var(--healthy); }
 .pipeline-steps span, .pipeline-steps small { font: 11px/1.5 var(--font-mono); color: var(--muted); }
 .pipeline-steps strong { font: 500 13px/1.5 var(--font-sans); }
 .pipeline-detail-grid { display: grid; grid-template-columns: minmax(260px, .85fr) minmax(0, 1.15fr); gap: 16px; }
@@ -4680,7 +4685,10 @@ button.dep-chip:hover { border-color: var(--ink); color: var(--ink); }
   .map-bottom-label { display: none; }
 }
 
-@media (max-width: 400px) {
+@media (max-width: 1100px) {
   .workspace-topbar .breadcrumbs { display: none; }
+}
+@media (max-width: 400px) {
+  .mission-elapsed, .data-mode-label { display: none; }
   .topbar-actions { width: 100%; justify-content: space-between; }
 }

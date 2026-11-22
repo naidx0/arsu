@@ -103,14 +103,6 @@ const STAGES = [
   "RESTORED",
 ];
 
-const PIPELINE = [
-  { label: "1. RECON PROBES", icon: Search01Icon },
-  { label: "2. ONTOLOGY & SPEC AUTHORING (ModelProvider)", icon: Layers01Icon },
-  { label: "3. 2s PROOF RUNNER LOOP", icon: Activity01Icon },
-  { label: "4. ROOT-CAUSE TRIAGE (Orchestrator)", icon: DashboardSquare01Icon },
-  { label: "5. SKILL EXECUTION (Response Units)", icon: Shield01Icon },
-];
-
 const SYSTEMS: Record<
   string,
   { code: string; city: string; role: string; fn: string }
@@ -1770,9 +1762,6 @@ export default function App() {
                   <button className="mini-btn" onClick={() => inspect(n.id)} aria-label={`Inspect ${n.name}`}>
                     Inspect
                   </button>
-                  <button className="mini-btn danger" disabled={busy} onClick={() => injectOn(n.id)} aria-label={`Inject fault on ${n.name}`}>
-                    Inject Fault
-                  </button>
                 </span>
               </div>
             );
@@ -2204,15 +2193,6 @@ export default function App() {
   const swarm = (
     <div className="content-scroll">
       <RehearsalConsole board={board} enabled={live.connected && !localMode && !localOverride} onLaunch={launch} onInspect={inspect} />
-      <ol className="swarm-pipeline-bar" aria-label="Swarm pipeline">
-        {PIPELINE.map((p, i) => (
-          <li key={p.label} className={`pipeline-stage ${i < pipelineStage ? "completed" : ""} ${i === pipelineStage ? "active" : ""} ${i === pipelineStage && i >= 3 ? "alert" : ""}`}>
-            <HugeiconsIcon icon={p.icon} size={16} />
-            <span>{p.label}</span>
-            {i < PIPELINE.length - 1 && <HugeiconsIcon icon={ArrowRight01Icon} size={13} />}
-          </li>
-        ))}
-      </ol>
       <section className="swarm-trace mc-panel" aria-label="Live incident trace">
         <header className="mc-panel-header">
           <h2>LIVE INCIDENT TRACE</h2>
@@ -2401,9 +2381,12 @@ export default function App() {
           <div className="topbar-actions">
             <span className={`data-mode-pill ${localMode ? "local" : localOverride ? "override" : "live"}`}>
               <span className={`health-dot ${localMode ? "idle" : "up"}`} />
-              {dataMode}
+              <span className="data-mode-label">{dataMode}</span>
             </span>
             <span className="mission-elapsed">T+ {clock}</span>
+            <button className="icon-button" aria-label="Reset estate" title="Reset estate" disabled={busy} onClick={reset}>
+              <HugeiconsIcon icon={RefreshIcon} size={15} />
+            </button>
             <div className="fault-control" ref={faultRef}>
               <button
                 className={`subtle-button ${chaos ? "pressed" : ""}`}
@@ -2431,15 +2414,6 @@ export default function App() {
                       </span>
                     </button>
                   ))}
-                  <div className="menu-divider" />
-                  <button disabled={busy} onClick={syncAdsb}>
-                    <HugeiconsIcon icon={Radar01Icon} size={15} />
-                    Sync Live ADS-B
-                  </button>
-                  <button disabled={busy} onClick={reset}>
-                    <HugeiconsIcon icon={RefreshIcon} size={15} />
-                    Reset
-                  </button>
                 </div>
               )}
             </div>
@@ -2498,7 +2472,7 @@ export default function App() {
               </div>
               {view === "Topology" && topology}
               {view === "Verification" && verification}
-              {view === "Pipeline" && <PipelineWalkthrough board={board} hostEnabled={live.connected && !localMode && !localOverride} onInspect={inspect} onLaunch={launch} />}
+              {view === "Pipeline" && <PipelineWalkthrough board={board} liveStage={pipelineStage} hostEnabled={live.connected && !localMode && !localOverride} onInspect={inspect} onLaunch={launch} />}
               {view === "Swarm" && swarm}
               {view === "Blackboard" && blackboard}
             </>
