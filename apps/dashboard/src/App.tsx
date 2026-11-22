@@ -951,6 +951,8 @@ function TopologyDag({
               strokeWidth={selected === id || health !== "up" ? 2 : 1.2}
               strokeDasharray={virtualNode ? "4 3" : undefined}
             />
+            <circle className="dag-port dag-port-in" cx={-w / 2 + 20} cy={-TOPO_H / 2} r="3.4" fill={p.tier === 1 ? "#fbbf24" : "#38bdf8"} stroke="#0b0f14" strokeWidth="1.5" />
+            <circle className="dag-port dag-port-out" cx={w / 2 - 20} cy={TOPO_H / 2} r="3.4" fill={HEALTH_COLOR[health]} stroke="#0b0f14" strokeWidth="1.5" />
             <circle cx={-w / 2 + 14} cy="-14" r="4" fill={HEALTH_COLOR[health]}>
               {health !== "up" && <animate attributeName="opacity" values="1;0.25;1" dur="1s" repeatCount="indefinite" />}
             </circle>
@@ -1761,6 +1763,41 @@ export default function App() {
             );
           })}
           {!nodes.length && <div className="content-empty">No systems discovered yet — launch the swarm.</div>}
+        </section>
+
+        <section className="mc-impact-strip" aria-label="Mission impact counters">
+          <div className="impact-legend">
+            <span><i className="dot up" /> Protected</span>
+            <span><i className="dot down" /> Danger</span>
+            <span><i className="dot degraded" /> Alerts</span>
+            <span><i className="dot idle" /> Unknown</span>
+          </div>
+          <div className="impact-counters">
+            <div className="impact-stat">
+              <strong className={upNodes === nodes.length ? "ok" : ""}>{upNodes}<small>/{nodes.length}</small></strong>
+              <span>Systems online</span>
+            </div>
+            <div className="impact-stat">
+              <strong className={percent === 100 ? "ok" : percent >= 60 ? "" : "bad"}>{passed}<small>/{checks.length}</small></strong>
+              <span>Proofs passing</span>
+            </div>
+            <div className="impact-stat">
+              <strong className={open.length ? "bad" : "ok"}>{open.length}</strong>
+              <span>Open violations</span>
+            </div>
+            <div className="impact-stat">
+              <strong>{board.tasks.size}</strong>
+              <span>Response tasks</span>
+            </div>
+            <div className="impact-stat">
+              <strong>{board.agents.size}</strong>
+              <span>Swarm agents</span>
+            </div>
+            <div className="impact-stat">
+              <strong>{board.events.length}</strong>
+              <span>Board events</span>
+            </div>
+          </div>
         </section>
 
         <section className="mc-panel triage-feed-panel" aria-label="Incident triage">
