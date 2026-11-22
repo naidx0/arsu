@@ -1,6 +1,6 @@
 // Board state: one snapshot fetch, then WS diffs only (SPEC §5).
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from "react";
 import type {
   AgentDoc,
   EdgeDoc,
@@ -15,7 +15,7 @@ import type {
   TaskDoc,
   ViolationDoc,
   WsMessage,
-} from '@arsu/core';
+} from "@arsu/core";
 
 export interface Board {
   nodes: Map<string, NodeDoc>;
@@ -44,7 +44,7 @@ const emptyBoard = (): Board => ({
   skills: new Map(),
   events: [],
   flights: { flights: [], groundStop: false, staleFeed: false },
-  provider: '…',
+  provider: "…",
   mission: { launched: false },
   connected: false,
 });
@@ -59,6 +59,10 @@ function fromSnapshot(s: StateSnapshot): Board {
   for (const a of s.agents) b.agents.set(a.id, a);
   for (const t of s.tasks) b.tasks.set(t.id, t);
   for (const k of s.skills) b.skills.set(k.id, k);
+  b.events = (s.events ?? [])
+    .slice()
+    .sort((a, b) => b.ts - a.ts)
+    .slice(0, 300);
   b.flights = s.flights;
   b.provider = s.provider;
   b.mission = s.mission;
@@ -76,11 +80,16 @@ export function useBoard(): Board {
     let ws: WebSocket | null = null;
     let dead = false;
     let retry = 0;
+    let socketSnapshotReceived = false;
 
-    fetch('/api/state')
+    fetch("/api/state")
       .then((r) => r.json())
       .then((s: StateSnapshot) => {
-        if (!dead) setBoard(fromSnapshot(s));
+        if (!dead && !socketSnapshotReceived)
+          setBoard((previous) => ({
+            ...fromSnapshot(s),
+            connected: previous.connected,
+          }));
       })
       .catch(() => {});
 
@@ -90,14 +99,14 @@ export function useBoard(): Board {
         const put = <T extends { id: string }>(
           key: keyof Pick<
             Board,
-            | 'nodes'
-            | 'edges'
-            | 'invariants'
-            | 'specs'
-            | 'violations'
-            | 'agents'
-            | 'tasks'
-            | 'skills'
+            | "nodes"
+            | "edges"
+            | "invariants"
+            | "specs"
+            | "violations"
+            | "agents"
+            | "tasks"
+            | "skills"
           >,
           doc: T,
         ) => {
@@ -106,36 +115,57 @@ export function useBoard(): Board {
           (b as unknown as Record<string, unknown>)[key] = m;
         };
         switch (msg.type) {
-          case 'snapshot':
+          case "snapshot":
+            socketSnapshotReceived = true;
             return { ...fromSnapshot(msg.data), connected: true };
-          case 'node':
-            put('nodes', msg.data);
+          case "node":
+            put("nodes", msg.data);
             break;
-          case 'edge':
-            put('edges', msg.data);
+          case "edge":
+            put("edges", msg.data);
             break;
-          case 'invariant':
-            put('invariants', msg.data);
+          case "invariant":
+            put("invariants", msg.data);
             break;
-          case 'spec':
-            put('specs', msg.data);
+          case "spec":
+            put("specs", msg.data);
             break;
-          case 'violation':
-            put('violations', msg.data);
+          case "violation":
+            put("violations", msg.data);
             break;
-          case 'agent':
-            put('agents', msg.data);
+          case "agent":
+            put("agents", msg.data);
             break;
-          case 'task':
-            put('tasks', msg.data);
+          case "task":
+            put("tasks", msg.data);
             break;
-          case 'skill':
-            put('skills', msg.data);
+          case "skill":
+            put("skills", msg.data);
             break;
-          case 'event':
+          case "event":
             b.events = [msg.data, ...prev.events].slice(0, EVENT_CAP);
+            if (
+              msg.data.type === "mission" &&
+              msg.data.msg.startsWith("mission launched")
+            ) {
+              b.mission = { launched: true, launchedAt: msg.data.ts };
+            }
+            if (
+              msg.data.type === "mission" &&
+              msg.data.msg.startsWith("reset —")
+            ) {
+              const empty = emptyBoard();
+              return {
+                ...empty,
+                connected: prev.connected,
+                provider: prev.provider,
+                mission: prev.mission,
+                flights: prev.flights,
+                events: [msg.data],
+              };
+            }
             break;
-          case 'flight':
+          case "flight":
             b.flights = msg.data;
             break;
         }
@@ -145,7 +175,9 @@ export function useBoard(): Board {
 
     const connect = () => {
       if (dead) return;
-      ws = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/ws`);
+      ws = new WebSocket(
+        `${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/ws`,
+      );
       ws.onopen = () => {
         retry = 0;
         setBoard((p) => ({ ...p, connected: true }));
@@ -168,9 +200,13 @@ export function useBoard(): Board {
 }
 
 export async function post(path: string, body?: object): Promise<void> {
-  await fetch(path, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
+  const response = await fetch(path, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
     body: JSON.stringify(body ?? {}),
   });
+  if (!response.ok)
+    throw new Error(
+      `Request failed (${response.status}): ${await response.text()}`,
+    );
 }
