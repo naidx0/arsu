@@ -236,6 +236,7 @@ export interface MissionState {
 }
 
 export interface StateSnapshot {
+  events?: EventDoc[];
   nodes: NodeDoc[];
   edges: EdgeDoc[];
   invariants: InvariantDoc[];

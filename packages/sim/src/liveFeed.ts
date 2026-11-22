@@ -11,10 +11,16 @@ import { bearing, distanceKm, slerp } from './geo.js';
 const HUBS = [
   { code: 'CYYZ', lat: 43.68, lon: -79.62 },
   { code: 'KORD', lat: 41.97, lon: -87.91 },
+  { code: 'KJFK', lat: 40.64, lon: -73.78 },
+  { code: 'KATL', lat: 33.64, lon: -84.43 },
+  { code: 'KDFW', lat: 32.9, lon: -97.04 },
+  { code: 'KDEN', lat: 39.86, lon: -104.67 },
+  { code: 'KLAX', lat: 33.94, lon: -118.41 },
+  { code: 'KSFO', lat: 37.62, lon: -122.38 },
   { code: 'EGLL', lat: 51.47, lon: -0.45 },
 ];
-const RADIUS_NM = 180;
-const MAX_FLIGHTS = 40;
+const RADIUS_NM = 220;
+const MAX_FLIGHTS = 45;
 
 interface AdsbAc {
   flight?: string;
@@ -82,9 +88,16 @@ export async function fetchLiveFlights(): Promise<Flight[] | null> {
     const results = await Promise.all(
       HUBS.map((h) => fetchPoint(h, ctrl.signal).catch(() => [] as AdsbAc[])),
     );
+    const seen = new Set<string>();
     const ac = results
       .flat()
       .filter((a) => a.lat !== undefined && a.lon !== undefined)
+      .filter((a) => {
+        const key = a.flight?.trim() || `${a.lat},${a.lon}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      })
       .slice(0, MAX_FLIGHTS);
     if (ac.length < 5) return null; // too sparse — seed looks better
 

@@ -15,6 +15,7 @@ import {
   createBlackboard,
   Doc,
   EdgeDoc,
+  EventDoc,
   FlightsPayload,
   InvariantDoc,
   NodeDoc,
@@ -49,6 +50,34 @@ const runtime = new AgentRuntime(ctx);
 const orchestrator = new Orchestrator(ctx);
 
 const mission = { launched: false, launchedAt: 0 };
+let agentsSpawned = false;
+
+// Idempotent swarm boot — safe on startup AND from /api/launch. Skills
+// and orchestrator.launch() dedupe themselves; agents spawn once per
+// process since their heartbeat loops live here, not on the board.
+async function bootSwarm(): Promise<void> {
+  if (!mission.launched) {
+    mission.launched = true;
+    mission.launchedAt = Date.now();
+  }
+
+  // mirror /skills/*.md into the skills collection
+  for (const skill of loadSkills(SKILLS_DIR)) {
+    await board.put('skills', skill.id, skill);
+  }
+
+  await orchestrator.launch();
+
+  if (!agentsSpawned) {
+    agentsSpawned = true;
+    await runtime.spawn('runner');
+    await runtime.spawn('recon');
+    await runtime.spawn('verify');
+    await runtime.spawn('verify');
+    await runtime.spawn('response');
+    await runtime.spawn('response');
+  }
+}
 
 // Lane F — optional live ADS-B feed; seed stays the offline-safe default.
 if (process.env.ARSU_FLIGHT_SOURCE === 'live') {
@@ -109,7 +138,7 @@ app.use(express.json());
 app.use('/sim', createSimApp(engine));
 
 async function snapshot(): Promise<StateSnapshot> {
-  const [nodes, edges, invariants, specs, violations, agents, tasks, skills] =
+  const [nodes, edges, invariants, specs, violations, agents, tasks, skills, events] =
     await Promise.all([
       board.query<NodeDoc>('nodes'),
       board.query<EdgeDoc>('edges'),
@@ -119,8 +148,10 @@ async function snapshot(): Promise<StateSnapshot> {
       board.query<AgentDoc>('agents'),
       board.query<TaskDoc>('tasks'),
       board.query<SkillDoc>('skills'),
+      board.query<EventDoc>('events'),
     ]);
   return {
+    events: events.map(d => d.data).sort((a, b) => b.ts - a.ts).slice(0, 300),
     nodes: nodes.map((d) => d.data),
     edges: edges.map((d) => d.data),
     invariants: invariants.map((d) => d.data),
@@ -143,26 +174,58 @@ app.get('/api/state', async (_req, res) => {
 });
 
 app.post('/api/launch', async (_req, res) => {
-  if (mission.launched) {
-    res.json({ ok: true, already: true });
-    return;
+  if (!mission.launched) {
+    await bootSwarm();
+  } else {
+    await board.add('tasks', {
+      id: '',
+      kind: 'recon',
+      target: 'registry',
+      priority: 5,
+      status: 'pending',
+      attempts: 0,
+      createdBy: 'operator',
+    });
+    await board.emit('mission', {
+      actor: 'operator',
+      msg: 'swarm re-scan triggered by operator',
+    });
   }
-  mission.launched = true;
-  mission.launchedAt = Date.now();
+  res.json({
+    ok: true,
+    provider: provider.name,
+    launchedAt: mission.launchedAt,
+  });
+});
 
-  // mirror /skills/*.md into the skills collection
-  for (const skill of loadSkills(SKILLS_DIR)) {
-    await board.put('skills', skill.id, skill);
+async function syncLiveFeed(res: express.Response): Promise<void> {
+  const live = await fetchLiveFlights();
+  if (live && live.length > 0) {
+    engine.setFlights(live);
+    broadcast({ type: 'flight', data: engine.flightsPayload() });
+    await board.emit('mission', {
+      actor: 'system',
+      msg: `Open-source ADS-B feed synced — ${live.length} live North America aircraft tracked`,
+    });
+  } else if (!live) {
+    await board.emit('mission', {
+      actor: 'system',
+      severity: 'info',
+      msg: 'ADS-B live endpoint unreachable — maintaining deterministic North America flight feed',
+    });
   }
+  res.json({
+    ok: true,
+    source: live ? 'live-adsb' : 'seed',
+    count: engine.flightsPayload().flights.length,
+  });
+}
 
-  await orchestrator.launch();
-  await runtime.spawn('runner');
-  await runtime.spawn('recon');
-  await runtime.spawn('verify');
-  await runtime.spawn('verify');
-  await runtime.spawn('response');
-  await runtime.spawn('response');
-  res.json({ ok: true, provider: provider.name });
+app.post('/api/flights/live', (_req, res) => {
+  void syncLiveFeed(res);
+});
+app.get('/api/flights/live', (_req, res) => {
+  void syncLiveFeed(res);
 });
 
 app.post('/api/chaos', async (req, res) => {
@@ -257,6 +320,8 @@ setInterval(() => {
   })();
 }, 1000);
 
+// swarm + proof-runner come up with the host, even over a warm board file
+void bootSwarm();
 server.listen(PORT, () => {
   console.log(`[arsu] provider=${provider.name}  http://localhost:${PORT}`);
   console.log(`[arsu] sim at /sim — control board proxies /api + /ws`);
