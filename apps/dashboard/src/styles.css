@@ -1,0 +1,283 @@
+/* ARSU control board — dark ops console. near-black bg, phosphor
+   green/amber/red, mono accents. */
+
+:root {
+  --bg: #070a08;
+  --panel: #0c110d;
+  --panel-2: #101710;
+  --line: #1c2b1e;
+  --text: #b8d8bf;
+  --dim: #5f7a66;
+  --green: #39ff6a;
+  --amber: #ffb000;
+  --red: #ff3355;
+  --cyan: #41d9ff;
+  --mono: 'JetBrains Mono', 'Cascadia Code', Consolas, monospace;
+}
+
+* { box-sizing: border-box; }
+
+html, body, #root {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 13px;
+}
+
+.app {
+  display: grid;
+  grid-template-rows: 46px minmax(0, 1fr) 230px;
+  height: 100vh;
+}
+
+/* ---- header / chaos bar ---- */
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+}
+
+.brand {
+  color: var(--green);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  font-size: 15px;
+  text-shadow: 0 0 12px rgba(57, 255, 106, 0.4);
+}
+
+.badge {
+  padding: 2px 8px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.badge.gemini { color: var(--cyan); border-color: var(--cyan); }
+.badge.sim { color: var(--amber); border-color: var(--amber); }
+.badge.ws-on { color: var(--green); border-color: var(--green); }
+.badge.ws-off { color: var(--red); border-color: var(--red); }
+.badge.mission { color: var(--green); border-color: var(--green); }
+
+.spacer { flex: 1; }
+
+button {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: var(--panel-2);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+button:hover { border-color: var(--dim); color: #e2f2e6; }
+button.launch { color: var(--green); border-color: var(--green); }
+button.chaos { color: var(--amber); border-color: #4a3a10; }
+button.chaos:hover { border-color: var(--amber); }
+button.reset { color: var(--dim); }
+
+/* ---- layout ---- */
+
+.main {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+  min-height: 0;
+}
+.rightcol {
+  display: grid;
+  grid-template-rows: minmax(0, 1.2fr) minmax(0, 1fr);
+  min-height: 0;
+  border-left: 1px solid var(--line);
+}
+.bottom {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
+  min-height: 0;
+  border-top: 1px solid var(--line);
+}
+
+.panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--panel);
+}
+.panel + .panel { border-left: 1px solid var(--line); }
+.rightcol .panel + .panel { border-left: none; border-top: 1px solid var(--line); }
+
+.panel-title {
+  padding: 6px 12px;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: var(--dim);
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex: none;
+}
+.panel-body { flex: 1; min-height: 0; overflow: auto; }
+
+/* ---- map ---- */
+
+.map-wrap { position: relative; flex: 1; min-height: 0; }
+.map-wrap .leaflet-container { height: 100%; background: #05070a; }
+
+.svc-badges {
+  position: absolute;
+  top: 8px; left: 8px; right: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  z-index: 500;
+  pointer-events: none;
+}
+.svc-badge {
+  background: rgba(7, 10, 8, 0.85);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 3px 8px;
+  font-size: 10px;
+  letter-spacing: 0.05em;
+}
+.svc-badge.up { color: var(--green); }
+.svc-badge.degraded { color: var(--amber); border-color: var(--amber); }
+.svc-badge.down { color: var(--red); border-color: var(--red); animation: pulse 1s infinite; }
+
+.map-banner {
+  position: absolute;
+  left: 50%; top: 52px;
+  transform: translateX(-50%);
+  z-index: 500;
+  padding: 6px 18px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  border-radius: 3px;
+}
+.map-banner.stop {
+  color: #fff;
+  background: rgba(255, 51, 85, 0.9);
+  box-shadow: 0 0 30px rgba(255, 51, 85, 0.5);
+  animation: pulse 1s infinite;
+}
+.map-banner.stale {
+  color: #1a1400;
+  background: rgba(255, 176, 0, 0.9);
+}
+
+.plane { font-size: 15px; line-height: 1; text-shadow: 0 0 6px currentColor; }
+.plane.enroute { color: var(--green); }
+.plane.ground { color: var(--amber); }
+.plane.held { color: var(--red); }
+.plane.arrived { color: var(--dim); font-size: 11px; }
+
+.airport-dot { fill: var(--cyan); opacity: 0.6; }
+.leaflet-tooltip.ap { background: rgba(7,10,8,.9); border: 1px solid var(--line); color: var(--cyan); font-family: var(--mono); font-size: 10px; }
+.leaflet-tooltip.ap::before { display: none; }
+
+/* ---- ontology ---- */
+
+.onto-node { cursor: default; }
+.onto-node circle { stroke: var(--bg); stroke-width: 2; }
+.onto-node.violated circle { animation: pulse 1s infinite; }
+.onto-node text {
+  fill: var(--text);
+  font-family: var(--mono);
+  font-size: 9px;
+  text-anchor: middle;
+}
+.onto-edge { stroke: var(--line); stroke-width: 1.2; }
+
+/* ---- invariants ---- */
+
+.inv-row {
+  display: grid;
+  grid-template-columns: 12px 1fr 90px 1.2fr 60px;
+  gap: 8px;
+  padding: 5px 12px;
+  border-bottom: 1px solid #131a14;
+  align-items: center;
+}
+.inv-row:hover { background: var(--panel-2); }
+.dot { width: 8px; height: 8px; border-radius: 50%; }
+.dot.pass { background: var(--green); box-shadow: 0 0 6px var(--green); }
+.dot.fail { background: var(--red); box-shadow: 0 0 6px var(--red); animation: pulse 1s infinite; }
+.dot.idle { background: var(--dim); }
+.inv-kind { color: var(--cyan); font-size: 11px; }
+.inv-detail { color: var(--dim); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.inv-runs { color: var(--dim); font-size: 10px; text-align: right; }
+
+/* ---- swarm ---- */
+
+.agent-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 8px;
+  padding: 10px;
+}
+.agent-card {
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 8px 10px;
+  background: var(--panel-2);
+}
+.agent-card .role {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+.agent-card .aid { color: var(--text); font-size: 12px; margin: 2px 0; }
+.agent-card .astate { font-size: 11px; }
+.agent-card .astate.working { color: var(--amber); }
+.agent-card .astate.idle { color: var(--green); }
+.agent-card .meta { color: var(--dim); font-size: 10px; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ---- feed ---- */
+
+.feed-filters { display: flex; gap: 4px; }
+.feed-filters button { padding: 1px 7px; font-size: 9px; }
+.feed-row {
+  display: grid;
+  grid-template-columns: 62px 74px 110px 1fr;
+  gap: 8px;
+  padding: 4px 12px;
+  border-bottom: 1px solid #10160f;
+  border-left: 3px solid transparent;
+  font-size: 11px;
+}
+.feed-row.info { border-left-color: var(--line); }
+.feed-row.warn { border-left-color: var(--amber); }
+.feed-row.crit { border-left-color: var(--red); background: rgba(255,51,85,.05); }
+.feed-ts { color: var(--dim); }
+.feed-sev { font-size: 9px; letter-spacing: .1em; }
+.feed-sev.info { color: var(--dim); }
+.feed-sev.warn { color: var(--amber); }
+.feed-sev.crit { color: var(--red); }
+.feed-actor { color: var(--cyan); }
+.feed-msg { color: var(--text); overflow: hidden; text-overflow: ellipsis; }
+
+/* ---- misc ---- */
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+.empty {
+  padding: 18px;
+  color: var(--dim);
+  font-size: 11px;
+  text-align: center;
+}
