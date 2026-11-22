@@ -1,0 +1,24 @@
+{
+  "name": "arsu",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Attack Response Swarm Unit — agent swarms that map systems into ontologies, generate executable invariants, and respond to outages.",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "tsx watch packages/server/src/index.ts",
+    "dev:ui": "npm run dev -w dashboard",
+    "build": "npm run build -w dashboard",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "seed": "tsx packages/sim/src/seed.ts"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
