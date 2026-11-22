@@ -25,6 +25,59 @@ function stripFences(text: string): string {
   return (m ? m[1] : text).trim();
 }
 
+// Structured-output contracts per PlanShape — Gemini's responseSchema keeps
+// responses shaped; ResilientProvider still covers any malformed output.
+const SHAPE_SCHEMAS: Record<PlanShape, object> = {
+  node: {
+    type: 'object',
+    required: ['kind', 'description', 'deps'],
+    properties: {
+      kind: { type: 'string', enum: ['feed', 'hub', 'db', 'api', 'comms', 'ops'] },
+      description: { type: 'string' },
+      deps: { type: 'array', items: { type: 'string' } },
+    },
+  },
+  invariants: {
+    type: 'object',
+    required: ['invariants'],
+    properties: {
+      invariants: {
+        type: 'array',
+        items: {
+          type: 'object',
+          required: ['kind', 'params', 'intervalMs'],
+          properties: {
+            kind: {
+              type: 'string',
+              enum: ['http_status', 'latency_lt', 'data_field', 'dep_health', 'consistency'],
+            },
+            params: { type: 'object' },
+            intervalMs: { type: 'integer', minimum: 500 },
+          },
+        },
+      },
+    },
+  },
+  spec: {
+    type: 'object',
+    required: ['title', 'body'],
+    properties: {
+      title: { type: 'string' },
+      body: { type: 'string' },
+    },
+  },
+  triage: {
+    type: 'object',
+    required: ['rootCause', 'skill', 'priority', 'rationale'],
+    properties: {
+      rootCause: { type: 'string' },
+      skill: { type: 'string' },
+      priority: { type: 'integer', minimum: 1, maximum: 5 },
+      rationale: { type: 'string' },
+    },
+  },
+};
+
 export class GeminiProvider implements ModelProvider {
   name = 'gemini' as const;
   private key: string;
@@ -36,14 +89,19 @@ export class GeminiProvider implements ModelProvider {
     this.model = model;
   }
 
-  private async generate(prompt: string, json: boolean): Promise<string> {
+  private async generate(prompt: string, schema?: object): Promise<string> {
     const res = await fetch(GEMINI_URL(this.model, this.key), {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
-        ...(json
-          ? { generationConfig: { responseMimeType: 'application/json' } }
+        ...(schema
+          ? {
+              generationConfig: {
+                responseMimeType: 'application/json',
+                responseSchema: schema,
+              },
+            }
           : {}),
       }),
     });
@@ -61,7 +119,7 @@ export class GeminiProvider implements ModelProvider {
   }
 
   async complete(prompt: string): Promise<string> {
-    return this.generate(prompt, false);
+    return this.generate(prompt);
   }
 
   async planJSON<T>(
@@ -70,10 +128,9 @@ export class GeminiProvider implements ModelProvider {
     context?: unknown,
   ): Promise<T> {
     const full =
-      `${prompt}\n\nYou are ARSU's ${shape} planner. Respond with JSON only — ` +
-      `no markdown, no commentary.` +
+      `${prompt}\n\nYou are ARSU's ${shape} planner.` +
       (context !== undefined ? `\n\nCONTEXT:\n${JSON.stringify(context)}` : '');
-    const text = await this.generate(full, true);
+    const text = await this.generate(full, SHAPE_SCHEMAS[shape]);
     return JSON.parse(stripFences(text)) as T;
   }
 }
