@@ -1,22 +1,30 @@
 :root {
+  /* PaceUI agent-console tokens merged into the SpaceX palette */
   --font-display: 'Barlow Condensed', 'DIN Condensed', sans-serif;
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-sans: 'DM Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'JetBrains Mono', Consolas, monospace;
   --bg-void: #000000;
-  --bg-canvas: #040507;
-  --glass-bg: rgba(8, 10, 14, 0.68);
-  --glass-bg-elevated: rgba(14, 17, 23, 0.82);
-  --glass-border: rgba(255, 255, 255, 0.14);
-  --glass-border-hover: rgba(255, 255, 255, 0.38);
-  --ink: #ffffff;
+  --bg-canvas: #0b0b0d;
+  --bg-page: #171719;
+  --bg-card: #1e1e21;
+  --bg-input: #26262a;
+  --glass-bg: rgba(15, 15, 18, 0.72);
+  --glass-bg-elevated: rgba(24, 24, 28, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.11);
+  --glass-border-hover: rgba(255, 255, 255, 0.3);
+  --ink: #fafafa;
   --ink-secondary: rgba(255, 255, 255, 0.72);
-  --muted: rgba(255, 255, 255, 0.46);
+  --muted: rgba(255, 255, 255, 0.48);
   --healthy: #34d399;
   --warning: #fbbf24;
   --critical: #f87171;
   --accent: #38bdf8;
-  --surface: rgba(8, 10, 14, 0.68);
-  --hairline: rgba(255, 255, 255, 0.14);
+  --accent-2: #7dd3fc;
+  --primary: #5b8ef0;
+  --radius: 10px;
+  --radius-lg: 12px;
+  --surface: rgba(15, 15, 18, 0.72);
+  --hairline: rgba(255, 255, 255, 0.11);
 }
 
 html,
@@ -113,7 +121,7 @@ pre {
 }
 
 .workspace-app button {
-  border-radius: 5px;
+  border-radius: var(--radius);
   text-transform: none;
   letter-spacing: 0.01em;
   font-weight: 500;
@@ -619,9 +627,9 @@ pre {
    ============================================================================ */
 
 .glass-surface {
-  background: rgba(8, 10, 14, 0.68);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 5px;
+  background: var(--glass-bg);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius);
   backdrop-filter: blur(20px) saturate(130%);
   -webkit-backdrop-filter: blur(20px) saturate(130%);
 }
@@ -1110,6 +1118,39 @@ pre {
   white-space: nowrap;
 }
 
+.stat-card strong {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.stat-card strong small {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.stat-meter {
+  height: 4px;
+  margin-top: 2px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.stat-meter > i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+  transition: width 400ms ease;
+}
+
+.stat-meter > i.ok { background: var(--healthy); }
+.stat-meter > i.warn { background: var(--warning); }
+.stat-meter > i.alert { background: var(--critical); }
+
 .workspace-app .overview-metrics button {
   display: flex;
   flex-direction: column;
@@ -1465,9 +1506,9 @@ pre {
   flex-direction: column;
   gap: 12px;
   padding: 16px 18px;
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  border-radius: 5px;
+  background: var(--bg-card);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
   min-width: 0;
 }
 
@@ -2290,20 +2331,27 @@ pre {
 
 .activity-entry {
   display: flex;
-  gap: 13px;
-  padding: 14px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+  gap: 12px;
+  padding: 12px 10px;
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.activity-entry:hover {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: var(--hairline);
 }
 
 .activity-mark {
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  width: 28px;
-  height: 28px;
-  border: 1px solid var(--glass-border);
-  background: rgba(255, 255, 255, 0.04);
-  border-radius: 5px;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--hairline);
+  background: var(--bg-input);
+  border-radius: 8px;
   color: var(--ink-secondary);
 }
 
@@ -2311,6 +2359,12 @@ pre {
   color: var(--critical);
   background: rgba(248, 113, 113, 0.12);
   border-color: rgba(248, 113, 113, 0.35);
+}
+
+.activity-mark.warn {
+  color: var(--warning);
+  background: rgba(251, 191, 36, 0.1);
+  border-color: rgba(251, 191, 36, 0.3);
 }
 
 .activity-body {
@@ -2336,10 +2390,10 @@ pre {
   font-size: 9px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  padding: 2px 6px;
-  border-radius: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
   background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid var(--hairline);
   color: var(--ink-secondary);
 }
 

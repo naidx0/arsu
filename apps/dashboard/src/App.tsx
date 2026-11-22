@@ -544,6 +544,15 @@ function eventCategory(e: EventDoc): EventFilter {
   return "REMEDIATION & TRIAGE";
 }
 
+function relTime(ts: number): string {
+  const s = Math.max(0, Math.round((Date.now() - ts) / 1000));
+  if (s < 60) return `${s}s ago`;
+  const m = Math.round(s / 60);
+  if (m < 60) return `${m}m ago`;
+  const h = Math.round(m / 60);
+  return `${h}h ago`;
+}
+
 // ---------------------------------------------------------------------------
 // Presentational pieces
 // ---------------------------------------------------------------------------
@@ -1619,7 +1628,7 @@ export default function App() {
           <strong>{e.actor}</strong>
           <span className="event-type">{e.type}</span>
           {e.node && <span className="event-node">{e.node}</span>}
-          <time>{new Date(e.ts).toLocaleTimeString()}</time>
+          <time title={new Date(e.ts).toLocaleTimeString()}>{relTime(e.ts)}</time>
         </div>
         <p>{e.msg}</p>
         {!compact && e.data !== undefined && (
@@ -1936,23 +1945,29 @@ export default function App() {
             </span>
           </div>
           <div className="overview-metrics">
-            <div>
+            <div className="stat-card">
               <span>Enroute</span>
-              <strong>{enrouteCount}</strong>
+              <strong>
+                {enrouteCount}
+                <small>of {board.flights.flights.length} total</small>
+              </strong>
+              <div className="stat-meter"><i style={{ width: `${board.flights.flights.length ? Math.round((enrouteCount / board.flights.flights.length) * 100) : 0}%` }} /></div>
             </div>
-            <div>
+            <div className="stat-card">
               <span>Hubs online</span>
               <strong>
                 {upNodes}
-                <small>/{nodes.length}</small>
+                <small>of {nodes.length} total</small>
               </strong>
+              <div className="stat-meter"><i className={upNodes === nodes.length ? "ok" : upNodes / Math.max(1, nodes.length) > 0.5 ? "warn" : "alert"} style={{ width: `${nodes.length ? Math.round((upNodes / nodes.length) * 100) : 0}%` }} /></div>
             </div>
-            <div>
-              <span>Proofs</span>
+            <div className="stat-card">
+              <span>Proofs passing</span>
               <strong>
-                {percent}
-                <small>%</small>
+                {passed}
+                <small>of {checks.length} total</small>
               </strong>
+              <div className="stat-meter"><i className={percent === 100 ? "ok" : percent >= 60 ? "warn" : "alert"} style={{ width: `${percent}%` }} /></div>
             </div>
           </div>
           <div className="overview-flights">
