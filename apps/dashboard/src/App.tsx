@@ -5,6 +5,8 @@ import {
   useRef,
   useState,
   type ComponentType,
+  type PointerEvent as ReactPointerEvent,
+  type WheelEvent as ReactWheelEvent,
 } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
@@ -671,6 +673,43 @@ function TopologyDag({
   onFleet: () => void;
   onArtex: () => void;
 }) {
+  const HOME_VB = { x: -30, y: -50, w: 1140, h: 700 };
+  const [vb, setVb] = useState(HOME_VB);
+  const svgRef = useRef<SVGSVGElement>(null);
+  const pan = useRef<{ px: number; py: number; x: number; y: number } | null>(null);
+  const clampW = (w: number) => Math.min(2400, Math.max(260, w));
+  const zoomAt = (clientX: number, clientY: number, factor: number) => {
+    const el = svgRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    setVb((v) => {
+      const w = clampW(v.w * factor);
+      const h = (w / v.w) * v.h;
+      const fx = (clientX - rect.left) / rect.width;
+      const fy = (clientY - rect.top) / rect.height;
+      return { x: v.x + fx * (v.w - w), y: v.y + fy * (v.h - h), w, h };
+    });
+  };
+  const onWheel = (e: ReactWheelEvent) => {
+    zoomAt(e.clientX, e.clientY, e.deltaY > 0 ? 1.15 : 1 / 1.15);
+  };
+  const onPointerDown = (e: ReactPointerEvent) => {
+    if (e.button !== 0) return;
+    pan.current = { px: e.clientX, py: e.clientY, x: vb.x, y: vb.y };
+    (e.target as Element).setPointerCapture?.(e.pointerId);
+  };
+  const onPointerMove = (e: ReactPointerEvent) => {
+    const p = pan.current;
+    const el = svgRef.current;
+    if (!p || !el) return;
+    const rect = el.getBoundingClientRect();
+    const k = vb.w / rect.width;
+    setVb((v) => ({ ...v, x: p.x - (e.clientX - p.px) * k, y: p.y - (e.clientY - p.py) * k }));
+  };
+  const onPointerUp = () => {
+    pan.current = null;
+  };
+
   const layout = new Map<string, { x: number; y: number; tier: number; title: string; sub: string }>();
   for (const [id, t] of Object.entries(TOPO))
     if (board.nodes.has(id) || id === "airspace-fleet" || id === "artex-adt")
@@ -771,11 +810,18 @@ function TopologyDag({
   const stroke = { ok: "#3b4b5c", affected: "#fbbf24", severed: "#f87171" } as const;
 
   return (
+    <>
     <svg
+      ref={svgRef}
       className="topology-dag"
-      viewBox="0 0 1080 620"
+      viewBox={`${vb.x} ${vb.y} ${vb.w} ${vb.h}`}
       role="group"
-      aria-label="4-tier aviation comms and dependency graph"
+      aria-label="4-tier aviation comms and dependency graph. Scroll to zoom, drag to pan."
+      onWheel={onWheel}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerLeave={onPointerUp}
     >
       <defs>
         {(["ok", "affected", "severed"] as const).map((s) => (
@@ -920,6 +966,12 @@ function TopologyDag({
         );
       })}
     </svg>
+    <div className="topology-hud">
+      <button aria-label="Zoom in" onClick={() => setVb((v) => ({ ...v, w: clampW(v.w / 1.25), h: v.h / 1.25 }))}>+</button>
+      <button aria-label="Zoom out" onClick={() => setVb((v) => ({ ...v, w: clampW(v.w * 1.25), h: v.h * 1.25 }))}>−</button>
+      <button onClick={() => setVb(HOME_VB)}>FIT</button>
+    </div>
+    </>
   );
 }
 
@@ -964,14 +1016,8 @@ function SwarmScale({
     <section className="swarm-scale-section">
       <header className="swarm-scale-header">
         <div>
-          <span className="eyebrow">SCALE MODEL · SAME BLACKBOARD CONTRACT, SHARDED BY SECTOR</span>
-          <h2>1,000 Autonomous Swarm Workers</h2>
-          <p>
-            Every worker runs the exact loop of the live unit above: claim a task with a
-            compare-and-swap lease, act, write a receipt, release. No agent ever calls another
-            agent — coordination is the blackboard, so adding workers adds throughput, not
-            chatter. Each cell below is one worker; colour is what it is doing right now.
-          </p>
+          <span className="eyebrow">SCALE MODEL · SHARDED BY SECTOR · BLACKBOARD CONTRACT</span>
+          <h2>1,000 Swarm Workers</h2>
         </div>
         <dl className="swarm-scale-metrics">
           <div><dt>PROBE THROUGHPUT</dt><dd>~{probes} probes/sec</dd></div>
@@ -1630,7 +1676,7 @@ export default function App() {
                 </span>
                 <span className="system-name">
                   <strong>{n.name}</strong>
-                  <small>{meta?.fn ?? n.description}</small>
+                  <small>{meta?.role ?? n.kind}</small>
                 </span>
                 <span>{healthBadge(n.health)}</span>
                 <span className="system-deps">
@@ -1668,11 +1714,6 @@ export default function App() {
               </h2>
               <span className={`status-pill ${artexTriggered ? "alert" : ""}`}>{artexTriggered ? "TRIGGERED" : "ARMED"}</span>
             </header>
-            <p className="artex-explainer">
-              ARTEX ELT-5000 ADT couples 406 MHz COSPAS-SARSAT distress telemetry to the estate's proofs:
-              when <strong>dispatch</strong> or <strong>ops-radar</strong> invariants fail, the beacon locks
-              last-known coordinates and the Swarm Response Unit triages.
-            </p>
             <dl className="artex-telemetry">
               <div><dt>FREQUENCY</dt><dd>406.025 MHz · 121.5 MHz homing</dd></div>
               <div><dt>GADSS MODE</dt><dd>{artexTriggered ? "Distress tracking · 1-min position" : "Normal tracking · 15-min position"}</dd></div>
@@ -1933,6 +1974,27 @@ export default function App() {
           FORMAL BEHAVIORAL SPECS ({board.specs.size})
         </button>
       </div>
+      {!showSpecs && (
+        <div className="verification-summary" role="toolbar" aria-label="Proof health by system">
+          {nodes.map((n) => {
+            const p = proofs.get(n.id) ?? { pass: 0, total: 0 };
+            const failingNode = p.pass < p.total;
+            const ratio = p.total ? p.pass / p.total : 0;
+            return (
+              <button
+                key={n.id}
+                className={`vs-node-tile ${nodeFilter === n.id ? "active" : ""} ${failingNode ? "failing" : ""}`}
+                aria-pressed={nodeFilter === n.id}
+                onClick={() => setNodeFilter(nodeFilter === n.id ? "ALL" : n.id)}
+              >
+                <span className="vs-name">{n.id}</span>
+                <span className="vs-ratio">{p.pass}/{p.total}</span>
+                <span className="vs-bar"><span style={{ width: `${ratio * 100}%` }} /></span>
+              </button>
+            );
+          })}
+        </div>
+      )}
       {showSpecs ? (
         <div className="spec-grid">
           {[...board.specs.values()]
@@ -2322,17 +2384,50 @@ export default function App() {
                     </div>
                     <div>
                       <dt>Upstream</dt>
-                      <dd>{depsOf(node.id).join(", ") || "root"}</dd>
+                      <dd>
+                        <span className="inspector-deps">
+                          {depsOf(node.id).length
+                            ? depsOf(node.id).map((d) => (
+                                <button key={d} className={`dep-chip ${board.nodes.get(d)?.health ?? "up"}`} onClick={() => inspect(d)}>
+                                  {d}
+                                </button>
+                              ))
+                            : <span className="dep-chip root">ROOT</span>}
+                        </span>
+                      </dd>
                     </div>
                     <div>
                       <dt>Downstream</dt>
-                      <dd>{dependentsOf(node.id).join(", ") || "—"}</dd>
+                      <dd>
+                        <span className="inspector-deps">
+                          {dependentsOf(node.id).length
+                            ? dependentsOf(node.id).map((d) => (
+                                <button key={d} className={`dep-chip ${board.nodes.get(d)?.health ?? "up"}`} onClick={() => inspect(d)}>
+                                  {d}
+                                </button>
+                              ))
+                            : "—"}
+                        </span>
+                      </dd>
                     </div>
                   </dl>
                   <p className="inspector-description">{SYSTEMS[node.id]?.fn ?? node.description}</p>
                   <div className="inspector-section">
                     <h3>
-                      Verification <span>{proofs.get(node.id)?.pass ?? 0}/{proofs.get(node.id)?.total ?? 0}</span>
+                      Verification
+                      <span>
+                        {proofs.get(node.id)?.pass ?? 0}/{proofs.get(node.id)?.total ?? 0}
+                        <button
+                          className="mini-btn"
+                          style={{ marginLeft: 8 }}
+                          onClick={() => {
+                            setNodeFilter(node.id);
+                            setView("Verification");
+                          }}
+                        >
+                          Open proofs
+                        </button>
+                      </span>
                     </h3>
                     {checks
                       .filter((i) => i.node === node.id)
