@@ -2,6 +2,7 @@ import {
   lazy,
   Suspense,
   useEffect,
+  useMemo,
   useRef,
   useState,
   type ComponentType,
@@ -192,7 +193,7 @@ const FAULTS: FaultDef[] = [
   {
     type: "kill",
     target: "unimatic",
-    label: "Kill Unimatic Hub",
+    label: "Take Unimatic hub offline",
     cta: "KILL UNIMATIC HUB (SPOF)",
     hint: "6 systems cascade · ground stop",
     danger: true,
@@ -200,22 +201,22 @@ const FAULTS: FaultDef[] = [
   {
     type: "degrade",
     target: "weight-balance",
-    label: "Degrade Weight & Balance",
+    label: "Slow the weight & balance feed",
     cta: "DEGRADE WEIGHT & BALANCE (+1500MS)",
-    hint: "1500ms > 800ms SLA",
+    hint: "1.5s latency > 800ms SLA",
   },
   {
     type: "cut_dep",
     target: "dispatch",
     dep: "notam",
-    label: "Sever Dispatch → NOTAM",
+    label: "Cut dispatch's NOTAM feed",
     cta: "SEVER DISPATCH → NOTAM LINK",
     hint: "release authority offline",
   },
   {
     type: "corrupt",
     target: "pax-connect",
-    label: "Corrupt Pax Connect",
+    label: "Corrupt the passenger data feed",
     cta: "CORRUPT PAX-CONNECT PAYLOAD",
     hint: "rev checksum mismatch",
   },
@@ -1165,6 +1166,59 @@ function DepsGraph({
   );
 }
 
+// ---- Live response trace ---------------------------------------------------
+const TRACE_STAGES: { key: string; types: string[]; label: string }[] = [
+  { key: "detection", types: ["violation", "chaos", "distress", "escalate"], label: "DETECTION" },
+  { key: "triage", types: ["triage"], label: "TRIAGE" },
+  { key: "dispatch", types: ["task", "lease"], label: "DISPATCH" },
+  { key: "response", types: ["remediate", "action"], label: "RESPONSE" },
+  { key: "resolved", types: ["resolved", "mission"], label: "RESOLVED" },
+];
+const INCIDENT_TYPES = new Set(TRACE_STAGES.flatMap((s) => s.types));
+
+function ResponseTrace({ events }: { events: EventDoc[] }) {
+  const ordered = useMemo(() => [...events].sort((a, b) => a.ts - b.ts), [events]);
+  const incident = [...ordered].reverse().find((e) => INCIDENT_TYPES.has(e.type) && e.node);
+  if (!incident)
+    return (
+      <div className="trace-card idle">
+        <span className="trace-node">No incident in progress — swarm on patrol</span>
+      </div>
+    );
+  const node = incident.node!;
+  let reached = true;
+  return (
+    <div className="trace-card">
+      <span className="trace-node">
+        Incident on <strong>{node}</strong>
+      </span>
+      {TRACE_STAGES.map((s) => {
+        const ev = [...ordered].reverse().find((e) => e.node === node && s.types.includes(e.type));
+        const active = reached && !ev;
+        if (!ev) reached = false;
+        return (
+          <div key={s.key} className={`trace-row ${ev ? "done" : active ? "active" : "waiting"}`}>
+            <span className="trace-dot" />
+            <span className="trace-label">{s.label}</span>
+            <span className="trace-detail">
+              {ev ? (
+                <>
+                  <span className="trace-msg">{ev.msg}</span>
+                  <small>
+                    {ev.actor} · {relTime(ev.ts)}
+                  </small>
+                </>
+              ) : (
+                <small>{active ? "in progress" : "waiting"}</small>
+              )}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 // ---------------------------------------------------------------------------
 // App
 // ---------------------------------------------------------------------------
@@ -1645,68 +1699,6 @@ export default function App() {
 
   const missionControl = (
     <div className="mission-control">
-      <section className="spacex-telemetry-deck" aria-label="Mission telemetry">
-        <div className="telemetry-gauges-group left">
-          <ArcGauge
-            label="SYSTEMS ONLINE"
-            value={`${upNodes}/${nodes.length}`}
-            unit="ESTATE"
-            ratio={nodes.length ? upNodes / nodes.length : 0}
-            tone={upNodes === nodes.length ? "ok" : upNodes / Math.max(1, nodes.length) > 0.5 ? "warn" : "alert"}
-          />
-          <ArcGauge
-            label="PROOF INTEGRITY"
-            value={`${percent}%`}
-            unit={`${passed}/${checks.length} PASS`}
-            ratio={percent / 100}
-            tone={failing ? "alert" : percent === 100 ? "ok" : "info"}
-          />
-        </div>
-        <div className="telemetry-center-stage">
-          <ol className="stage-rail" aria-label="Mission stages">
-            {STAGES.map((s, i) => (
-              <li
-                key={s}
-                className={`stage-node ${i < stage ? "completed" : ""} ${i === stage ? "active" : ""} ${i === stage && stage === 4 ? "alert" : ""}`}
-                aria-current={i === stage ? "step" : undefined}
-              >
-                <span className="stage-dot" />
-                <span className="stage-label">{s}</span>
-              </li>
-            ))}
-          </ol>
-          <div className="mission-clock-display" aria-label={`Mission elapsed T plus ${clock}`}>
-            <span className="mission-clock-prefix">T+</span>
-            <span className="mission-clock-time">{clock}</span>
-          </div>
-          <div className="mission-designation">
-            <span>ARSU-01 // NORTH AMERICA AVIATION ESTATE</span>
-            <span className={`artex-beacon-pill ${artexTriggered ? "triggered" : "armed"}`}>
-              <HugeiconsIcon icon={Satellite01Icon} size={13} />
-              {artexTriggered
-                ? "ARTEX ADT DISTRESS TRIGGERED · GADSS TELEMETRY ACTIVE"
-                : "ARTEX ELT-5000 ADT · 406 MHz ARMED"}
-            </span>
-          </div>
-        </div>
-        <div className="telemetry-gauges-group right">
-          <ArcGauge
-            label="PROBE LATENCY"
-            value={latency}
-            unit="MS SLA <800"
-            ratio={latency / 1500}
-            tone={latency > 800 ? "alert" : latency > 100 ? "warn" : "ok"}
-          />
-          <ArcGauge
-            label="NORTH AMERICA FLEET"
-            value={`${enrouteCount}/${board.flights.flights.length}`}
-            unit={board.flights.groundStop ? "GROUND STOP" : "ENROUTE"}
-            ratio={board.flights.flights.length ? enrouteCount / board.flights.flights.length : 0}
-            tone={board.flights.groundStop ? "alert" : "info"}
-          />
-        </div>
-      </section>
-
       <div className="mc-grid">
         <section className="mc-panel systems-matrix" aria-label="Aviation estate systems">
           <header className="mc-panel-header">
@@ -1854,6 +1846,13 @@ export default function App() {
               </h2>
               <span className={open.length ? "text-alert" : ""}>{open.length} OPEN</span>
             </header>
+            <p className="assistant-line">
+              <span className="assistant-tag">{board.provider === "gemini" ? "GEMINI" : "SIM"}</span>
+              {open.length
+                ? `${open.length} open violation${open.length === 1 ? "" : "s"} — root cause ${open[0].node}. Response ${board.tasks.size ? "dispatched" : "queued"}; watch the trace below.`
+                : "No active risk — all proofs satisfied across the estate."}
+            </p>
+            <ResponseTrace events={board.events} />
             {open.map((v) => (
               <div key={v.id} className={`violation-row ${v.status}`}>
                 <HugeiconsIcon icon={Alert02Icon} size={14} />
@@ -1991,7 +1990,7 @@ export default function App() {
               <div className="stat-meter"><i style={{ width: `${board.flights.flights.length ? Math.round((enrouteCount / board.flights.flights.length) * 100) : 0}%` }} /></div>
             </div>
             <div className="stat-card">
-              <span>Hubs online</span>
+              <span>Hubs</span>
               <strong>
                 {upNodes}
                 <small>of {nodes.length} total</small>
@@ -1999,7 +1998,7 @@ export default function App() {
               <div className="stat-meter"><i className={upNodes === nodes.length ? "ok" : upNodes / Math.max(1, nodes.length) > 0.5 ? "warn" : "alert"} style={{ width: `${nodes.length ? Math.round((upNodes / nodes.length) * 100) : 0}%` }} /></div>
             </div>
             <div className="stat-card">
-              <span>Proofs passing</span>
+              <span>Proofs</span>
               <strong>
                 {passed}
                 <small>of {checks.length} total</small>
@@ -2507,8 +2506,20 @@ export default function App() {
                       <dd>{node.id}</dd>
                     </div>
                     <div>
+                      <dt>Ontology</dt>
+                      <dd>{node.kind} block · blackboard node</dd>
+                    </div>
+                    <div>
                       <dt>Discovered by</dt>
                       <dd>{node.discoveredBy}</dd>
+                    </div>
+                    <div>
+                      <dt>Mapped</dt>
+                      <dd>{relTime(node.firstSeen)}</dd>
+                    </div>
+                    <div>
+                      <dt>Last probe</dt>
+                      <dd>{relTime(node.lastProbe)}</dd>
                     </div>
                   </dl>
                   <div className="inspector-section">
