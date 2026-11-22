@@ -1,48 +1,157 @@
-# HACKATHON.md — Hack @ DevFest Sudbury facts
+# Hack @ DevFest Sudbury: rules and ARSU readiness
 
-Source: <https://www.mlh.com/events/hack-devfest-sudbury> +
-GDG Sudbury LinkedIn announcement (Nov 13, 2026).
+Research checked November 22, 2026. This is the GDG Sudbury / MLH event,
+not a separate global Google competition. Confirmed facts and our assessment
+are separated below. No public weighted judging rubric was found.
 
-## Schedule
+## Primary sources
 
-| What | When |
-|---|---|
-| Kickoff (online) + theme reveal | Sat **Nov 21**, 11:00 AM EST |
-| Build window | Nov 21 → 27 |
-| Submission due | **Fri Nov 27** (Google Form: GitHub repo + short demo video) |
-| MLH submissions close | Sat Nov 28, 3:30 PM EST |
-| Demo booth @ DevFest | Sat **Nov 28**, Collège Boréal, Sudbury |
-| Judging | GDEs Wesley Chun (Cloud/Workspace) + Arcadio Quintero (Angular) at lunch; attendees = people's choice |
+- [MLH event listing](https://www.mlh.com/events/hack-devfest-sudbury)
+- [MLH registration event](https://events.mlh.com/events/15656-hack-devfest-sudbury)
+- [GDG hackathon page](https://gdg.community.dev/events/details/google-gdg-sudbury-presents-hack-devfest-sudbury-mlh-hack-day/)
+- [GDG organizer announcement, November 13](https://www.linkedin.com/posts/gdg-sudbury_devfest-devfestsudbury-gdg-activity-7526839295735681024-9xde)
+- [MLH Gemini prize category](https://www.mlh.com/events/hack-devfest-sudbury/challenges/019d43c3-bed0-523b-a04f-80bd5fcc8276)
+- [DevFest conference and agenda](https://gdg.community.dev/events/details/google-gdg-sudbury-presents-devfest-sudbury-2026-build-secure-scale-developers-and-builders-in-the-agentic-era/)
 
-Prize: **$500**, one winner ("Best Use of the Google Gemini API") + MLH swag
-kit. Winner demos live to the full DevFest audience.
+The prize category is listed by MLH and appears in search results. Direct
+fetches of that route returned the parent event page, so its detailed text
+couldn't be independently read through that route.
 
-## Qualification rules
+## Confirmed requirements and event facts
 
-- **Gemini must be a core feature — not just a wrapper.** Our answer: every
-  agent decision (ontology authoring, invariant generation, spec writing,
-  response planning) is a Gemini call through `ModelProvider`. The SIM
-  provider exists for offline dev only and is clearly labeled.
-- **Everything from scratch** — "your commits count." This repo was created
-  Nov 22 inside the window; keep the commit trail honest.
-- Required stack to build around: **Gemini API (free tier) · Gemini CLI +
-  agents + skills · Google Antigravity · Firebase (Auth, Firestore, Hosting,
-  Cloud Functions) · Google Cloud**.
+- Gemini must do substantive work in a core product function. A cosmetic
+  chatbot or summary alone doesn't establish that requirement.
+- Work starts from scratch at the kickoff. The organizer explicitly says
+  commits count. Keep the actual history and credit external references.
+- Solo entries and teams are allowed. The public pages don't state a team-size
+  cap or a precise video duration.
+- Submission requires a GitHub repository and a short demo video through a
+  submission form. The inspected pages don't provide a verified form URL.
+- Publicly listed prize category: **Best Use of the Google Gemini API**.
+  The event advertises one $500 winner. No separate aviation, cybersecurity,
+  infrastructure, or social-impact track was found in the inspected sources.
+- Judges named on the GDG event: Wesley Chun and Arcadio Quintero. The organizer
+  announcement says judging happens at lunch and attendees also vote.
+  The weighting between judges and attendees isn't published.
+- Kickoff: Saturday, November 21, 11:00 AM EST, online. In-person demos:
+  Saturday, November 28 at College Boreal, Sudbury.
 
-## ⚠️ Open item: kickoff theme
+The event lists Gemini API, Gemini CLI with agents and skills, Google
+Antigravity, Firebase, and Google Cloud under what to build with. The public
+qualification sentence explicitly requires core Gemini use. It doesn't say
+that every listed product or every Firebase service is mandatory. Confirm
+that point with the organizer before treating the list as a checklist.
 
-The theme was revealed only at the Nov 21 kickoff and is not published
-online. **Action: ask the organizers / GDG Discord what it was.** The
-conference tagline is *"Build, Secure, Scale — developers and builders in
-the agentic era"*, which ARSU maps onto directly (swarm **builds** the
-ontology, invariants **secure** it, response units **scale** recovery) — but
-if the hack theme differs, re-frame the pitch before submission.
+## Conflicts and missing information
 
-## Why ARSU wins the room
+### Submission deadline
 
-- Judges are Cloud + Angular GDEs: a live control board (Firestore
-  listeners → real-time UI) is exactly their aesthetic.
-- The outage story is real and recent — Unimatic, Alaska, CrowdStrike,
-  NOTAM. We demo against a simulation of the actual failure topology.
-- "Swarm + blackboard + proofs" is a legible architecture that survives a
-  90-second booth pitch: *watch the map, press chaos, watch it heal*.
+The MLH and GDG event descriptions say "Friday, November 21st." November 21,
+2026 is a Saturday and is the kickoff date. The organizer's November 13 post
+and its video transcript explicitly say Friday, November 27.
+
+**Working deadline: November 27. Exact cutoff and time zone need organizer
+confirmation.** Don't silently substitute a date in the source. MLH's
+November 28, 3:30 PM event end is not evidence of a submission deadline.
+GDG lists a 4:30 PM event end; the conference agenda also has later networking.
+
+### Kickoff theme and tracks
+
+The official pages still say the theme is revealed at the November 21 kickoff.
+No announcement of the actual revealed theme was found in the inspected public
+pages or searches. That doesn't prove it wasn't announced privately.
+
+"Build, Secure, Scale: Developers and Builders in the Agentic Era" is the
+conference title. It isn't a confirmed substitute for the hackathon prompt.
+The conference's Canadian Digital Core Library and PDAC/CDL announcements
+also aren't confirmed hackathon tracks.
+
+The MLH registration page links an organizer WhatsApp group and Contact Host.
+Use those channels to confirm the theme, deadline, submission form, rubric,
+video limit, team rules, and any required tools. This research didn't join a
+group or send a message.
+
+### Booths
+
+The organizer post says every team gets a booth. The event listings describe
+a dedicated booth for the winner. Confirm logistics; don't promise a booth
+based on one version of the copy.
+
+## ARSU assessment
+
+This is our engineering assessment, not an official score or eligibility ruling.
+
+### Strongest evidence
+
+- Both actual swarm rehearsal profiles pass isolated HTTP-based integration
+  tests. The airline profile discovers 8 systems and 8 links, authors 33 checks,
+  and recovers from 4 faults. Communications practice discovers 8 components
+  across 3 layers and 7 links, authors 34 checks, and recovers from 4 message faults.
+- Readiness and recovery depend on stored records and fresh passing results.
+  Triage isn't treated as resolution. Before/after evidence can be downloaded.
+- Public aviation references, our modeled topology and messages, and observed
+  ARSU-process telemetry are labeled separately. This avoids claiming private
+  FAA access or a protocol implementation we haven't built.
+- Git author timestamps start November 22, inside the advertised build window.
+  History supports the timeline; timestamps alone can't prove originality.
+
+### Biggest qualification risk: proving Gemini's contribution
+
+`packages/swarm/src/provider.ts` contains the actual Gemini API integration.
+Recon descriptions, invariant authoring, specs, and response planning call
+`ModelProvider`; the summary endpoint uses the same boundary.
+
+The automated mission runs force SIM. They prove orchestration and recovery,
+not live Gemini generation, reasoning quality, or model availability. Record
+at least one real Gemini run with bounded source input, structured output,
+the selected response skill, and the resulting verification evidence.
+
+The graph's declared dependencies come from the local registry. Don't describe
+that as Gemini discovering an unknown real network. Explain where source
+observations end and generated descriptions, contracts, and plans begin.
+
+`ResilientProvider.name` retains the primary provider's name after an agent-call
+fallback; the fallback is logged on the server. A configured Gemini label alone
+therefore doesn't prove a particular agent result came from Gemini. Summary
+fallback attribution has its own validation. Per-call attribution is a high
+priority before filming any claim of live Gemini reasoning.
+
+### Google stack and remote product gaps
+
+A Firestore Blackboard adapter exists. Live Firestore persistence hasn't been
+verified in this work. No Firebase Auth implementation or Firebase deployment
+configuration was found in the inspected source/config paths. Hosting,
+Functions, and Google Cloud deployment aren't demonstrated by local tests.
+
+These are product/demo gaps. The published wording doesn't establish them as
+separate disqualifiers. Don't add services solely to collect platform badges.
+If we show Firebase, demonstrate actual persisted evidence and authorized access.
+
+### Demo and pitch gaps
+
+The new screens haven't had a real-browser visual review. The submission video
+hasn't been produced in this work. The PDF is a learning aid, not the required
+demo video. A local working server isn't a verified remote deployment.
+
+Lead with one operator problem: a host looks healthy while communication data
+is corrupted, replayed, missing, or stale. Follow one failure from its receipt
+through a contract, response task, skill action, and post-response verification.
+Keep the three-layer explanation short enough to follow without ontology jargon.
+
+## Recommended order before submission
+
+1. Confirm the kickoff theme, actual deadline/form, and judging rubric through
+   the organizer channel. Check whether all named Google tools are required.
+2. Capture a real Gemini-backed contract/planning run and label every fallback
+   accurately. Prove what Gemini contributes beyond a deterministic playbook.
+3. Visually check the recording flow. Produce the short video and verify a clean
+   checkout can run the same scenario. Include a failed/escalated outcome too.
+4. If remote access is part of the pitch, finish and test authentication and
+   deployment. Demonstrate Firestore persistence only when it's actually active.
+5. Package the repo, recording, source credits, and limits. Keep simulation,
+   local observation, and live external data distinct throughout.
+
+Conference fit looks good: its agenda includes agent-fleet orchestration and
+reliable Gemini API use. That's useful context for the pitch, not evidence of
+private judging preferences. Without a published rubric, numeric readiness
+scores or invented judging weights would be misleading.
