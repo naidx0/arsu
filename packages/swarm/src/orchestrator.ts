@@ -21,6 +21,7 @@ export class Orchestrator {
   private triageTimer: ReturnType<typeof setTimeout> | null = null;
   private verifyQueue = new Set<string>();
   private sawViolations = false;
+  private triaging = false;
   private heartbeat: ReturnType<typeof setInterval> | null = null;
   launched = false;
 
@@ -91,7 +92,7 @@ export class Orchestrator {
         if (docs.some((d) => d.data.status === 'open')) {
           this.sawViolations = true;
           this.scheduleTriage();
-        } else if (this.sawViolations) {
+        } else if (this.sawViolations && docs.length > 0 && docs.every(d => d.data.status === 'resolved')) {
           this.sawViolations = false;
           void this.ctx.board.emit('mission', {
             actor: AGENT_ID,
@@ -159,6 +160,13 @@ export class Orchestrator {
   }
 
   private async triage(): Promise<void> {
+    if (this.triaging) return;
+    this.triaging = true;
+    try { await this.triageOnce(); }
+    finally { this.triaging = false; }
+  }
+
+  private async triageOnce(): Promise<void> {
     const open = (
       await this.ctx.board.query<ViolationDoc>('violations')
     ).filter((v) => v.data.status === 'open');
@@ -248,6 +256,8 @@ export class Orchestrator {
         }
       }
 
+      await this.ctx.board.emit('planning', { actor: AGENT_ID, node: nodeId, msg: `Evaluating root-cause response for ${nodeId}`, data: { invariantIds: invIds, inDegree: inDegree(nodeId), depHealthy, provider: this.ctx.provider.name } });
+      if (this.ctx.stepDelayMs) await new Promise(r => setTimeout(r, this.ctx.stepDelayMs));
       const plan = await this.ctx.provider.planJSON<{
         rootCause?: string;
         skill?: string;

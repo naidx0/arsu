@@ -19,6 +19,7 @@ export interface SwarmCtx {
   board: Blackboard;
   provider: ModelProvider;
   simBase: string;
+  stepDelayMs?: number;
 }
 
 async function j<T>(res: Response): Promise<T> {
@@ -38,6 +39,8 @@ export async function doRecon(
   let nodes = 0;
   let edges = 0;
   for (const svc of services) {
+    if (ctx.stepDelayMs) await new Promise(r => setTimeout(r, ctx.stepDelayMs));
+    await ctx.board.emit('planning', { actor: agentId, node: svc.id, msg: `Probing registry component ${svc.id}`, data: { task: task.id, source: '/sim/registry', provider: ctx.provider.name } });
     const evidence: string[] = [`GET /sim/registry → listed`];
     let health: NodeDoc['health'] = 'down';
     let opSnippet = '';
@@ -82,10 +85,7 @@ export async function doRecon(
         plan.description ??
         `${svc.name} (${svc.kind}) — ${opSnippet || 'probed'}`,
     };
-    await ctx.board.put('nodes', svc.id, node);
-    nodes++;
-
-    const deps = plan.deps?.length ? plan.deps : svc.deps;
+    const deps = svc.deps;
     for (const dep of deps) {
       const edgeId = `${svc.id}->${dep}`;
       const edge: EdgeDoc = {
@@ -99,6 +99,8 @@ export async function doRecon(
       await ctx.board.put('edges', edgeId, edge);
       edges++;
     }
+    await ctx.board.put('nodes', svc.id, node);
+    nodes++;
     await ctx.board.emit('probe', {
       actor: agentId,
       node: svc.id,
@@ -136,6 +138,8 @@ export async function doVerify(
     description: node.description,
   };
 
+  await ctx.board.emit('planning', { actor: agentId, node: node.id, msg: `Authoring contracts for ${node.id}`, data: { task: task.id, dependencies: service.deps, provider: ctx.provider.name } });
+  if (ctx.stepDelayMs) await new Promise(r => setTimeout(r, ctx.stepDelayMs));
   const plan = await ctx.provider.planJSON<{
     invariants?: {
       kind: InvariantDoc['kind'];
@@ -277,7 +281,7 @@ export async function evaluateInvariant(
         const va = a[p.field!];
         const vb = b[p.viaField ?? p.field!];
         return {
-          pass: va === vb,
+          pass: va !== undefined && vb !== undefined && va === vb,
           detail: `${p.field}: ${JSON.stringify(va)} vs ${JSON.stringify(vb)}`,
         };
       }
@@ -449,6 +453,7 @@ export async function doRemediate(
 
   let escalated = false;
   for (const step of steps) {
+    if (ctx.stepDelayMs) await new Promise(r => setTimeout(r, ctx.stepDelayMs));
     const target = step.target === '.' ? nodeId : step.target;
     if (ACTION_STEPS.has(step.action)) {
       try {

@@ -198,6 +198,22 @@ steps:
 Human-readable rationale shown in SWARM panel while the agent works.
 ```
 
+## Recording rehearsal
+
+`npm run dev:recording` starts the host with `--recording`: an empty, ephemeral
+LocalBlackboard, manual launch, seeded aviation flights, and paced agent stages.
+It never clears or overwrites the persisted board. Normal startup is unchanged.
+`GET /api/rehearsal` exposes registry-derived readiness and scenario history;
+`POST /api/rehearsal` with `{scenario}` injects one allowlisted fault only after
+complete discovery, required dependency contracts, fresh passing checks, and
+no unresolved violations or active tasks. One scenario runs at a time.
+Rehearsal records live in `rehearsals`; `/api/rehearsal/:id/evidence` exports
+frozen outcome records. Verified recovery requires an observed failure, a
+successful response action, and all covered checks passing after that action.
+Escalations, timeouts, missing coverage, and stale checks cannot count as verified.
+Readiness and scenario progress stream over WS as `rehearsal` messages.
+These are executable simulation checks, not a guarantee about external aviation.
+
 ## Operational summaries
 
 `POST /api/summary` accepts no user prompt. The server derives bounded context

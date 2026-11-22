@@ -54,6 +54,7 @@ import MissionGlobe, { type RegionId } from "./components/MissionGlobe";
 import OpsMap from "./components/OpsMap";
 import OperationalSummary from "./components/OperationalSummary";
 import PipelineWalkthrough from "./components/PipelineWalkthrough";
+import RehearsalConsole from "./components/RehearsalConsole";
 import { missionCondition, missionStage } from "./mission-state";
 import { routePoint } from "./geometry";
 import { showcaseBoard } from "./showcase";
@@ -1251,6 +1252,13 @@ export default function App() {
   const inspectorTrigger = useRef<HTMLElement | null>(null);
   const timers = useRef(new Map<string, number[]>());
   const seq = useRef(0);
+  const recordingViewOpened = useRef(false);
+  useEffect(() => {
+    if (live.rehearsal?.recording && !recordingViewOpened.current) {
+      recordingViewOpened.current = true;
+      setView("Swarm");
+    }
+  }, [live.rehearsal?.recording]);
 
   // ---- data source ---------------------------------------------------------
   const coldFallback = !live.connected && live.nodes.size === 0;
@@ -2182,6 +2190,7 @@ export default function App() {
 
   const swarm = (
     <div className="content-scroll">
+      <RehearsalConsole board={board} enabled={live.connected && !localMode && !localOverride} onLaunch={launch} onInspect={inspect} />
       <ol className="swarm-pipeline-bar" aria-label="Swarm pipeline">
         {PIPELINE.map((p, i) => (
           <li key={p.label} className={`pipeline-stage ${i < pipelineStage ? "completed" : ""} ${i === pipelineStage ? "active" : ""} ${i === pipelineStage && i >= 3 ? "alert" : ""}`}>

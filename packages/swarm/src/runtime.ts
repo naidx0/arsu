@@ -32,7 +32,7 @@ export class AgentRuntime {
     const doc: AgentDoc = {
       id: agentId,
       role,
-      state: 'idle',
+      state: role === 'runner' ? 'working' : 'idle',
       lastBeat: Date.now(),
       decisions: 0,
     };

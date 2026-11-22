@@ -33,7 +33,15 @@ npm run dev          # ARSU host: sim + blackboard + swarm + API on :4780
 npm run dev:ui       # dashboard dev server on :5173 (proxies /api + /ws)
 npm run typecheck    # all workspaces
 npm run seed         # regenerate data/flights.seed.json
+npm run dev:recording
+npm run test:mission
 ```
+
+Recording mode builds and serves the dashboard on :4780 with an empty,
+in-memory Blackboard and explicit swarm launch. It never overwrites saved
+mission data. Download rehearsal evidence before stopping the host.
+`test:mission` starts its own ephemeral host on an available port, forces SIM,
+and verifies discovery plus recovery from all four stress scenarios.
 
 ## Env
 

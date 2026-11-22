@@ -18,6 +18,7 @@ import {
   EventDoc,
   FlightsPayload,
   InvariantDoc,
+  LocalBlackboard,
   NodeDoc,
   SkillDoc,
   SpecDoc,
@@ -36,6 +37,7 @@ import {
 } from '@arsu/swarm';
 
 import { createSummaryService } from './summary.js';
+import { RehearsalController } from './rehearsal.js';
 
 const PORT = Number(process.env.ARSU_PORT ?? 4780);
 const SELF = `http://localhost:${PORT}`;
@@ -44,10 +46,12 @@ const BOARD_FILE = path.resolve('data/blackboard.json');
 const SKILLS_DIR = path.resolve('skills');
 const DASH_DIST = path.resolve('apps/dashboard/dist');
 
+const recording = process.argv.includes('--recording');
 const engine = new SimEngine(SEED);
-const board = createBlackboard(BOARD_FILE);
+const board = recording ? new LocalBlackboard() : createBlackboard(BOARD_FILE);
 const provider = selectProvider();
-const ctx: SwarmCtx = { board, provider, simBase: SELF };
+const ctx: SwarmCtx = { board, provider, simBase: SELF, stepDelayMs: recording ? 900 : 0 };
+const rehearsal = new RehearsalController(board, engine.registry(), recording, fault => { engine.chaos(fault); });
 const runtime = new AgentRuntime(ctx);
 const orchestrator = new Orchestrator(ctx);
 
@@ -82,7 +86,7 @@ async function bootSwarm(): Promise<void> {
 }
 
 // Lane F — optional live ADS-B feed; seed stays the offline-safe default.
-if (process.env.ARSU_FLIGHT_SOURCE === 'live') {
+if (!recording && process.env.ARSU_FLIGHT_SOURCE === 'live') {
   void fetchLiveFlights().then(async (flights) => {
     if (flights) {
       engine.setFlights(flights);
@@ -152,7 +156,7 @@ async function snapshot(): Promise<StateSnapshot> {
       board.query<SkillDoc>('skills'),
       board.query<EventDoc>('events'),
     ]);
-  return {
+  const state: StateSnapshot = {
     events: events.map(d => d.data).sort((a, b) => b.ts - a.ts).slice(0, 300),
     nodes: nodes.map((d) => d.data),
     edges: edges.map((d) => d.data),
@@ -169,7 +173,29 @@ async function snapshot(): Promise<StateSnapshot> {
       launchedAt: mission.launchedAt || undefined,
     },
   };
+  state.rehearsal = await rehearsal.status(state);
+  return state;
 }
+
+app.get('/api/rehearsal', async (_req, res) => {
+  res.json((await snapshot()).rehearsal);
+});
+app.post('/api/rehearsal', async (req, res) => {
+  try {
+    const run = await rehearsal.start(req.body.scenario, await snapshot());
+    broadcast({ type: 'rehearsal', data: (await snapshot()).rehearsal! });
+    res.status(202).json(run);
+  } catch (e) {
+    res.status(409).json({ error: e instanceof Error ? e.message : 'Stress test could not start' });
+  }
+});
+app.get('/api/rehearsal/:id/evidence', async (req, res) => {
+  const run = await rehearsal.evidence(req.params.id);
+  if (!run) { res.status(404).json({ error: 'Run not found' }); return; }
+  if (run.outcome === 'running') { res.status(409).json({ error: 'Wait for the run to finish' }); return; }
+  res.setHeader('Content-Disposition', `attachment; filename="arsu-evidence-${run.id}.json"`);
+  res.json(run);
+});
 
 const summarize = createSummaryService(provider, snapshot);
 app.post('/api/summary', async (_req, res) => {
@@ -312,9 +338,19 @@ wss.on('connection', async (ws) => {
 // ---------- steady-state loops ----------
 
 // flight ticker → WS (1 Hz)
+let samplingRehearsal = false;
 setInterval(() => {
   const payload: FlightsPayload = engine.tick(1000);
   broadcast({ type: 'flight', data: payload });
+  if (!samplingRehearsal) {
+    samplingRehearsal = true;
+    void (async () => {
+      try {
+        await rehearsal.advance(await snapshot());
+        broadcast({ type: 'rehearsal', data: (await snapshot()).rehearsal! });
+      } finally { samplingRehearsal = false; }
+    })();
+  }
 }, 1000);
 
 // sim truth → board node.health (1 Hz) so the ontology + invariants see
@@ -332,8 +368,9 @@ setInterval(() => {
 }, 1000);
 
 // swarm + proof-runner come up with the host, even over a warm board file
-void bootSwarm();
+if (!recording) void bootSwarm();
 server.listen(PORT, () => {
+  if (recording) console.log('[arsu] RECORDING: ephemeral board, seed flights, manual launch, paced workers');
   console.log(`[arsu] provider=${provider.name}  http://localhost:${PORT}`);
   console.log(`[arsu] sim at /sim — control board proxies /api + /ws`);
 });

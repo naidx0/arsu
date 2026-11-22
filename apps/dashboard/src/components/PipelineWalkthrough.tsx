@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { Board } from '../api';
 import OperationalSummary from './OperationalSummary';
+import RehearsalConsole from './RehearsalConsole';
 
 type RecordEntry = { path: string; data: unknown };
 export default function PipelineWalkthrough({ board, hostEnabled, onInspect, onLaunch }: {
@@ -22,10 +23,11 @@ export default function PipelineWalkthrough({ board, hostEnabled, onInspect, onL
   const current = steps[stage];
   const record = current.records.find(r => r.path === recordPath) ?? current.records[0];
   return <div className="pipeline-workspace">
+    <RehearsalConsole board={board} enabled={hostEnabled} onLaunch={onLaunch} onInspect={onInspect} />
     <div className="pipeline-intro"><div><span className="pipeline-eyebrow">LIVE RECORD WALKTHROUGH</span><h2>From discovery to verified response</h2><p>Simulated airline estate · {board.provider.toUpperCase()} configured · {hostEnabled ? 'Host Blackboard' : 'Local example records'}</p></div>
-      <button className="mini-btn" onClick={onLaunch}>{board.nodes.size ? 'Re-scan estate' : 'Launch discovery'}</button></div>
+      <button className="mini-btn" disabled={!hostEnabled || board.rehearsal?.runs.some(r => r.outcome === 'running')} onClick={onLaunch}>{board.nodes.size ? 'Re-scan estate' : 'Launch discovery'}</button></div>
     <nav className="pipeline-steps" aria-label="Mission pipeline">{steps.map((s, i) => <button key={s.title} aria-current={stage === i ? 'step' : undefined} onClick={() => { setStage(i); setRecordPath(''); }}><span>{String(i + 1).padStart(2, '0')}</span><strong>{s.title}</strong><small>{s.records.length} records</small></button>)}</nav>
-    <div className="pipeline-detail-grid"><section className="pipeline-stage"><span className="pipeline-eyebrow">STAGE {stage + 1} / {steps.length} · {current.actor}</span><h2>{current.title}</h2><p>{current.description}</p>
+    <div className="pipeline-detail-grid"><section className="walkthrough-stage"><span className="pipeline-eyebrow">STAGE {stage + 1} / {steps.length} · {current.actor}</span><h2>{current.title}</h2><p>{current.description}</p>
       <div className="pipeline-record-list">{current.records.length ? current.records.map(r => <button key={r.path} aria-pressed={record?.path === r.path} onClick={() => setRecordPath(r.path)}>{r.path}</button>) : <p>No records yet. Launch discovery, or inject a fault from the header to observe detection and response. Selecting a stage does not run work.</p>}</div>
       <div className="pipeline-paging"><button className="mini-btn" disabled={stage === 0} onClick={() => setStage(stage - 1)}>Previous</button><button className="mini-btn" disabled={stage === steps.length - 1} onClick={() => setStage(stage + 1)}>Next stage</button></div>
     </section><section className="pipeline-record"><header><h2>Blackboard record</h2>{record?.path.startsWith('nodes/') && <button className="mini-btn" onClick={() => onInspect(record.path.slice(6))}>Inspect system</button>}</header><p>{record?.path ?? 'Waiting for evidence'}</p><pre>{record ? JSON.stringify(record.data, null, 2) : 'No record has been written for this stage.'}</pre></section></div>

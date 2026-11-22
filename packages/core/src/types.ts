@@ -218,6 +218,7 @@ export interface ActionRequest {
 // ---- API / WS shapes ----
 
 export type WsMessage =
+  | { type: 'rehearsal'; data: RehearsalState }
   | { type: 'event'; data: EventDoc }
   | { type: 'invariant'; data: InvariantDoc }
   | { type: 'flight'; data: FlightsPayload }
@@ -244,7 +245,29 @@ export interface OperationalSummary {
   evidence: string[];
 }
 
+export interface RehearsalRun {
+  id: string;
+  scenario: string;
+  startedAt: number;
+  finishedAt?: number;
+  outcome: 'running' | 'verified' | 'failed';
+  detail: string;
+  violationIds: string[];
+  actionIds: string[];
+}
+
+export interface RehearsalState {
+  recording: boolean;
+  expectedSystems: number;
+  expectedLinks: number;
+  ready: boolean;
+  blockers: string[];
+  scenarios: { id: string; title: string; fault: ChaosRequest }[];
+  runs: RehearsalRun[];
+}
+
 export interface StateSnapshot {
+  rehearsal?: RehearsalState;
   events?: EventDoc[];
   nodes: NodeDoc[];
   edges: EdgeDoc[];

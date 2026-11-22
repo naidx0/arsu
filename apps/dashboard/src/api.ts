@@ -18,6 +18,7 @@ import type {
 } from "@arsu/core";
 
 export interface Board {
+  rehearsal?: StateSnapshot['rehearsal'];
   nodes: Map<string, NodeDoc>;
   edges: Map<string, EdgeDoc>;
   invariants: Map<string, InvariantDoc>;
@@ -66,6 +67,7 @@ function fromSnapshot(s: StateSnapshot): Board {
   b.flights = s.flights;
   b.provider = s.provider;
   b.mission = s.mission;
+  b.rehearsal = s.rehearsal;
   return b;
 }
 
@@ -115,6 +117,9 @@ export function useBoard(): Board {
           (b as unknown as Record<string, unknown>)[key] = m;
         };
         switch (msg.type) {
+          case "rehearsal":
+            b.rehearsal = msg.data;
+            break;
           case "snapshot":
             socketSnapshotReceived = true;
             return { ...fromSnapshot(msg.data), connected: true };
