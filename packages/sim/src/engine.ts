@@ -330,12 +330,22 @@ export class SimEngine {
     } catch {
       this.flights = [];
     }
+    this.resetFlightState();
+  }
+
+  private resetFlightState(): void {
     this.dwell.clear();
     for (const f of this.flights) {
       f.position = slerp(f.from, f.to, f.t);
       f.heading = bearing(f.from, f.to);
       this.dwell.set(f.id, 8_000 + Math.random() * 20_000);
     }
+  }
+
+  /** Hot-swap the flight list — used by the live ADS-B adapter (Lane F). */
+  setFlights(flights: Flight[]): void {
+    this.flights = flights;
+    this.resetFlightState();
   }
 
   groundStop(): boolean {

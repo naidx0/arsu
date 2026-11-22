@@ -25,7 +25,7 @@ import {
   ViolationDoc,
   WsMessage,
 } from '@arsu/core';
-import { createSimApp, SimEngine, SimError } from '@arsu/sim';
+import { createSimApp, fetchLiveFlights, SimEngine, SimError } from '@arsu/sim';
 import {
   AgentRuntime,
   loadSkills,
@@ -49,6 +49,22 @@ const runtime = new AgentRuntime(ctx);
 const orchestrator = new Orchestrator(ctx);
 
 const mission = { launched: false, launchedAt: 0 };
+
+// Lane F — optional live ADS-B feed; seed stays the offline-safe default.
+if (process.env.ARSU_FLIGHT_SOURCE === 'live') {
+  void fetchLiveFlights().then(async (flights) => {
+    if (flights) {
+      engine.setFlights(flights);
+      console.log(`[arsu] live ADS-B: ${flights.length} real aircraft on map`);
+      await board.emit('mission', {
+        actor: 'system',
+        msg: `live ADS-B feed connected — ${flights.length} real aircraft`,
+      });
+    } else {
+      console.warn('[arsu] live ADS-B unavailable — using seed flights');
+    }
+  });
+}
 
 // ---------- WS broadcast ----------
 

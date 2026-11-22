@@ -54,6 +54,28 @@
 
 - [ ] `.env`: `GEMINI_API_KEY` set OR deliberately `ARSU_PROVIDER=sim`
 - [ ] `npm run seed` fresh
-- [ ] server + dashboard running, hard refresh, WS connected badge
+- [ ] server + dashboard running, hard refresh, WS LIVE badge on
 - [ ] demo account-less URL ready (firebase hosting if shipped, else LAN)
 - [ ] video recorded backup of the full beat run
+
+## Video shot list (60–90s, submission requirement)
+
+| # | Shot | Src |
+|---|------|-----|
+| 1 | Cold open on MAP — planes moving, "this is the estate" | live board |
+| 2 | LAUNCH SWARM click — agents register, ontology blooms | live board |
+| 3 | INVARIANTS filling green; expand one spec | live board |
+| 4 | **Kill unimatic** — cascade red, GROUND STOP banner, planes hold | live board |
+| 5 | Violations → triage event → response agent runs `hub-failover` | live board |
+| 6 | Board greens, planes resume, "mission: resolved" in FEED | live board |
+| 7 | Code flash: `ModelProvider` call sites + a `skills/*.md` file | VS Code |
+| 8 | Title card: ARSU · stack (Gemini API, Firestore, GCP) · repo URL | post |
+
+## Submission checklist (due Fri Nov 27, Google Form)
+
+- [ ] GitHub repo link — commit history tells the scratch-built story
+- [ ] Demo video (60–90s) uploaded + linked
+- [ ] README quickstart verified cold on a second machine
+- [ ] `.env.example` covers everything; no secrets committed
+- [ ] Theme confirmed with organizers (see HACKATHON.md open item)
+- [ ] Devpost/MLH fields filled if the form asks

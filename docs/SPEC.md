@@ -85,9 +85,9 @@ EventDoc { id, ts, type: string, actor: agentId|'operator'|'system',
 |---|---|---|
 | `http_status` | `url` | GET returns 200 |
 | `latency_lt` | `url`, `ms` | GET responds < ms |
-| `dep_health` | `dep` | dep node's effective health = `up` |
+| `dep_health` | `dep` | dep is in the node's *active* deps AND effectively `up` — catches dead deps **and** severed edges |
 | `data_field` | `url`, `field`, `equals?` | JSON body has field (and equals match) |
-| `consistency` | `via`, `field`, `equals` | two endpoints agree on field — the Unimatic check |
+| `consistency` | `url`, `field`, `via`, `viaField` | two endpoints agree on field — the Unimatic check |
 
 Runner: `setInterval` per invariant at `intervalMs` (default 2s); on
 fail→fail, update `runs/lastResult`, mint-or-increment `violations`, emit
@@ -116,8 +116,9 @@ POST /sim/reset                         → all up, standby off, flights resynce
 `type` for chaos: `kill | degrade | cut_dep | corrupt`.
 `type` for action: `restart | failover | reroute | repair`.
 
-- `kill` → state=down. `degrade` → state=degraded (+latency, op returns
-  partial). `cut_dep{target,dep}` → removes required edge in sim truth.
+- `kill` → state=down. `degrade` → state=degraded (+latency above the
+  800ms `latency_lt` budget, op returns partial). `cut_dep{target,dep}` →
+  removes required edge in sim truth.
 - `restart` → up (clears kill/degrade). `failover` → activates `standby`,
   flips dependents' traffic to replica (sim: swaps dep target). `reroute` →
   repoint a `cut_dep` edge to standby. `repair` → clears `corrupt`.
@@ -166,11 +167,13 @@ work → write results → `tasks.status=done` (+`result`) → idle.
 - `response` — claim `remediate` → `skills.get(block)` → execute steps
   sequentially via `/sim/action` → re-run affected invariants → close or
   escalate violation. Every step + result → `events` + `agents.decisions++`.
-- `orchestrator` — watches `violations` (status `open`) → group by root
-  cause (node with most open violations + highest in-degree) → create
-  `remediate` tasks (priority: hub>feed>worker), `skill` = lookup by
-  `node.kind` + failure mode → mark violation `triaged`. Escalates
-  after 2 failed attempts (`status:'escalated'`, crit event).
+- `orchestrator` — watches `violations` (status `open`) → group by node →
+  root-cause filter: a violated node with a required dep effectively
+  ≠`up` is *collateral* and gets no task (its proofs re-green when the
+  root is remediated) → create `remediate` tasks for roots only
+  (priority: hub>feed>worker), `skill` = lookup by `node.kind` + failure
+  mode → mark violation `triaged`. Escalates after 2 failed attempts
+  (`status:'escalated'`, crit event).
 
 ### Built-in skills (`/skills/*.md`, mirrored into `skills` col)
 
@@ -234,4 +237,5 @@ provider/key reads happen in `packages/swarm/provider.ts` and
 
 - No real auth on sim/action in demo (prod note in README only).
 - No persistence guarantee beyond `data/blackboard.json`.
-- No live ADS-B unless lane F lands it — seed flights are the baseline.
+- Live ADS-B is an opt-in plug (`ARSU_FLIGHT_SOURCE=live`, airplanes.live,
+  graceful fallback) — seed flights are the baseline.

@@ -71,7 +71,31 @@ arsu/
   data/            flight seed + blackboard persistence
 ```
 
+## Quickstart
+
+```bash
+npm install
+npm run seed     # generate data/flights.seed.json (~40 flights)
+npm run dev      # host on :4780 — sim + blackboard + swarm + API/WS
+npm run dev:ui   # dashboard dev server on :5173 (or build once: npm run build,
+                 # then :4780 serves the control board directly)
+```
+
+On the board: **LAUNCH SWARM** → watch recon map the ontology and verify
+agents fill the invariant board green → **kill unimatic** → GROUND STOP,
+violations, triage, `hub-failover` → board heals. `npm run typecheck` is
+the gate for all workspaces.
+
+No keys needed: the default `SimulatedProvider` is deterministic and
+offline. Set `GEMINI_API_KEY` in `.env` to run the same swarm on Gemini
+(`gemini-2.5-flash`, free tier). `ARSU_FLIGHT_SOURCE=live` optionally
+puts real ADS-B traffic on the map.
+
 ## Status
 
-Documentation + spec complete. Implementation is decomposed into parallel
-lanes in [docs/LANES.md](docs/LANES.md).
+**Playable.** All lanes landed: core contracts, sim, swarm, server,
+control board. The full mission arc is verified end-to-end — launch →
+map → prove → chaos → triage → remediate → resolved — for all four chaos
+types (`kill`, `degrade`, `cut_dep`, `corrupt`). Remaining work is demo
+polish and the Gemini key; see [docs/LANES.md](docs/LANES.md) and
+[docs/DEMO.md](docs/DEMO.md).
