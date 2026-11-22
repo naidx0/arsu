@@ -17,7 +17,7 @@ function RadarControls({ region = "regional", comms, toggle }: { region: Airspac
   const map = useMap();
   const reset = () => { const home = REGIONS[region]; map.setView([home.lat, home.lon], home.zoom, { animate: true }); };
   useEffect(reset, [region, map]);
-  return <div className="globe-controls map-radar-controls" style={{ position: "absolute", top: 16, right: 16, bottom: "auto", left: "auto", zIndex: 1000 }} ref={el => { if (el) { L.DomEvent.disableClickPropagation(el); L.DomEvent.disableScrollPropagation(el); } }}>
+  return <div className="globe-controls map-radar-controls" ref={el => { if (el) { L.DomEvent.disableClickPropagation(el); L.DomEvent.disableScrollPropagation(el); } }}>
     <div className="ctl-group" role="group" aria-label="Camera">
       <button aria-label="Zoom out" onClick={() => map.zoomOut()}>−</button>
       <button aria-label="Zoom in" onClick={() => map.zoomIn()}>+</button>

@@ -29,7 +29,6 @@ export default function RehearsalConsole({ board, enabled, onLaunch, onInspect }
       <button className="mini-btn" disabled={!enabled || busy || board.mission.launched} onClick={onLaunch}>{board.mission.launched ? 'Swarm launched' : 'Launch environment'}</button></header>
     {!enabled && <p role="status">Connect to the host to run the real swarm. Example data cannot run a verified rehearsal.</p>}
     {!rehearsal?.recording && <p>For a clean recording, start <code>npm run dev:recording</code>. It waits for launch and leaves your saved board untouched.</p>}
-    <PracticeLayers board={board} onInspect={onInspect} />
     <div className="rehearsal-metrics">
       <div><strong>{nodes.length}<small> / {rehearsal?.expectedSystems ?? '—'}</small></strong><span>Systems discovered</span></div>
       <div><strong>{board.edges.size}<small> / {rehearsal?.expectedLinks ?? '—'}</small></strong><span>Dependency links</span></div>
@@ -53,6 +52,7 @@ export default function RehearsalConsole({ board, enabled, onLaunch, onInspect }
       {error && <p role="alert">{error}</p>}
       <p className="rehearsal-caveat">Simulation only. Verification covers these executable checks. In recording mode, download evidence before stopping the host; restart the recording command for a fresh take.</p>
     </div></div>
+    {board.practice && <details className="practice-disclosure"><summary>Explore layers and message receipts</summary><PracticeLayers board={board} onInspect={onInspect} /></details>}
     <div className="rehearsal-grid"><section className="rehearsal-events"><h3>Live execution receipts</h3><div aria-label="Execution event log">{events.map(e => <details key={e.id}><summary><time>{new Date(e.ts).toLocaleTimeString()}</time><span>{e.msg}</span><small>{e.actor}</small></summary><pre>{JSON.stringify(e, null, 2)}</pre></details>)}{!events.length && <p>No agent work has been observed yet.</p>}</div></section>
       <section className="rehearsal-history"><h3>Recorded outcomes</h3>{rehearsal?.runs.map(run => <article key={run.id} data-outcome={run.outcome}><header><strong>{run.scenario}</strong><span>{run.outcome}</span></header><p>{run.detail}</p><small>{run.violationIds.length} violations · {run.actionIds.length} actions</small>{run.outcome !== 'running' && <a href={`/api/rehearsal/${encodeURIComponent(run.id)}/evidence`} download>Download evidence JSON</a>}</article>)}{!rehearsal?.runs.length && <p>Completed stress tests will retain proof results, tasks, topology, and event receipts here.</p>}</section></div>
   </section>;

@@ -44,6 +44,15 @@ mission data. Download rehearsal evidence before stopping the host.
 `test:mission` starts its own ephemeral host on an available port, forces SIM,
 and verifies discovery plus recovery from all four stress scenarios.
 
+`npm run test:layout -w dashboard` checks all seven views at 320, 390, 768,
+and 1440px using installed Google Chrome, then records a communications fault,
+verified recovery, evidence download, and inspector navigation. First build the
+UI and start a separate `--practice` host with `ARSU_PORT=4782` and
+`ARSU_PROVIDER=sim`. The browser test requires this ephemeral SIM profile;
+it can launch the swarm and inject a local fault. `ARSU_UI_URL` overrides the
+loopback URL. Screenshots, video, and evidence go to the temporary artifact
+directory printed by the test, or `ARSU_UI_ARTIFACTS` when set.
+
 ## Env
 
 Copy `.env.example` → `.env`. Nothing is required to run — the default

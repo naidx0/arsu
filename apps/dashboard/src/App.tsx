@@ -1231,6 +1231,7 @@ export default function App() {
   const [sample] = useState(showcaseBoard);
   const [example, setExample] = useState(false);
   const [view, setView] = useState<View>("Mission Control");
+  const [airspaceExpanded, setAirspaceExpanded] = useState(() => !window.matchMedia('(max-width: 760px)').matches);
   const [map, setMap] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
   const [flightId, setFlightId] = useState<string | null>(null);
@@ -1253,6 +1254,17 @@ export default function App() {
   const timers = useRef(new Map<string, number[]>());
   const seq = useRef(0);
   const recordingViewOpened = useRef(false);
+  const activeNavigationRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    const mobile = window.matchMedia('(max-width: 760px)');
+    const reveal = () => {
+      setAirspaceExpanded(!mobile.matches);
+      if (mobile.matches) activeNavigationRef.current?.scrollIntoView({ block: 'nearest', inline: 'center' });
+    };
+    reveal();
+    mobile.addEventListener('change', reveal);
+    return () => mobile.removeEventListener('change', reveal);
+  }, [view]);
   useEffect(() => {
     if (live.rehearsal?.recording && !recordingViewOpened.current) {
       recordingViewOpened.current = true;
@@ -1978,14 +1990,15 @@ export default function App() {
         </button>
       </div>
       {!node && !flight && (
-        <section className="overview-card glass-surface" aria-label="North America airspace telemetry">
-          <div className="card-heading">
+        <details className="overview-card glass-surface" aria-label="North America airspace telemetry" open={airspaceExpanded} onToggle={event => setAirspaceExpanded(event.currentTarget.open)}>
+          <summary className="card-heading">
             <span>North America Airspace</span>
             <span className={`status-pill ${condition === "DEGRADED" ? "alert" : ""}`}>
               <span className={`health-dot ${condition === "NOMINAL" ? "up" : condition === "DEGRADED" ? "down" : "idle"}`} />
               {condition}
             </span>
-          </div>
+            <HugeiconsIcon icon={ArrowDown01Icon} size={14} />
+          </summary>
           <div className="overview-metrics">
             <div className="stat-card">
               <span>Enroute</span>
@@ -1996,7 +2009,7 @@ export default function App() {
               <div className="stat-meter"><i style={{ width: `${board.flights.flights.length ? Math.round((enrouteCount / board.flights.flights.length) * 100) : 0}%` }} /></div>
             </div>
             <div className="stat-card">
-              <span>Hubs</span>
+              <span>Systems</span>
               <strong>
                 {upNodes}
                 <small>of {nodes.length} total</small>
@@ -2017,7 +2030,7 @@ export default function App() {
             {board.flights.groundStop ? "Ground stop — dispatch unavailable" : "Releases flowing"}
             <span>{board.flights.staleFeed ? "Radar feed STALE" : "Radar feed 1 Hz"}</span>
           </div>
-          <OperationalSummary enabled={live.connected && !localMode && !localOverride} />
+          <details className="airspace-summary"><summary>Operational summary</summary><OperationalSummary enabled={airspaceExpanded && live.connected && !localMode && !localOverride} /></details>
           <div className="overview-actions">
             <button className="mini-btn" onClick={goHome}>
               Mission Control
@@ -2026,7 +2039,7 @@ export default function App() {
               Topology
             </button>
           </div>
-        </section>
+        </details>
       )}
       {board.flights.groundStop && (
         <div className="ground-stop glass-surface">
@@ -2314,6 +2327,7 @@ export default function App() {
               key={item.id}
               aria-label={item.id}
               aria-current={view === item.id ? "page" : undefined}
+              ref={view === item.id ? activeNavigationRef : null}
               className={`nav-item ${view === item.id ? "selected" : ""}`}
               onClick={() => openView(item.id)}
             >

@@ -3029,6 +3029,10 @@ pre {
   .overview-card {
     width: 244px;
     right: 16px;
+    top: auto;
+    bottom: 84px;
+    max-height: calc(100% - 164px);
+    overflow-y: auto;
   }
   .map-toolbar {
     left: 16px;
@@ -4561,4 +4565,122 @@ button.dep-chip:hover { border-color: var(--ink); color: var(--ink); }
 .practice-sources article { padding: 16px 0 0; max-width: 900px; }
 .practice-sources a { color: var(--accent); font: 13px/1.6 var(--font-sans); }
 .practice-observer { background: var(--bg-page); border-radius: 10px; padding: 18px; }
-@media (max-width: 760px) { .practice-layer-tabs { grid-template-columns: minmax(0, 1fr); } }
+.regional-map { isolation: isolate; }
+.map-radar-controls { position: absolute; top: auto; right: 20px; bottom: 20px; left: auto; z-index: 1000; }
+.overview-card > summary { cursor: pointer; list-style: none; margin-bottom: 0; }
+.overview-card > summary::-webkit-details-marker { display: none; }
+.overview-card[open] > summary { margin-bottom: 16px; }
+.overview-card[open] > summary > svg { transform: rotate(180deg); }
+.practice-disclosure { margin-top: 20px; }
+.practice-disclosure > summary { padding: 12px 0; min-height: 44px; color: var(--accent); }
+
+@media (max-width: 760px) {
+  .workspace-app { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; font-size: 13px; }
+  .app-main { grid-column: 1; grid-row: 1; }
+  .app-sidebar { grid-column: 1; grid-row: 2; flex-direction: row; align-items: center; gap: 8px; width: 100%; min-width: 0; overflow-x: auto; padding: 6px 8px max(6px, env(safe-area-inset-bottom)); border-right: 0; border-top: 1px solid var(--hairline); background: var(--bg-canvas); }
+  .workspace-app .workspace-brand { display: none; }
+  .app-sidebar nav { display: flex; flex-direction: row; flex: 0 0 auto; gap: 4px; width: max-content; }
+  .workspace-app .app-sidebar .nav-item { flex: 0 0 auto; flex-direction: column; justify-content: center; gap: 5px; width: auto; min-width: 76px; min-height: 56px; padding: 6px 10px; }
+  .app-sidebar .nav-item > span:first-of-type { display: block; margin: 0; font: 11px/1.4 var(--font-sans); white-space: nowrap; letter-spacing: 0; }
+  .app-sidebar .nav-item > .nav-count { display: none; }
+  .sidebar-bottom { flex-direction: row; align-items: center; gap: 6px; padding: 0; margin: 0; border: 0; }
+  .workspace-app .sidebar-bottom .launch-button, .workspace-app .sidebar-bottom .source-switch { flex-direction: column; width: auto; min-width: 100px; min-height: 56px; padding: 6px 10px; gap: 4px; font: 11px/1.4 var(--font-sans); letter-spacing: 0; text-transform: none; white-space: nowrap; }
+  .sidebar-bottom .source-switch > span { display: block; }
+  .workspace-topbar { height: auto; min-height: 60px; padding: 8px 12px; gap: 8px; }
+  .breadcrumbs { flex: 1; min-width: 0; gap: 0; }
+  .workspace-app .breadcrumbs > .breadcrumb-btn, .breadcrumbs > span { display: none; }
+  .breadcrumbs strong { font: 600 13px/1.4 var(--font-sans); letter-spacing: 0; text-transform: none; overflow-wrap: anywhere; }
+  .topbar-actions { flex: 0 0 auto; gap: 8px; }
+  .data-mode-pill { flex-shrink: 0; white-space: nowrap; font-size: 9px; line-height: 1.5; letter-spacing: 0; padding: 6px 8px; }
+  .workspace-app .subtle-button, .workspace-app .icon-button { min-width: 44px; min-height: 44px; }
+  .workspace-app .subtle-button { padding: 8px 10px; white-space: nowrap; }
+  .fault-popover { position: fixed; top: 64px; right: 12px; width: min(340px, calc(100vw - 24px)); max-height: calc(100dvh - 160px); overflow-y: auto; }
+  .workspace-app .fault-popover button { min-height: 44px; font-size: 13px; }
+  .content-toolbar { padding: 14px 12px; }
+  .content-toolbar h1 { font-size: 24px; }
+  .content-scroll, .mission-control-page, .pipeline-workspace { min-width: 0; padding: 12px; }
+  .workspace-search { min-width: 0; margin-left: 0; }
+  .workspace-search input { min-width: 0; font-size: 16px; }
+  .workspace-app .mini-btn { min-height: 44px; min-width: 44px; padding: 8px 12px; font-size: 12px; letter-spacing: 0; text-transform: none; white-space: normal; }
+  .workspace-content .object-inspector, .workspace-content:not(.view-mission-control) .object-inspector { inset: 8px; width: auto; padding: 16px; }
+  .mc-panel { padding: 16px; }
+  .mc-panel-header { flex-wrap: wrap; align-items: flex-start; gap: 8px; }
+  .mc-panel-header h2 { min-width: 0; font-size: 14px; letter-spacing: .04em; }
+  .mc-panel-header > span { white-space: normal; }
+  .systems-matrix-head { display: none; }
+  .system-row { grid-template-columns: minmax(0, 1fr) auto; gap: 12px; padding: 16px 0; }
+  .system-row > .system-hub { display: none; }
+  .system-row > .system-name { grid-column: 1; grid-row: 1; }
+  .system-row > :nth-child(3) { grid-column: 2; grid-row: 1; }
+  .system-row > .system-deps { display: flex; grid-column: 1 / -1; flex-wrap: wrap; }
+  .system-row > .system-proofs { display: block; grid-column: 1 / -1; grid-row: 3; align-self: center; }
+  .system-row > .system-actions { grid-column: 1 / -1; grid-row: 4; flex-wrap: wrap; justify-content: flex-start; }
+  .system-row .system-name strong { white-space: normal; overflow-wrap: anywhere; }
+  .impact-counters { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+  .mc-impact-strip { padding: 16px; }
+  .rehearsal-console { padding: 16px; margin-bottom: 16px; }
+  .rehearsal-console h2 { font-size: 20px; }
+  .pipeline-eyebrow { font-size: 10px; letter-spacing: .05em; overflow-wrap: anywhere; }
+  .rehearsal-metrics { gap: 10px; margin: 18px 0; }
+  .rehearsal-metrics > div { padding: 12px; }
+  .rehearsal-metrics strong { font-size: 26px; }
+  .rehearsal-grid { gap: 16px; margin-top: 16px; }
+  .rehearsal-stress { order: -1; }
+  .rehearsal-map, .rehearsal-stress, .rehearsal-events, .rehearsal-history { padding: 14px; }
+  .rehearsal-scenarios { margin: 14px 0; }
+  .practice-layer-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  .practice-layer-tabs button { padding: 10px 6px; gap: 6px; }
+  .practice-layer-tabs strong { font-size: 12px; }
+  .practice-layer-tabs span { font-size: 10px; }
+  .practice-checks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .practice-checks > span { min-width: 0; padding: 12px; }
+  .practice-layers { padding-top: 16px; }
+  .pipeline-record, .walkthrough-stage, .operational-summary { padding: 16px; }
+  .pipeline-record-list button { overflow-wrap: anywhere; }
+  .operational-summary li, .rehearsal-console code { overflow-wrap: anywhere; }
+  .blackboard-workspace { overflow-y: auto; display: flex; flex-direction: column; }
+  .blackboard-activity, .firestore-explorer { overflow: visible; flex: none; padding: 14px 12px; }
+  .mission-control { padding: 12px; min-width: 0; }
+  .pipeline-stage { min-width: 0; }
+  .pipeline-stage > span, .practice-layer-tabs strong { min-width: 0; overflow-wrap: anywhere; }
+  .trace-row { grid-template-columns: 12px minmax(0, 1fr); gap: 6px 8px; }
+  .trace-label { grid-column: 2; }
+  .trace-detail { grid-column: 2; }
+  .trace-node, .trace-msg, .trace-detail small { overflow-wrap: anywhere; white-space: normal; }
+  .activity-body > div:first-child { flex-wrap: wrap; gap: 6px 10px; }
+  .activity-body time { margin-left: 0; }
+  .event-node { overflow-wrap: anywhere; }
+  .blackboard-summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .spec-grid, .swarm-sector-grid { grid-template-columns: minmax(0, 1fr); }
+  .swarm-scale-header { min-width: 0; flex-wrap: wrap; }
+  .swarm-scale-metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; min-width: 0; width: 100%; }
+  .swarm-scale-metrics dd { overflow-wrap: anywhere; }
+  .rehearsal-metrics strong { display: flex; align-items: baseline; gap: 6px; }
+  .rehearsal-metrics strong small { display: inline; }
+  .map-toolbar { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); left: 12px; right: 12px; top: 12px; height: auto; width: auto; padding: 8px; gap: 6px; }
+  .map-toolbar > svg, .map-toolbar .toolbar-divider { display: none; }
+  .map-toolbar select { grid-column: 1 / -1; width: 100%; min-width: 0; min-height: 44px; font-size: 16px; }
+  .workspace-app .map-toolbar button { justify-content: center; min-width: 0; min-height: 44px; padding: 8px 6px; font-size: 12px; letter-spacing: 0; white-space: normal; }
+  .overview-card { width: min(330px, calc(100% - 24px)); padding: 12px; }
+  .overview-metrics { gap: 6px; }
+  .overview-metrics .stat-card { padding: 8px; }
+  .overview-metrics .stat-card strong { font-size: 20px; }
+  .overview-flights { flex-wrap: wrap; gap: 6px; }
+  .overview-actions { display: none; }
+  .airspace-summary > summary { min-height: 44px; padding: 12px 0; cursor: pointer; }
+  .data-mode-pill { font-size: 11px; }
+  .map-toolbar, .overview-card { background: var(--bg-card); }
+  .overview-card { bottom: 136px; max-height: calc(100% - 270px); overflow-y: auto; }
+  .overview-card > summary { min-height: 44px; gap: 8px; font-size: 12px; }
+  .globe-controls { left: 12px; right: 12px; bottom: 12px; flex-wrap: wrap; gap: 8px; }
+  .map-radar-controls { top: auto; }
+  .workspace-app .globe-controls button { min-width: 44px; min-height: 44px; height: auto; padding: 8px; font-size: 12px; letter-spacing: 0; }
+  .aircraft-picker { top: 132px; bottom: auto; left: 12px; right: 12px; min-height: 44px; gap: 8px; font-size: 12px; }
+  .aircraft-picker select { max-width: none; flex: 1; min-width: 0; min-height: 44px; font-size: 16px; }
+  .map-bottom-label { display: none; }
+}
+
+@media (max-width: 400px) {
+  .workspace-topbar .breadcrumbs { display: none; }
+  .topbar-actions { width: 100%; justify-content: space-between; }
+}
