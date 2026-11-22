@@ -2192,6 +2192,13 @@ export default function App() {
           </li>
         ))}
       </ol>
+      <section className="swarm-trace mc-panel" aria-label="Live incident trace">
+        <header className="mc-panel-header">
+          <h2>LIVE INCIDENT TRACE</h2>
+          <span>{board.provider === "gemini" ? "GEMINI" : "SIM"} REASONING</span>
+        </header>
+        <ResponseTrace events={board.events} />
+      </section>
       <div className="agent-cards">
         {[...board.agents.values()].map((a: AgentDoc) => {
           const latest = board.events.find((e) => e.actor === a.id);
@@ -2387,7 +2394,12 @@ export default function App() {
               </button>
               {chaos && (
                 <div className="fault-popover glass-surface">
-                  <div className="popover-label">Fault injection</div>
+                  <div className="popover-label">
+                    Fault injection
+                    <button className="icon-button" aria-label="Close" onClick={() => setChaos(false)}>
+                      <HugeiconsIcon icon={Cancel01Icon} size={13} />
+                    </button>
+                  </div>
                   {FAULTS.map((f) => (
                     <button key={f.type} disabled={busy} onClick={() => inject(f.type, f.target, f.dep)}>
                       <HugeiconsIcon icon={Alert02Icon} size={15} />
