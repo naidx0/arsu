@@ -379,4 +379,5 @@ server.listen(PORT, () => {
   if (recording) console.log('[arsu] RECORDING: ephemeral board, seed flights, manual launch, paced workers');
   console.log(`[arsu] provider=${provider.name}  http://localhost:${PORT}`);
   console.log(`[arsu] sim at /sim — control board proxies /api + /ws`);
+  if (recording && !practiceMode) console.log(`[arsu] DEMO: open http://localhost:${PORT}/?demo for the presenter director`);
 });

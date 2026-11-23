@@ -10,6 +10,7 @@
   "scripts": {
     "dev": "tsx watch packages/server/src/index.ts",
     "dev:recording": "npm run build && tsx packages/server/src/index.ts --recording",
+    "demo": "npm run dev:recording",
     "dev:practice": "npm run build && tsx packages/server/src/index.ts --practice",
     "test:mission": "tsx --test packages/server/src/mission.integration.test.ts",
     "dev:ui": "npm run dev -w dashboard",

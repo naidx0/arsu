@@ -55,6 +55,7 @@ import OpsMap from "./components/OpsMap";
 import OperationalSummary from "./components/OperationalSummary";
 import PipelineWalkthrough from "./components/PipelineWalkthrough";
 import RehearsalConsole from "./components/RehearsalConsole";
+import DemoDirector from "./components/DemoDirector";
 import { missionCondition, missionStage } from "./mission-state";
 import { routePoint } from "./geometry";
 import { showcaseBoard } from "./showcase";
@@ -1250,6 +1251,7 @@ export default function App() {
   const [eventFilter, setEventFilter] = useState<EventFilter>("ALL");
   const [collection, setCollection] = useState<Collection>("nodes");
   const [patch, setPatch] = useState<LocalPatch>(emptyPatch);
+  const [demo, setDemo] = useState(() => new URLSearchParams(window.location.search).has("demo"));
   const faultRef = useRef<HTMLDivElement>(null);
   const inspectorRef = useRef<HTMLElement>(null);
   const inspectorTrigger = useRef<HTMLElement | null>(null);
@@ -2391,6 +2393,10 @@ export default function App() {
               <span className="data-mode-label">{dataMode}</span>
             </span>
             <span className="mission-elapsed">T+ {clock}</span>
+            <button className={`subtle-button demo-toggle ${demo ? "pressed" : ""}`} aria-pressed={demo} onClick={() => setDemo((d) => !d)}>
+              <HugeiconsIcon icon={PlayIcon} size={15} />
+              <span className="demo-toggle-label">Demo</span>
+            </button>
             <button className="icon-button" aria-label="Reset estate" title="Reset estate" disabled={busy} onClick={reset}>
               <HugeiconsIcon icon={RefreshIcon} size={15} />
             </button>
@@ -2656,6 +2662,16 @@ export default function App() {
             </section>
           )}
         </main>
+        {demo && (
+          <DemoDirector
+            board={board}
+            onView={openView}
+            onRadar={setMap}
+            onLaunch={launch}
+            onScenario={(scenario) => void command(scenario, "/api/rehearsal", { scenario }, () => runLocalFault("kill", "unimatic"))}
+            onClose={() => setDemo(false)}
+          />
+        )}
       </div>
     </div>
   );
