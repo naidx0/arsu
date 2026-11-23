@@ -70,6 +70,26 @@ try {
   const run = (await state()).rehearsal.runs[0];
   assert.equal(run.scenario, 'hub-outage');
   assert(run.violationIds.length > 0 && run.actionIds.length > 0, 'Verified run must carry violations and actions');
+  // Pipeline flow canvas: seven stage cards, wires with branch labels clear of every card.
+  await nav(page, 'Pipeline');
+  await expect(page.locator('.flow-card')).toHaveCount(7);
+  const flow = await page.locator('.flow-canvas').evaluate(root => ({
+    cards: [...root.querySelectorAll('.flow-slot')].map(e => { const r = e.getBoundingClientRect(); return { text: e.querySelector('.flow-title')!.textContent!, left: r.left, right: r.right, top: r.top, bottom: r.bottom }; }),
+    labels: [...root.querySelectorAll('.flow-branch, .flow-lane')].map(e => { const r = e.getBoundingClientRect(); return { text: e.textContent!, left: r.left, right: r.right, top: r.top, bottom: r.bottom }; }),
+    wires: root.querySelectorAll('.flow-wires path').length,
+    clipped: [...root.querySelectorAll('.flow-title')].filter(t => t.scrollWidth > t.clientWidth + 1).map(t => t.textContent),
+  }));
+  assert(flow.wires >= 7, `expected at least 7 flow wires, saw ${flow.wires}`);
+  assert.deepEqual(flow.clipped, [], 'Flow card titles are truncated');
+  const flowClashes = [
+    ...flow.cards.flatMap((a, i) => flow.cards.slice(i + 1).filter(b => overlaps(a, b)).map(b => `${a.text} × ${b.text}`)),
+    ...flow.labels.flatMap(l => flow.cards.filter(c => overlaps(l, c)).map(c => `${l.text} × ${c.text}`)),
+  ];
+  assert.deepEqual(flowClashes, [], 'Pipeline flow overlaps');
+  // The AI assistant panels are gone from every view.
+  await expect(page.getByRole('button', { name: /generate summary/i })).toHaveCount(0);
+  await expect(page.locator('.operational-summary')).toHaveCount(0);
+
   await nav(page, 'Swarm');
   await expect(page.locator('.rehearsal-history article[data-outcome="verified"]').first()).toContainText('hub-outage');
   await page.screenshot({ path: path.join(artifacts, 'stage-verified.png') });

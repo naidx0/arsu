@@ -52,10 +52,10 @@ import type {
 import { post, useBoard, type Board } from "./api";
 import MissionGlobe, { type RegionId } from "./components/MissionGlobe";
 import OpsMap from "./components/OpsMap";
-import OperationalSummary from "./components/OperationalSummary";
 import PipelineWalkthrough from "./components/PipelineWalkthrough";
 import RehearsalConsole from "./components/RehearsalConsole";
 import DemoDirector from "./components/DemoDirector";
+import { DotSpark, series } from "./components/FlowKit";
 import { missionCondition, missionStage } from "./mission-state";
 import { routePoint } from "./geometry";
 import { showcaseBoard } from "./showcase";
@@ -1731,12 +1731,14 @@ export default function App() {
   );
 
   const tasksDone = [...board.tasks.values()].filter((t) => t.status === "done").length;
-  const kpis: { label: string; value: number; total: number; unit?: string; tone: "ok" | "info" | "warn" | "bad"; view: View }[] = [
-    { label: "Systems online", value: upNodes, total: nodes.length, tone: upNodes === nodes.length ? "ok" : "bad", view: "Topology" },
-    { label: "Proofs passing", value: passed, total: checks.length, tone: percent === 100 ? "ok" : percent >= 60 ? "warn" : "bad", view: "Verification" },
-    { label: "Open violations", value: open.length, total: Math.max(violations.length, open.length), unit: "raised this mission", tone: open.length ? "bad" : "ok", view: "Blackboard" },
-    { label: "Swarm actions", value: tasksDone, total: board.tasks.size, tone: "info", view: "Swarm" },
+  const kpis: { label: string; value: number; total: number; unit?: string; tone: "ok" | "info" | "warn" | "bad"; view: View; types: string[] }[] = [
+    { label: "Systems online", value: upNodes, total: nodes.length, tone: upNodes === nodes.length ? "ok" : "bad", view: "Topology", types: ["probe", "recon"] },
+    { label: "Proofs passing", value: passed, total: checks.length, tone: percent === 100 ? "ok" : percent >= 60 ? "warn" : "bad", view: "Verification", types: ["verify", "resolved"] },
+    { label: "Open violations", value: open.length, total: Math.max(violations.length, open.length), unit: "raised this mission", tone: open.length ? "bad" : "ok", view: "Blackboard", types: ["violation", "chaos"] },
+    { label: "Swarm actions", value: tasksDone, total: board.tasks.size, tone: "info", view: "Swarm", types: ["action", "remediate", "triage"] },
   ];
+  const kpiTs = board.events.map((e) => e.ts);
+  const kpiRange: [number, number] = kpiTs.length ? [Math.min(...kpiTs), Math.max(now, ...kpiTs)] : [now - 60_000, now];
   const missionControl = (
     <div className="mission-control">
       <section className="kpi-row" aria-label="Mission impact counters">
@@ -1751,6 +1753,7 @@ export default function App() {
                 <span>of {k.total} {k.unit ?? "total"}</span>
                 {!k.unit && <span><b>{k.value}</b> /{k.total}</span>}
               </span>
+              <DotSpark values={series(board.events.filter((e) => k.types.includes(e.type)).map((e) => e.ts), kpiRange)} tone={k.tone} />
               <span className="kpi-ticks" aria-hidden="true">
                 {Array.from({ length: ticks }, (_, i) => <i key={i} className={i < lit ? "on" : ""} />)}
               </span>
@@ -1868,8 +1871,6 @@ export default function App() {
               </h2>
               <span className={open.length ? "text-alert" : ""}>{open.length} open</span>
             </header>
-            <OperationalSummary enabled={live.connected && !localMode && !localOverride} />
-            <ResponseTrace events={board.events} />
             {open.map((v) => (
               <div key={v.id} className={`violation-row ${v.status}`}>
                 <HugeiconsIcon icon={Alert02Icon} size={14} />
@@ -2029,7 +2030,6 @@ export default function App() {
             {board.flights.groundStop ? "Ground stop — dispatch unavailable" : "Releases flowing"}
             <span>{board.flights.staleFeed ? "Radar feed STALE" : "Radar feed 1 Hz"}</span>
           </div>
-          <details className="airspace-summary"><summary>Operational summary</summary><OperationalSummary enabled={airspaceExpanded && live.connected && !localMode && !localOverride} /></details>
           <div className="overview-actions">
             <button className="mini-btn" onClick={goHome}>
               Mission Control

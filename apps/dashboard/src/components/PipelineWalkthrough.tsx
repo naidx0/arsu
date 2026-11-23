@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { Board } from '../api';
-import OperationalSummary from './OperationalSummary';
+import PipelineFlow from './PipelineFlow';
 
 type RecordEntry = { path: string; data: unknown };
 const LIVE_STEP = [0, 1, 3, 4, 5]; // pipelineStage (0-4) → walkthrough step index
@@ -36,11 +36,10 @@ export default function PipelineWalkthrough({ board, liveStage, hostEnabled, onI
       <span className={openViolations ? 'alert' : ''}>{openViolations} open violations</span>
       <span>{board.agents.size} agents live</span>
     </div>
-    <nav className="pipeline-steps" aria-label="Mission pipeline">{steps.map((s, i) => <button key={s.title} data-live={i === liveStep && board.nodes.size > 0 || undefined} aria-current={stage === i ? 'step' : undefined} onClick={() => { setStage(i); setRecordPath(''); }}><span>{String(i + 1).padStart(2, '0')}</span><strong>{s.title}</strong><small>{s.records.length} records{i === liveStep && board.nodes.size > 0 ? ' · live' : ''}</small></button>)}</nav>
+    <PipelineFlow board={board} stage={stage} liveStep={board.nodes.size ? liveStep : -1} onSelect={i => { setStage(i); setRecordPath(''); }} />
     <div className="pipeline-detail-grid"><section className="walkthrough-stage"><span className="pipeline-eyebrow">STAGE {stage + 1} / {steps.length} · {current.actor}</span><h2>{current.title}</h2><p>{current.description}</p>
       <div className="pipeline-record-list">{current.records.length ? current.records.map(r => <button key={r.path} aria-pressed={record?.path === r.path} onClick={() => setRecordPath(r.path)}>{r.path}</button>) : <p>No records yet. Launch discovery, or inject a fault from the header to observe detection and response. Selecting a stage does not run work.</p>}</div>
       <div className="pipeline-paging"><button className="mini-btn" disabled={stage === 0} onClick={() => setStage(stage - 1)}>Previous</button><button className="mini-btn" disabled={stage === steps.length - 1} onClick={() => setStage(stage + 1)}>Next stage</button></div>
     </section><section className="pipeline-record"><header><h2>Blackboard record</h2>{record?.path.startsWith('nodes/') && <button className="mini-btn" onClick={() => onInspect(record.path.slice(6))}>Inspect system</button>}</header><p>{record?.path ?? 'Waiting for evidence'}</p><pre>{record ? JSON.stringify(record.data, null, 2) : 'No record has been written for this stage.'}</pre></section></div>
-    <OperationalSummary enabled={hostEnabled} />
   </div>;
 }
