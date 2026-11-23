@@ -6371,3 +6371,16 @@ kbd,
   border-color: var(--ink);
   border-radius: var(--radius);
 }
+
+.overview-metrics .stat-card strong {
+  font-family: var(--font-display);
+  font-size: 21px;
+  font-weight: 500;
+  gap: 2px;
+}
+
+.overview-metrics .stat-card strong small {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0;
+}

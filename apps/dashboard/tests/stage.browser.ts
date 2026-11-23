@@ -26,10 +26,10 @@ try {
   await expect.poll(async () => (await state()).rehearsal?.ready, { timeout: 120_000 }).toBe(true);
   const before = (await state()).rehearsal.runs.length as number;
 
-  // Icon rail: narrow, and no rail control spills text sideways (dividers hang below by design).
+  // Icon rail: narrow, and no rail control's own text spills outside it (the count badge sits on the corner by design).
   const rail = await page.locator('.app-sidebar').evaluate(aside => ({
     width: aside.getBoundingClientRect().width,
-    spills: [...aside.querySelectorAll('button')].filter(b => { const r = b.getBoundingClientRect(); return r.width > 0 && b.scrollWidth > b.clientWidth + 1; }).map(b => b.getAttribute('aria-label') ?? b.textContent),
+    spills: [...aside.querySelectorAll('button')].filter(b => { const r = b.getBoundingClientRect(); if (!r.width) return false; const walk = document.createTreeWalker(b, NodeFilter.SHOW_TEXT); const out = []; for (let t = walk.nextNode(); t; t = walk.nextNode()) { if (t.parentElement!.closest('.nav-count')) continue; const range = document.createRange(); range.selectNodeContents(t); out.push(...[...range.getClientRects()].filter(q => q.width > 0 && (q.left < r.left - 1 || q.right > r.right + 1))); } return out.length > 0; }).map(b => b.getAttribute('aria-label') ?? b.textContent),
   }));
   assert(rail.width <= 90, `Icon rail is ${rail.width}px wide`);
   assert.deepEqual(rail.spills, [], 'Rail controls spill text');
