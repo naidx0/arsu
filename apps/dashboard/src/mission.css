@@ -4696,3 +4696,9 @@ button.dep-chip:hover { border-color: var(--ink); color: var(--ink); }
   .mission-elapsed, .data-mode-label { display: none; }
   .topbar-actions { width: 100%; justify-content: space-between; }
 }
+
+/* Phones: the legend wraps to full width, so the zoom HUD moves to the top edge. */
+@media (max-width: 760px) {
+  .topology-hud { top: 12px; bottom: auto; right: 12px; }
+  .graph-legend { left: 12px; right: 12px; gap: 8px 14px; }
+}
