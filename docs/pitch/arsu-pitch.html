@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>ARSU Pitch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  @page { size: 1280px 720px; margin: 0; }
+  :root {
+    --ink: #ededed; --dim: rgba(237,237,237,.72); --muted: rgba(237,237,237,.5);
+    --line: #1f1f1f; --card: #0b0b0b; --orange: #ff7a2f; --green: #3ddc84; --red: #ff4d4d; --amber: #f5b83d;
+    --bk: rgba(237,237,237,.6);
+    --brackets:
+      linear-gradient(var(--bk),var(--bk)) left top/12px 1px, linear-gradient(var(--bk),var(--bk)) left top/1px 12px,
+      linear-gradient(var(--bk),var(--bk)) right top/12px 1px, linear-gradient(var(--bk),var(--bk)) right top/1px 12px,
+      linear-gradient(var(--bk),var(--bk)) left bottom/12px 1px, linear-gradient(var(--bk),var(--bk)) left bottom/1px 12px,
+      linear-gradient(var(--bk),var(--bk)) right bottom/12px 1px, linear-gradient(var(--bk),var(--bk)) right bottom/1px 12px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #000; color: var(--ink); font: 16px/1.5 Inter, sans-serif; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .slide {
+    position: relative; width: 1280px; height: 720px; padding: 56px 64px 48px; overflow: hidden; page-break-after: always;
+    background-color: #030303;
+    background-image: linear-gradient(rgba(237,237,237,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(237,237,237,.03) 1px, transparent 1px);
+    background-size: 48px 48px;
+    display: flex; flex-direction: column;
+  }
+  .slide:last-child { page-break-after: auto; }
+  .kicker { font: 500 12px/1 'JetBrains Mono', monospace; letter-spacing: .14em; text-transform: uppercase; color: var(--orange); }
+  h1, h2 { font-family: 'Chakra Petch', sans-serif; font-weight: 500; margin: 0; letter-spacing: .005em; }
+  h1 { font-size: 64px; line-height: 1.04; }
+  h2 { font-size: 40px; line-height: 1.1; margin: 12px 0 8px; }
+  .lede { font-size: 20px; color: var(--dim); max-width: 900px; margin: 4px 0 0; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+  .foot { position: absolute; left: 64px; right: 64px; bottom: 22px; display: flex; justify-content: space-between; font: 11px 'JetBrains Mono', monospace; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  .panel { border: 1px solid #1c1c1c; border-radius: 5px; background: var(--brackets), var(--card); background-repeat: no-repeat; padding: 20px 22px; }
+  .label { font: 500 11px 'JetBrains Mono', monospace; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .grid { display: grid; gap: 18px; }
+  .g2 { grid-template-columns: 1fr 1fr; } .g3 { grid-template-columns: repeat(3, 1fr); } .g4 { grid-template-columns: repeat(4, 1fr); }
+  .body { flex: 1; min-height: 0; margin-top: 26px; }
+  .big { font: 400 44px/1 'Chakra Petch', sans-serif; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; border: 1px solid #333; border-radius: 2px; font: 500 11px 'JetBrains Mono', monospace; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
+  .chip::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .ok { color: var(--green); border-color: rgba(61,220,132,.45); }
+  .warn { color: var(--amber); border-color: rgba(245,184,61,.5); }
+  .bad { color: var(--red); border-color: rgba(255,77,77,.5); }
+  .or { color: var(--orange); border-color: rgba(255,122,47,.5); }
+  .shot { width: 100%; border: 1px solid #222; border-radius: 4px; display: block; }
+  p { margin: 8px 0 0; color: var(--dim); }
+  ul { margin: 10px 0 0; padding-left: 18px; color: var(--dim); } li { margin: 5px 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { text-align: left; font: 500 11px 'JetBrains Mono', monospace; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); padding: 0 12px 10px 0; border-bottom: 1px solid #222; }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid #161616; vertical-align: top; color: var(--dim); }
+  td:first-child { color: var(--ink); }
+  code { font: 13px 'JetBrains Mono', monospace; color: var(--ink); background: #111; padding: 1px 5px; border-radius: 2px; }
+  .step { display: flex; flex-direction: column; gap: 8px; }
+  .step .n { font: 500 12px 'JetBrains Mono', monospace; color: var(--orange); letter-spacing: .12em; }
+  .step h3 { margin: 0; font: 500 22px 'Chakra Petch', sans-serif; }
+  .layer { display: grid; grid-template-columns: 220px 1fr; gap: 22px; align-items: start; }
+  .layer h3 { margin: 6px 0 0; font: 500 26px 'Chakra Petch', sans-serif; }
+  .flowline { display: flex; align-items: center; gap: 10px; font: 500 13px 'JetBrains Mono', monospace; color: var(--dim); flex-wrap: wrap; }
+  .flowline b { color: var(--ink); font-weight: 500; padding: 6px 10px; border: 1px solid #2a2a2a; background: #0d0d0d; border-radius: 2px; }
+  .arrow { color: var(--orange); }
+  .caption { margin-top: 8px; font: 12px 'JetBrains Mono', monospace; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<!-- 1 · Cover -->
+<section class="slide" style="justify-content:center">
+  <div class="kicker">Hack @ DevFest Sudbury · Best Use of the Gemini API · Theme: North / Place</div>
+  <h1 style="margin-top:22px">ARSU<br>Attack Response Swarm Unit</h1>
+  <p class="lede" style="margin-top:22px;font-size:24px">A swarm of agents that maps critical systems, proves they work, and repairs them the moment a proof breaks.</p>
+  <div style="display:flex;gap:10px;margin-top:34px">
+    <span class="chip or">Gemini: the reasoning layer</span>
+    <span class="chip ok">Firebase blackboard: the shared memory</span>
+  </div>
+  <div class="foot"><span>Built from scratch · Nov 21–27, 2026</span><span>github.com/naidx0/arsu</span></div>
+</section>
+
+<!-- 2 · Problem -->
+<section class="slide">
+  <div class="kicker">The problem</div>
+  <h2>Outages are knowledge failures</h2>
+  <p class="lede">When one hidden dependency breaks, operators learn the dependency graph live, in the dark. The failure is small; the blast radius is invisible.</p>
+  <div class="body grid g3">
+    <div class="panel"><div class="label">Aug 6, 2025</div><div class="big" style="margin-top:14px">5 hubs</div><p>United's Unimatic flight-information system went down and the FAA ground-stopped Chicago, Denver, Houston, Newark and San Francisco.</p></div>
+    <div class="panel"><div class="label">Pattern</div><div class="big" style="margin-top:14px">1 → many</div><p>CrowdStrike (2024), the FAA NOTAM outage (2023), Alaska (2025): a dependency nobody had mapped, cascading into everything above it.</p></div>
+    <div class="panel"><div class="label">North / Place</div><div class="big" style="margin-top:14px">Thin links</div><p>Northern aviation runs on thin redundancy. A swarm that maps, proves and repairs communication paths is a north-connectivity story.</p></div>
+  </div>
+  <div class="foot"><span>ARSU · pitch</span><span>02</span></div>
+</section>
+
+<!-- 3 · What it does -->
+<section class="slide">
+  <div class="kicker">What ARSU does</div>
+  <h2>Map. Prove. Detect. Recover.</h2>
+  <div class="body grid" style="grid-template-columns: 1fr 1.25fr; gap: 28px">
+    <div class="grid" style="gap:14px; align-content:start">
+      <div class="panel step"><span class="n">01 · MAP</span><h3>Recon agents discover the estate</h3><p>Probe every service, record the evidence, write systems and dependency links.</p></div>
+      <div class="panel step"><span class="n">02 · PROVE</span><h3>Gemini writes executable checks</h3><p>Availability, latency budgets, schema and cross-system consistency, run on an interval.</p></div>
+      <div class="panel step"><span class="n">03 · DETECT + 04 · RECOVER</span><h3>A broken proof is a distress call</h3><p>Gemini picks the root cause and the fix; a response agent runs it; the proofs must go green again.</p></div>
+    </div>
+    <div><img class="shot" src="img/mission-control.png" alt="Mission Control" /><div class="caption">Mission Control · 8 / 8 systems online · 33 / 33 proofs passing</div></div>
+  </div>
+  <div class="foot"><span>ARSU · pitch</span><span>03</span></div>
+</section>
+
+<!-- 4 · Two layers -->
+<section class="slide">
+  <div class="kicker">The stack, in two layers</div>
+  <h2>A brain and a shared memory</h2>
+  <p class="lede">Everything that matters lives in two layers. The simulated airline and the control board are plumbing around them.</p>
+  <div class="body grid" style="gap:18px; align-content:start">
+    <div class="panel layer" style="--bk: var(--orange)">
+      <div><div class="label" style="color:var(--orange)">Layer 1 · Reasoning</div><h3>Gemini API</h3></div>
+      <div><p style="margin:0">Decides what each system is, what must stay true about it, and what to do when that breaks. Every decision returns as structured JSON.</p>
+        <div class="flowline" style="margin-top:12px"><b>describe system</b><span class="arrow">→</span><b>author checks</b><span class="arrow">→</span><b>write spec</b><span class="arrow">→</span><b>triage + pick skill</b></div></div>
+    </div>
+    <div class="panel layer" style="--bk: var(--green)">
+      <div><div class="label" style="color:var(--green)">Layer 2 · Memory</div><h3>Firestore-shaped blackboard</h3></div>
+      <div><p style="margin:0">The only way agents talk. Every observation, check, violation, task and action is a document. No agent-to-agent calls, so every decision is a receipt you can click.</p>
+        <div class="flowline" style="margin-top:12px"><b>nodes</b><b>edges</b><b>invariants</b><b>specs</b><b>violations</b><b>tasks</b><b>events</b></div></div>
+    </div>
+    <div class="label" style="margin-top:4px">Plumbing: simulated airline estate (8 systems) · deterministic proof runner · React control board · Node host</div>
+  </div>
+  <div class="foot"><span>ARSU · pitch</span><span>04</span></div>
+</section>
+
+<!-- 5 · What the hackathon requires -->
+<section class="slide">
+  <div class="kicker">Google stack · what the hackathon asks for</div>
+  <h2>Requirements and where ARSU stands</h2>
+  <div class="body">
+    <table>
+      <tr><th style="width:34%">Requirement (organizer, MLH, GDG)</th><th style="width:44%">How ARSU meets it</th><th>Status</th></tr>
+      <tr><td>Gemini does substantive work in a core function, not a chatbot</td><td>Gemini authors the ontology, the executable checks, the specs and the triage plan. The assistant panel was removed.</td><td><span class="chip ok">Built</span></td></tr>
+      <tr><td>Built from scratch in the window; commits count</td><td>Every commit is in public history from Nov 22 onward.</td><td><span class="chip ok">Met</span></td></tr>
+      <tr><td>GitHub repo + short demo video via the form</td><td>Repo is ready. The video is recorded from the built-in demo director.</td><td><span class="chip warn">Video to record</span></td></tr>
+      <tr><td>Deadline: end of day Fri Nov 27 · demos Sat Nov 28, College Boreal</td><td>Booth runs <code>npm run demo</code>, then <code>/?demo</code>.</td><td><span class="chip warn">In progress</span></td></tr>
+      <tr><td>Suggested tools: Gemini API, Gemini CLI, Antigravity, Firebase, Google Cloud</td><td>Gemini API is core. A Firestore adapter exists. The others are not required by the published rules.</td><td><span class="chip or">Partial</span></td></tr>
+    </table>
+    <p style="margin-top:14px;font-size:13px">Prize: Best Use of the Google Gemini API ($500). Judges: Wesley Chun, Arcadio Quintero, plus attendee votes. No weighted rubric is published. Source: docs/HACKATHON.md, checked Nov 22.</p>
+  </div>
+  <div class="foot"><span>ARSU · pitch</span><span>05</span></div>
+</section>
+
+<!-- 6 · Gemini deep dive -->
+<section class="slide">
+  <div class="kicker">Layer 1 deep dive · Gemini API</div>
+  <h2>How we sit on Gemini</h2>
+  <div class="body grid" style="grid-template-columns: 1.35fr 1fr; gap: 26px">
+    <div>
+      <table>
+        <tr><th>Agent call</th><th>Shape</th><th>What Gemini decides</th></tr>
+        <tr><td>Recon · <code>roles.ts</code></td><td><code>node</code></td><td>Block kind, description, confirmed dependencies from probe output</td></tr>
+        <tr><td>Verify · <code>roles.ts</code></td><td><code>invariants</code></td><td>The executable checks: kind, URL, thresholds, interval</td></tr>
+        <tr><td>Verify · <code>roles.ts</code></td><td><code>spec</code></td><td>A human-readable behavioral contract per system</td></tr>
+        <tr><td>Orchestrator · <code>orchestrator.ts</code></td><td><code>triage</code></td><td>Root cause, which skill to run, priority, rationale</td></tr>
+      </table>
+      <p style="font-size:14px">Deterministic code then runs the checks and the skills, so a model never touches production directly. It proposes; proofs verify.</p>
+    </div>
+    <div class="grid" style="gap:14px; align-content:start">
+      <div class="panel"><div class="label">Call</div><p class="mono" style="font-size:13px;color:var(--ink)">POST generativelanguage.googleapis.com<br>/v1beta/models/gemini-2.5-flash<br>:generateContent</p></div>
+      <div class="panel"><div class="label">Structured output</div><p style="font-size:14px"><code>responseMimeType: application/json</code> plus a <code>responseSchema</code> per shape, with enums for check kinds and a 1–5 priority.</p></div>
+      <div class="panel"><div class="label">One boundary</div><p style="font-size:14px">Every call goes through <code>ModelProvider</code> in <code>provider.ts</code>. A failed call falls back to SIM and is logged; the demo cannot stall.</p></div>
+    </div>
+  </div>
+  <div class="foot"><span>ARSU · pitch</span><span>06</span></div>
+</section>
+
+<!-- 7 · Firebase deep dive -->
+<section class="slide">
+  <div class="kicker">Layer 2 deep dive · Firebase / Firestore</div>
+  <h2>The blackboard is the Firestore surface</h2>
+  <div class="body grid g2" style="gap:26px">
+    <div>
+      <p style="margin-top:0">The <code>Blackboard</code> interface is literally Firestore's shape: <code>get · put · add · patch · query · watch · emit</code>. It has two implementations behind one switch.</p>
+      <table style="margin-top:16px">
+        <tr><th>Backend</th><th>When</th><th>watch()</th></tr>
+        <tr><td>LocalBlackboard</td><td>Default and demo; zero credentials</td><td>In-process listeners</td></tr>
+        <tr><td>FirestoreBlackboard</td><td>Three <code>FIREBASE_*</code> env vars set</td><td><code>onSnapshot</code></td></tr>
+      </table>
+      <p style="font-size:14px">Config, not code: only <code>firestore.ts</code> imports <code>@google-cloud/firestore</code>. Swapping storage changes nothing about how the swarm reasons.</p>
+    </div>
+    <div class="grid" style="gap:14px; align-content:start">
+      <div class="panel"><div class="label">What Firestore buys</div><ul style="font-size:14px"><li>Durable, queryable incident history: violations, tasks, events</li><li>Live fan-out to every viewer with <code>onSnapshot</code></li><li>Evidence that outlives the host process</li></ul></div>
+      <div class="panel"><div class="label">Honest status</div><ul style="font-size:14px"><li><span class="chip ok">Built</span> adapter and env switch</li><li><span class="chip warn">Not yet verified</span> against a live Firebase project</li><li><span class="chip or">Planned</span> Hosting, Auth for the fault controls, Cloud Run host</li></ul></div>
+    </div>
+  </div>
+  <div class="foot"><span>ARSU · pitch</span><span>07</span></div>
+</section>
+
+<!-- 8 · Demo -->
+<section class="slide">
+  <div class="kicker">The live demo · 10 beats, under 2 minutes</div>
+  <h2>Break the hub. Watch it come back.</h2>
+  <div class="body grid" style="grid-template-columns: 1fr 1.35fr; gap: 26px">
+    <div>
+      <table style="font-size:13.5px">
+        <tr><td class="mono">01–02</td><td>Empty board · 40 flights on real routes</td></tr>
+        <tr><td class="mono">03–04</td><td>Launch: 8 systems and 8 links mapped in ~12 s</td></tr>
+        <tr><td class="mono">05–06</td><td>33 / 33 Gemini-authored proofs green</td></tr>
+        <tr><td class="mono">07</td><td>Take Unimatic offline: ground stop, ARTEX beacon fires</td></tr>
+        <tr><td class="mono">08</td><td>Triage picks hub-failover; standby takes over</td></tr>
+        <tr><td class="mono">09–10</td><td>Re-verified · evidence JSON downloaded</td></tr>
+      </table>
+      <p style="font-size:14px">The built-in demo director runs each beat, waits for live evidence, and can run the whole show on autopilot.</p>
+    </div>
+    <div><img class="shot" src="img/pipeline-fault.png" alt="Pipeline during the fault" /><div class="caption">Pipeline mid-outage · detection branches into the response lane</div></div>
+  </div>
+  <div class="foot"><span>ARSU · pitch</span><span>08</span></div>
+</section>
+
+<!-- 9 · Evidence -->
+<section class="slide">
+  <div class="kicker">Evidence, not adjectives</div>
+  <h2>What the tests prove today</h2>
+  <div class="body grid" style="grid-template-columns: 1fr 1.25fr; gap: 26px">
+    <div class="grid g2" style="gap:14px; align-content:start">
+      <div class="panel"><div class="label">Systems mapped</div><div class="big" style="margin-top:10px">8 / 8</div></div>
+      <div class="panel"><div class="label">Checks authored</div><div class="big" style="margin-top:10px">33</div></div>
+      <div class="panel"><div class="label">Fault types recovered</div><div class="big" style="margin-top:10px">4 / 4</div></div>
+      <div class="panel"><div class="label">Demo beats landed</div><div class="big" style="margin-top:10px">10 / 10</div></div>
+      <p style="grid-column:1/-1;font-size:13.5px;margin-top:0">Hub outage, slow load sheet, cut NOTAM link, corrupt manifest: each recovers and re-verifies in automated tests. A run only counts when every proof passes after the response.</p>
+    </div>
+    <div><img class="shot" src="img/topology-fault.png" alt="Topology during the fault" /><div class="caption">Topology mid-outage · ARTEX beacon triggered · 406 MHz link to the fleet</div></div>
+  </div>
+  <div class="foot"><span>ARSU · pitch</span><span>09</span></div>
+</section>
+
+<!-- 10 · What we need -->
+<section class="slide">
+  <div class="kicker">What we still need before Nov 27</div>
+  <h2>The short list</h2>
+  <div class="body grid g2" style="gap:26px">
+    <div class="panel"><div class="label" style="color:var(--orange)">Must do</div>
+      <ul style="font-size:15px">
+        <li>Get a free Gemini API key from AI Studio and record one live run. Every automated test so far ran in SIM.</li>
+        <li>Label each agent call with the provider that actually answered. Today a fallback keeps the Gemini label.</li>
+        <li>Record the demo video with the director on autopilot, then submit the repo and video on the form.</li>
+        <li>Confirm the rubric, video length and form with the organizer.</li>
+      </ul></div>
+    <div class="panel"><div class="label" style="color:var(--green)">If time allows</div>
+      <ul style="font-size:15px">
+        <li>Connect a Firebase project and show the same run persisting in Firestore.</li>
+        <li>Firebase Hosting for the control board; Firebase Auth to gate fault injection.</li>
+        <li>Host on Cloud Run so judges can open it from their phones.</li>
+      </ul>
+      <p style="font-size:13px">Simulated estate, not live FAA data. Executable checks, not formal verification.</p></div>
+  </div>
+  <div class="foot"><span>ARSU · pitch</span><span>10</span></div>
+</section>
+
+<!-- 11 · Close -->
+<section class="slide" style="justify-content:center">
+  <div class="kicker">Close</div>
+  <h1 style="margin-top:18px;font-size:54px">A broken proof is a distress call.<br>ARSU answers it.</h1>
+  <p class="lede" style="margin-top:20px">Gemini reasons about what must stay true. The blackboard remembers every decision. The swarm restores the system and proves it.</p>
+  <div style="display:flex;gap:10px;margin-top:30px"><span class="chip or">Ask: want to see the cut-link outage no runbook covers?</span></div>
+  <div class="foot"><span>Hack @ DevFest Sudbury 2026</span><span>github.com/naidx0/arsu</span></div>
+</section>
+
+</body>
+</html>

@@ -6384,3 +6384,140 @@ kbd,
   font-size: 10px;
   letter-spacing: 0;
 }
+
+/* ============================================================================
+   DESIGN LAYER v4: CLARITY
+   Two surface levels at most: a bracketed panel, then one flat inset inside
+   it. Wrappers that only group panels lose their own surface. Sentences read
+   in a sans face; labels and data stay mono. Secondary text gets contrast.
+   ============================================================================ */
+
+:root {
+  --font-read: 'Inter', 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --ink-secondary: rgba(237, 237, 237, 0.8);
+  --muted: rgba(237, 237, 237, 0.56);
+}
+
+.workspace-app {
+  font-size: 12.5px;
+}
+
+/* Sentences: readable sans, comfortable line height. */
+.flow-desc,
+.demo-say,
+.pipeline-workspace p,
+.rehearsal-console p,
+.inspector-description,
+.activity-body p,
+.violation-row small,
+.artex-explainer,
+.content-empty,
+.rehearsal-history article p {
+  font-family: var(--font-read);
+  font-size: 13.5px;
+  line-height: 1.55;
+  letter-spacing: 0;
+}
+
+.demo-say { font-size: 16px; }
+
+/* ---- Level 0: grouping wrappers have no surface of their own ----------- */
+
+.mc-panel.triage-feed-panel,
+.rehearsal-console,
+.flow-canvas {
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+
+.mc-panel.triage-feed-panel { gap: 16px; }
+.flow-canvas { padding: 40px 4px 8px; }
+
+/* ---- Level 1: the panels inside those wrappers become the top surface --- */
+
+.artex-panel,
+.blackboard-summary,
+.remediation-feed {
+  padding: 20px 22px;
+  border: 1px solid #1c1c1c;
+  border-radius: var(--radius-lg);
+  background: var(--brackets), #0b0b0b;
+  background-repeat: no-repeat;
+  background-origin: border-box;
+}
+
+.rehearsal-metrics > div {
+  border-color: #1c1c1c;
+  border-radius: var(--radius-lg);
+  background: var(--brackets), #0b0b0b;
+  background-repeat: no-repeat;
+  background-origin: border-box;
+}
+
+/* ---- Level 2: insets are flat: one tint, no border, no third level ----- */
+
+.system-row {
+  border: 0;
+  border-left: 2px solid transparent;
+  border-bottom: 1px solid #181818;
+  border-radius: 0;
+  background: none;
+}
+
+.system-row.up { border-left-color: rgba(61, 220, 132, 0.6); }
+.system-row.degraded { border-left-color: var(--tone-warn); }
+.system-row.down { border-left-color: var(--tone-bad); background: rgba(255, 77, 77, 0.05); }
+.system-row:hover { background: #111; }
+
+.blackboard-summary-grid {
+  gap: 0;
+  border-top: 1px solid #1a1a1a;
+  border-left: 1px solid #1a1a1a;
+}
+
+.workspace-app .collection-tile {
+  border: 0;
+  border-right: 1px solid #1a1a1a;
+  border-bottom: 1px solid #1a1a1a;
+  border-radius: 0;
+  background: none;
+}
+
+.workspace-app .collection-tile:hover {
+  background: #121212;
+}
+
+.violation-row,
+.response-task,
+.activity-entry {
+  border-color: transparent;
+  border-radius: var(--radius);
+}
+
+.violation-row.clear {
+  border: 0;
+  background: rgba(61, 220, 132, 0.06);
+}
+
+.rehearsal-map svg {
+  border: 0;
+  background-color: #080808;
+}
+
+.flow-kv {
+  border: 0;
+  background: #070707;
+}
+
+.overview-metrics .stat-card {
+  border: 0;
+  background: #111;
+}
+
+/* Fewer competing accents: eyebrow labels read as quiet captions. */
+.pipeline-eyebrow {
+  color: var(--muted);
+  letter-spacing: 0.1em;
+}
