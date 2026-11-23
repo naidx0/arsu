@@ -37,7 +37,7 @@ export const COMMS = [
 ].map(([from, to]) => ({ from: SERVICE_HUBS.find(h => h.id === from)!, to: SERVICE_HUBS.find(h => h.id === to)! }));
 export const healthColor = (nodes: AirspaceProps["nodes"], id: string) => {
   const health = nodes?.get(id)?.health;
-  return health === "down" ? "#f87171" : health === "degraded" ? "#fbbf24" : health === "up" ? "#34d399" : "#38bdf8";
+  return health === "down" ? "#f87171" : health === "degraded" ? "#fbbf24" : health === "up" ? "#ededed" : "#ff7a2f";
 };
 
 export const outlines = [

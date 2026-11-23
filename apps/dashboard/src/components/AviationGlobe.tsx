@@ -101,15 +101,15 @@ export default function AviationGlobe(props: AirspaceProps) {
     };
 
     const earthMaterial = new THREE.MeshPhongMaterial({
-      color: 0x203b50,
+      color: 0x141414,
       shininess: 8,
-      specular: 0x182330,
+      specular: 0x2a2a2a,
     });
     const earthGeometry = new THREE.SphereGeometry(1, 80, 56);
     const earth = new THREE.Mesh(earthGeometry, earthMaterial);
     scene.add(earth);
-    scene.add(new THREE.AmbientLight(0xadbccc, 1.45));
-    const sun = new THREE.DirectionalLight(0xdce9ff, 2);
+    scene.add(new THREE.AmbientLight(0xd0d0d0, 1.3));
+    const sun = new THREE.DirectionalLight(0xffffff, 1.6);
     sun.position.set(4, 3, 5);
     scene.add(sun);
 
@@ -138,7 +138,7 @@ export default function AviationGlobe(props: AirspaceProps) {
           points.push(coordinate(y, x, 1.003));
         }
       });
-      coasts.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(points), new THREE.LineBasicMaterial({ color: 0x78b1c9, transparent: true, opacity: 0.7 })));
+      coasts.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(points), new THREE.LineBasicMaterial({ color: 0x8c8c8c, transparent: true, opacity: 0.65 })));
     });
     const comms = new THREE.Group();
     COMMS.forEach(({ from, to }) => {
@@ -147,13 +147,13 @@ export default function AviationGlobe(props: AirspaceProps) {
         const [lon, lat] = routePoint(from, to, t);
         return coordinate(lat, lon, 1.008 + Math.sin(t * Math.PI) * 0.025);
       }));
-      const arc = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending }));
+      const arc = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 0xff7a2f, transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending }));
       arc.userData.target = to.id;
       comms.add(arc);
     });
     const hubs = new THREE.Group();
     SERVICE_HUBS.forEach(hub => {
-      const dot = new THREE.Mesh(new THREE.SphereGeometry(0.0035, 10, 8), new THREE.MeshBasicMaterial({ color: 0x38bdf8 }));
+      const dot = new THREE.Mesh(new THREE.SphereGeometry(0.0035, 10, 8), new THREE.MeshBasicMaterial({ color: 0xff7a2f }));
       dot.position.copy(coordinate(hub.lat, hub.lon, 1.006));
       dot.userData.nodeId = hub.id;
       hubs.add(dot);
@@ -162,7 +162,7 @@ export default function AviationGlobe(props: AirspaceProps) {
 
     const grid = new THREE.Group();
     const gridMaterial = new THREE.LineBasicMaterial({
-      color: 0x819aab,
+      color: 0xb0b0b0,
       transparent: true,
       opacity: 0.09,
     });
@@ -198,7 +198,7 @@ export default function AviationGlobe(props: AirspaceProps) {
     const planeMaterial = new THREE.MeshBasicMaterial({ color: 0xe7eff4 });
     const stoppedMaterial = new THREE.MeshBasicMaterial({ color: 0xf0957e });
     const airportGeometry = new THREE.SphereGeometry(0.003, 6, 6);
-    const airportMaterial = new THREE.MeshBasicMaterial({ color: 0x9bc3dd });
+    const airportMaterial = new THREE.MeshBasicMaterial({ color: 0xbdbdbd });
     const markers = new Map<string, THREE.Mesh>();
     const selectedRingGeometry = new THREE.RingGeometry(0.022, 0.024, 32);
     const selectedRingMaterial = new THREE.MeshBasicMaterial({
@@ -272,7 +272,7 @@ export default function AviationGlobe(props: AirspaceProps) {
             new THREE.Line(
               new THREE.BufferGeometry().setFromPoints(points),
               new THREE.LineBasicMaterial({
-                color: 0xa8c5d7,
+                color: 0xbdbdbd,
                 transparent: true,
                 opacity: 0.19,
               }),
@@ -396,9 +396,9 @@ export default function AviationGlobe(props: AirspaceProps) {
     <div className="webgl-scene" style={{ position: "relative", overflow: "hidden" }}>
       <div className="globe-renderer" ref={container} />
       <div ref={overlay} className="globe-landmarks" style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden" }}>
-        {SERVICE_HUBS.map(h => <button key={h.id} data-lat={h.lat} data-lon={h.lon} title={`${h.city} · ${h.label}`} onClick={() => props.onSelectNode?.(h.id)} style={{ position: "absolute", top: 0, left: 0, display: "none", pointerEvents: "auto", color: healthColor(props.nodes, h.id), background: "#06131ee8", border: "1px solid currentColor", borderRadius: 3, padding: "4px 6px", font: "10px monospace", whiteSpace: "nowrap", boxShadow: "0 0 12px #38bdf822" }}>{h.code} · {h.short}</button>)}
-        {[...new Map(props.flights.flights.flatMap(f => [[f.from.code, f.from] as const, [f.to.code, f.to] as const])).values()].filter(a => !SERVICE_HUBS.some(h => h.code === a.code)).map(a => <span key={a.code} data-lat={a.lat} data-lon={a.lon} style={{ position: "absolute", top: 0, left: 0, display: "none", color: "#a6c7d8", font: "9px monospace", textShadow: "0 1px 3px #000" }}>{a.code}</span>)}
-        {props.flights.flights.filter(f => props.selected === f.id).map(f => <button key={f.id} data-flight={f.id} data-lat={f.position.lat} data-lon={f.position.lon} onClick={() => props.onSelect?.(f.id)} style={{ position: "absolute", top: 0, left: 0, display: "none", pointerEvents: "auto", color: "#e7f3fb", background: "#06131e", border: "1px solid #38bdf8", font: "10px monospace" }}>{f.callsign}</button>)}
+        {SERVICE_HUBS.map(h => <button key={h.id} data-lat={h.lat} data-lon={h.lon} title={`${h.city} · ${h.label}`} onClick={() => props.onSelectNode?.(h.id)} style={{ position: "absolute", top: 0, left: 0, display: "none", pointerEvents: "auto", color: healthColor(props.nodes, h.id), background: "#0b0b0be8", border: "1px solid currentColor", borderRadius: 2, padding: "4px 6px", font: "10px monospace", whiteSpace: "nowrap", boxShadow: "none" }}>{h.code} · {h.short}</button>)}
+        {[...new Map(props.flights.flights.flatMap(f => [[f.from.code, f.from] as const, [f.to.code, f.to] as const])).values()].filter(a => !SERVICE_HUBS.some(h => h.code === a.code)).map(a => <span key={a.code} data-lat={a.lat} data-lon={a.lon} style={{ position: "absolute", top: 0, left: 0, display: "none", color: "#bdbdbd", font: "9px monospace", textShadow: "0 1px 3px #000" }}>{a.code}</span>)}
+        {props.flights.flights.filter(f => props.selected === f.id).map(f => <button key={f.id} data-flight={f.id} data-lat={f.position.lat} data-lon={f.position.lon} onClick={() => props.onSelect?.(f.id)} style={{ position: "absolute", top: 0, left: 0, display: "none", pointerEvents: "auto", color: "#e7f3fb", background: "#0b0b0b", border: "1px solid #ff7a2f", font: "10px monospace" }}>{f.callsign}</button>)}
       </div>
       <span className="earth-credit">PROCEDURAL VECTOR EARTH · SIMULATED TRAFFIC</span>
       <div className="globe-controls">
