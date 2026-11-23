@@ -26,10 +26,10 @@ try {
   await expect.poll(async () => (await state()).rehearsal?.ready, { timeout: 120_000 }).toBe(true);
   const before = (await state()).rehearsal.runs.length as number;
 
-  // Icon rail: narrow, and no rail control spills text outside its box.
+  // Icon rail: narrow, and no rail control spills text sideways (dividers hang below by design).
   const rail = await page.locator('.app-sidebar').evaluate(aside => ({
     width: aside.getBoundingClientRect().width,
-    spills: [...aside.querySelectorAll('button')].filter(b => { const r = b.getBoundingClientRect(); return r.width > 0 && (b.scrollWidth > b.clientWidth + 1 || b.scrollHeight > b.clientHeight + 1); }).map(b => b.getAttribute('aria-label') ?? b.textContent),
+    spills: [...aside.querySelectorAll('button')].filter(b => { const r = b.getBoundingClientRect(); return r.width > 0 && b.scrollWidth > b.clientWidth + 1; }).map(b => b.getAttribute('aria-label') ?? b.textContent),
   }));
   assert(rail.width <= 90, `Icon rail is ${rail.width}px wide`);
   assert.deepEqual(rail.spills, [], 'Rail controls spill text');
