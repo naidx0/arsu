@@ -5419,7 +5419,8 @@ kbd,
   letter-spacing: 0;
 }
 
-.workspace-app .demo-auto.on {
+.workspace-app .demo-auto.on,
+.workspace-app .demo-auto.on:hover:not(:disabled) {
   color: #000;
   background: var(--ink);
   border-color: var(--ink);

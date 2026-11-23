@@ -12,6 +12,22 @@
 > block should behave — and when a proof breaks, a response unit carrying
 > that block's skill brings it back. Watch."
 
+## Demo director (presenter mode)
+
+`npm run demo` builds the UI and starts a fresh recording host. Open
+http://localhost:4780/?demo (or press **Demo** in the top bar). A broadcast
+band docks under the view and walks ten beats: cold open, airspace, launch,
+topology, proof, mission control, fault, response, evidence, close. Each beat
+opens its view, shows the line to say, runs its action (launch, take Unimatic
+offline, download evidence) and waits on live evidence before it turns green.
+
+- **Next / →  / PageDown / Space**: run the beat's action, or advance once it lands.
+- **Back / ← / PageUp**: previous beat. Click the rail to jump.
+- **A**: autopilot (runs actions and advances on its own). **H**: hide to a pill. **Esc**: close.
+
+The fault beat waits for a green baseline, so it can never fire mid-recovery.
+For a fresh take, stop the host and run `npm run demo` again.
+
 ## Beats (live, on the control board)
 
 Run the stage host with `npm run dev:recording` (empty board, SIM unless

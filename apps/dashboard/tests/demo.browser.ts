@@ -27,12 +27,14 @@ try {
   const downloads: string[] = [];
   page.on('download', d => downloads.push(d.suggestedFilename()));
   await director.getByRole('button', { name: 'Autopilot' }).click();
+  await expect(director.getByRole('button', { name: /^Autopilot/ })).toHaveAttribute('aria-pressed', 'true');
 
   for (const [i, beat] of BEATS.entries()) {
     await expect(director).toHaveAttribute('data-beat', beat.id, { timeout: 240_000 });
     await expect(page.locator('.breadcrumbs strong')).toHaveText(beat.view);
     if (beat.radar) await expect(page.getByRole('button', { name: '2D radar', exact: true })).toHaveAttribute('aria-pressed', 'true');
     await expect(director).toHaveAttribute('data-state', 'landed', { timeout: 240_000 });
+    if (beat.focus) await expect(page.locator(beat.focus).first()).toBeInViewport({ timeout: 5_000 });
     await page.screenshot({ path: path.join(artifacts, `${String(i + 1).padStart(2, '0')}-${beat.id}.png`) });
     console.log(`beat ${i + 1} ${beat.id}: ${(await director.getByRole('status').innerText()).split('\n')[0]}`);
   }

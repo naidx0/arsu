@@ -27,6 +27,8 @@ export interface Beat {
   title: string;
   view: DemoView;
   radar?: boolean;
+  /** Element the beat scrolls into view once its view is open. */
+  focus?: string;
   say: string;
   action?: { kind: DemoAction; label: string };
   watch: (ctx: DemoContext) => Watch;
@@ -95,6 +97,7 @@ export const BEATS: Beat[] = [
     kicker: "Proof",
     title: "Every system gets executable proofs",
     view: "Verification",
+    focus: ".verification-summary",
     say: "Each block now has machine-checkable invariants: availability, latency budgets, schema integrity. All green.",
     watch: ({ board }) => {
       const p = proofs(board);
@@ -153,6 +156,7 @@ export const BEATS: Beat[] = [
     kicker: "Evidence",
     title: "Verified, with every decision receipted",
     view: "Swarm",
+    focus: ".rehearsal-history article[data-outcome='verified']",
     say: "The stress test is verified: violations raised, actions taken, proofs green again. Every decision is in the evidence file.",
     action: { kind: "evidence", label: "Download evidence" },
     watch: (ctx) => {

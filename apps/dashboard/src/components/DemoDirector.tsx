@@ -64,6 +64,13 @@ export default function DemoDirector({ board, onView, onRadar, onLaunch, onScena
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index]);
 
+  // Bring the beat's key element into view, again once the beat lands (it may appear late).
+  useEffect(() => {
+    if (!beat.focus) return;
+    const t = window.setTimeout(() => document.querySelector(beat.focus!)?.scrollIntoView({ behavior: "smooth", block: "center" }), 400);
+    return () => window.clearTimeout(t);
+  }, [index, beat.focus, watch.done]);
+
   useEffect(() => {
     const t = window.setInterval(() => setNow(Date.now()), 1000);
     return () => window.clearInterval(t);
@@ -126,7 +133,7 @@ export default function DemoDirector({ board, onView, onRadar, onLaunch, onScena
         <span className="demo-meta">
           <span className="demo-clock">T+ {clock}</span>
           <button className={`demo-auto ${auto ? "on" : ""}`} aria-pressed={auto} onClick={() => setAuto((v) => !v)} title="Autopilot (A)">
-            Autopilot
+            {auto ? "Autopilot on" : "Autopilot"}
           </button>
           <button className="demo-icon" onClick={() => setHidden(true)} aria-label="Hide demo director" title="Hide (H)">–</button>
           <button className="demo-icon" onClick={onClose} aria-label="Close demo director" title="Close (Esc)">×</button>

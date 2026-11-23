@@ -57,6 +57,10 @@ directory printed by the test, or `ARSU_UI_ARTIFACTS` when set.
 estate: launch, Inject fault (hub outage), verified recovery. It needs a
 separate `--recording` host with `ARSU_PORT=4783` and `ARSU_PROVIDER=sim`.
 
+`npm run test:demo -w dashboard` runs the demo director on autopilot through
+all ten beats. It needs a FRESH `--recording` SIM host on 4783 (not yet
+launched); run it before `test:stage`, which can reuse that host.
+
 ## Env
 
 Copy `.env.example` → `.env`. Nothing is required to run — the default
