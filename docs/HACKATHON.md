@@ -35,6 +35,13 @@ couldn't be independently read through that route.
   The weighting between judges and attendees isn't published.
 - Kickoff: Saturday, November 21, 11:00 AM EST, online. In-person demos:
   Saturday, November 28 at College Boreal, Sudbury.
+- Kickoff themes, shared with participants (eight, all framed around Gemini):
+  Make DevFest Easy · **North / Place angle** · Health & Care ·
+  Nature & Environment · Community & People · Students & Youth ·
+  Work & Economy · Language & Culture.
+- Submission deadline confirmed by the organizer: **end of day Friday,
+  November 27**. Submitting by then gets booth space in the DevFest
+  networking area on Saturday, November 28.
 
 The event lists Gemini API, Gemini CLI with agents and skills, Google
 Antigravity, Firebase, and Google Cloud under what to build with. The public
@@ -46,25 +53,17 @@ that point with the organizer before treating the list as a checklist.
 
 ### Submission deadline
 
-The MLH and GDG event descriptions say "Friday, November 21st." November 21,
-2026 is a Saturday and is the kickoff date. The organizer's November 13 post
-and its video transcript explicitly say Friday, November 27.
-
-**Working deadline: November 27. Exact cutoff and time zone need organizer
-confirmation.** Don't silently substitute a date in the source. MLH's
-November 28, 3:30 PM event end is not evidence of a submission deadline.
-GDG lists a 4:30 PM event end; the conference agenda also has later networking.
+Resolved. The MLH/GDG copy ("Friday, November 21st") was wrong — November 21
+is the Saturday kickoff. The organizer's kickoff material now confirms
+**end of day Friday, November 27**, tied to booth space on November 28.
 
 ### Kickoff theme and tracks
 
-The official pages still say the theme is revealed at the November 21 kickoff.
-No announcement of the actual revealed theme was found in the inspected public
-pages or searches. That doesn't prove it wasn't announced privately.
-
-"Build, Secure, Scale: Developers and Builders in the Agentic Era" is the
-conference title. It isn't a confirmed substitute for the hackathon prompt.
-The conference's Canadian Digital Core Library and PDAC/CDL announcements
-also aren't confirmed hackathon tracks.
+Resolved. Eight themes were shared at kickoff (list above). **ARSU's primary
+match is North / Place angle**: northern aviation runs on thin redundancy,
+and a swarm that maps, proves, and repairs critical communication paths is
+a north-connectivity story, not just an aviation one. Secondary fit is
+Work & Economy (critical-infrastructure reliability).
 
 The MLH registration page links an organizer WhatsApp group and Contact Host.
 Use those channels to confirm the theme, deadline, submission form, rubric,
