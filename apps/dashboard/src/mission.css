@@ -1218,10 +1218,14 @@ pre {
 
 .overview-metrics strong small {
   display: inline;
-  font-size: 13px;
+  font-size: 11px;
+  white-space: nowrap;
   color: var(--muted);
-  margin-left: 2px;
 }
+
+/* Three tiles share a ~265px card: "38 / 40" must fit a 78px tile. */
+.overview-metrics .stat-card { padding: 10px; }
+.overview-metrics .stat-card strong { font-size: 24px; gap: 3px; }
 
 .mission-progress {
   margin-top: 18px;

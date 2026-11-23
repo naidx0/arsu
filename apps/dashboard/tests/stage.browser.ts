@@ -1,0 +1,69 @@
+// Stage run on the aviation estate: the exact path a presenter clicks.
+// Needs a separate `--recording` host with ARSU_PROVIDER=sim (default port 4783).
+import assert from 'node:assert/strict';
+import { mkdir } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+import { chromium, expect, type Page } from '@playwright/test';
+
+const url = process.env.ARSU_UI_URL ?? 'http://127.0.0.1:4783';
+assert(['127.0.0.1', 'localhost'].includes(new URL(url).hostname), 'Stage rehearsal must use an isolated loopback host');
+const artifacts = process.env.ARSU_UI_ARTIFACTS ?? path.join(tmpdir(), `arsu-stage-${Date.now()}`);
+await mkdir(artifacts, { recursive: true });
+
+type Box = { left: number; right: number; top: number; bottom: number };
+const overlaps = (a: Box, b: Box) => a.left < b.right - 1 && b.left < a.right - 1 && a.top < b.bottom - 1 && b.top < a.bottom - 1;
+const nav = (page: Page, view: string) => page.getByRole('navigation', { name: 'Workspace navigation' }).getByRole('button', { name: view, exact: true }).click();
+
+const browser = await chromium.launch({ channel: 'chrome', headless: true });
+try {
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
+  const state = async () => (await page.request.get(`${url}/api/state`)).json();
+  const initial = await state();
+  assert(initial.rehearsal?.recording && !initial.practice && initial.provider === 'sim', 'Use an isolated --recording host with ARSU_PROVIDER=sim');
+  await page.goto(url);
+  if (!initial.mission.launched) await page.getByRole('button', { name: 'Launch environment', exact: true }).click();
+  await expect.poll(async () => (await state()).rehearsal?.ready, { timeout: 120_000 }).toBe(true);
+  const before = (await state()).rehearsal.runs.length as number;
+
+  // Topology: edge labels never sit on a tier title or a system card.
+  await nav(page, 'Topology');
+  await page.getByRole('button', { name: 'FIT' }).click().catch(() => undefined);
+  // Browser callbacks stay free of named helpers: tsx wraps those in __name, which the page lacks.
+  const boxes = await page.locator('svg.topology-dag').evaluate(svg => ({
+    labels: [...svg.querySelectorAll('.dag-edge-label rect')].map(e => { const r = e.getBoundingClientRect(); return { text: e.parentElement!.textContent!, left: r.left, right: r.right, top: r.top, bottom: r.bottom }; }),
+    blockers: [...svg.querySelectorAll('.dag-tier text, g[role="button"] > rect')].map(e => { const r = e.getBoundingClientRect(); return { text: e.textContent || e.parentElement!.getAttribute('aria-label')!, left: r.left, right: r.right, top: r.top, bottom: r.bottom }; }),
+  }));
+  assert(boxes.labels.length >= 4, `expected topology edge labels, saw ${boxes.labels.length}`);
+  const topologyClashes = boxes.labels.flatMap(l => boxes.blockers.filter(b => overlaps(l, b)).map(b => `${l.text} × ${b.text}`));
+  assert.deepEqual(topologyClashes, [], 'Topology edge labels collide');
+
+  // The menu fault runs as a tracked stress test.
+  await nav(page, 'Airspace');
+  await page.getByRole('button', { name: '2D radar', exact: true }).click();
+  await page.getByRole('button', { name: 'Inject fault', exact: true }).click();
+  await page.locator('.fault-popover button').filter({ hasText: 'Take Unimatic hub offline' }).click();
+  await expect.poll(async () => (await state()).flights.groundStop, { timeout: 30_000 }).toBe(true);
+
+  // During the outage: one ground-stop banner, hub labels apart, stat tiles fit.
+  await expect(page.locator('.ground-stop, .map-banner.stop')).toHaveCount(1);
+  const hubLabels = await page.locator('.leaflet-tooltip.ap').evaluateAll(els => els.filter(e => e.querySelector('strong')).map(e => { const r = e.getBoundingClientRect(); return { text: e.querySelector('strong')!.textContent!, left: r.left, right: r.right, top: r.top, bottom: r.bottom }; }));
+  assert(hubLabels.length >= 8, `expected 8 hub labels, saw ${hubLabels.length}`);
+  const labelClashes = hubLabels.flatMap((a, i) => hubLabels.slice(i + 1).filter(b => overlaps(a, b)).map(b => `${a.text} × ${b.text}`));
+  assert.deepEqual(labelClashes, [], 'Radar hub labels overlap');
+  const tileOverflow = await page.locator('.overview-metrics .stat-card').evaluateAll(cards => cards.filter(card => { const c = card.getBoundingClientRect(); const s = card.querySelector('strong')!; return s.scrollWidth > s.clientWidth + 1 || [...s.querySelectorAll('*')].some(e => e.getBoundingClientRect().right > c.right); }).map(card => card.textContent));
+  assert.deepEqual(tileOverflow, [], 'Airspace stat tiles overflow');
+  await page.screenshot({ path: path.join(artifacts, 'stage-ground-stop.png') });
+
+  await expect.poll(async () => { const runs = (await state()).rehearsal.runs; return runs.length > before ? runs[0].outcome : 'none'; }, { timeout: 200_000 }).toBe('verified');
+  const run = (await state()).rehearsal.runs[0];
+  assert.equal(run.scenario, 'hub-outage');
+  assert(run.violationIds.length > 0 && run.actionIds.length > 0, 'Verified run must carry violations and actions');
+  await nav(page, 'Swarm');
+  await expect(page.locator('.rehearsal-history article[data-outcome="verified"]').first()).toContainText('hub-outage');
+  await page.screenshot({ path: path.join(artifacts, 'stage-verified.png') });
+  console.log(`Stage run: hub-outage verified (${run.violationIds.length} violations, ${run.actionIds.length} actions): PASS`);
+  console.log(`Artifacts: ${artifacts}`);
+} finally {
+  await browser.close();
+}

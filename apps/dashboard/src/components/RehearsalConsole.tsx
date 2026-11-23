@@ -2,6 +2,14 @@ import { useId, useState } from 'react';
 import { post, type Board } from '../api';
 import PracticeLayers from './PracticeLayers';
 
+// Cross-row links run from the facing edges of the two cards; same-row links dip just below them.
+function edgePath(a: { x: number; y: number }, b: { x: number; y: number }) {
+  if (Math.abs(a.y - b.y) < 1) return `M${a.x},${a.y + 37} Q${(a.x + b.x) / 2},${a.y + 90} ${b.x},${b.y + 37}`;
+  const [y1, y2] = a.y > b.y ? [a.y - 29, b.y + 37] : [a.y + 37, b.y - 29];
+  const mid = (y1 + y2) / 2;
+  return `M${a.x},${y1} C${a.x},${mid} ${b.x},${mid} ${b.x},${y2}`;
+}
+
 export default function RehearsalConsole({ board, enabled, onLaunch, onInspect }: {
   board: Board; enabled: boolean; onLaunch: () => void; onInspect: (id: string) => void;
 }) {
@@ -41,7 +49,7 @@ export default function RehearsalConsole({ board, enabled, onLaunch, onInspect }
         {[...board.edges.values()].map(edge => {
           const a = points.get(edge.from), b = points.get(edge.to);
           const broken = board.nodes.get(edge.to)?.health !== 'up' || checks.some(i => i.node === edge.from && i.kind === 'dep_health' && i.params.dep === edge.to && i.lastResult === 'fail');
-          return a && b ? <path key={edge.id} markerEnd={`url(#${marker})`} d={`M${a.x},${a.y + 37} Q${(a.x + b.x) / 2},${Math.max(a.y, b.y) + 110} ${b.x},${b.y + 37}`} className={broken ? 'link-down' : 'link-up'}><title>{edge.from} depends on {edge.to}</title></path> : null;
+          return a && b ? <path key={edge.id} markerEnd={`url(#${marker})`} d={edgePath(a, b)} className={broken ? 'link-down' : 'link-up'}><title>{edge.from} depends on {edge.to}</title></path> : null;
         })}
         {nodes.map(n => { const p = points.get(n.id)!; return <g key={n.id} className={`rehearsal-node ${n.health}`} role="button" tabIndex={0} aria-label={`Inspect ${n.name}, ${n.health}`} onClick={() => onInspect(n.id)} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onInspect(n.id); } }} transform={`translate(${p.x},${p.y})`}><rect x={-88} y={-28} width={176} height={64} rx={10} /><text textAnchor="middle" y={-2}>{n.name}</text><text textAnchor="middle" y={20} className="node-meta">{n.kind} · {n.health}</text></g>; })}
       </svg> : <div className="rehearsal-empty">Waiting for recon probes. Nodes appear only when the swarm writes them.</div>}

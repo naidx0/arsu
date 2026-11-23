@@ -642,16 +642,16 @@ const TIER_LABELS = [
   "TIER 4 · PHYSICAL AIRSPACE & DISTRESS TRACKING",
 ];
 const TOPO: Record<string, { x: number; tier: number; title: string; sub: string }> = {
-  unimatic: { x: 340, tier: 1, title: "Unimatic Primary Hub", sub: "KORD CHICAGO" },
-  "unimatic-standby": { x: 560, tier: 1, title: "Unimatic Standby Replica", sub: "KDEN DENVER" },
+  unimatic: { x: 320, tier: 1, title: "Unimatic Primary Hub", sub: "KORD CHICAGO" },
+  "unimatic-standby": { x: 580, tier: 1, title: "Unimatic Standby Replica", sub: "KDEN DENVER" },
   notam: { x: 820, tier: 1, title: "FAA NOTAM Ingest", sub: "KBOS BOSTON" },
   "ops-radar": { x: 170, tier: 2, title: "Ops Radar ADS-B", sub: "KSFO" },
   "pax-connect": { x: 390, tier: 2, title: "Pax Connect", sub: "CYYZ" },
   "weight-balance": { x: 610, tier: 2, title: "Weight & Balance", sub: "KATL" },
   "crew-sched": { x: 830, tier: 2, title: "Crew Scheduling", sub: "KDFW" },
-  dispatch: { x: 610, tier: 3, title: "Flight Dispatch Control", sub: "KJFK NEW YORK" },
-  "airspace-fleet": { x: 390, tier: 4, title: "North America Fleet", sub: "" },
-  "artex-adt": { x: 610, tier: 4, title: "ARTEX ELT-5000 Beacon", sub: "" },
+  dispatch: { x: 610, tier: 3, title: "Flight Dispatch Control", sub: "KJFK" },
+  "airspace-fleet": { x: 470, tier: 4, title: "North America Fleet", sub: "" },
+  "artex-adt": { x: 790, tier: 4, title: "ARTEX ELT-5000 Beacon", sub: "" },
 };
 const TIER2_GAPS = [280, 500, 720, 940];
 const EDGE_LABELS: Record<string, string> = {
@@ -786,7 +786,7 @@ function TopologyDag({
       const x2 = b.x + (right ? -TOPO_W / 2 : TOPO_W / 2);
       d = `M${x1},${a.y} L${x2},${b.y}`;
       lx = (x1 + x2) / 2;
-      ly = a.y - 12;
+      ly = a.y;
     } else {
       const x1 = a.x + offset(outgoing.get(e.src), e, "dst", 16);
       const x2 = b.x + offset(incoming.get(e.dst), e, "src", 22);
@@ -804,8 +804,12 @@ function TopologyDag({
       } else {
         const ym = (y1 + y2) / 2;
         d = `M${x1},${y1} C${x1},${ym} ${x2},${ym} ${x2},${y2}`;
-        lx = (x1 + x2) / 2;
-        ly = ym;
+        // A label on a link that crosses a whole tier would sit on that tier's
+        // title, so it rides the curve further down (cubic at t = 0.62).
+        const t = b.tier - a.tier > 1 ? 0.62 : 0.5;
+        const near = (1 - t) ** 3 + 3 * (1 - t) ** 2 * t;
+        lx = near * x1 + (1 - near) * x2;
+        ly = (1 - t) ** 3 * y1 + (3 * (1 - t) ** 2 * t + 3 * (1 - t) * t ** 2) * ym + t ** 3 * y2;
       }
     }
     const cut = severed.has(e.id) || severed.has(`${e.dst}-${e.src}`);
@@ -1617,6 +1621,12 @@ export default function App() {
 
   function inject(type: FaultType, target: string, dep?: string) {
     setChaos(false);
+    // A fault that matches a stress scenario on a ready estate runs as a tracked
+    // rehearsal, so the recovery is verified and lands in the evidence record.
+    const scenario = live.rehearsal?.ready
+      ? live.rehearsal.scenarios.find((s) => s.fault.type === type && s.fault.target === target && (s.fault.dep ?? undefined) === dep)
+      : undefined;
+    if (scenario) return void command(`${type} ${target}`, "/api/rehearsal", { scenario: scenario.id }, () => runLocalFault(type, target, dep));
     void command(`${type} ${target}`, "/api/chaos", { type, target, ...(dep ? { dep } : {}) }, () =>
       runLocalFault(type, target, dep),
     );
@@ -1993,7 +2003,7 @@ export default function App() {
               <span>Enroute</span>
               <strong>
                 {enrouteCount}
-                <small>of {board.flights.flights.length} total</small>
+                <small>/ {board.flights.flights.length}</small>
               </strong>
               <div className="stat-meter"><i style={{ width: `${board.flights.flights.length ? Math.round((enrouteCount / board.flights.flights.length) * 100) : 0}%` }} /></div>
             </div>
@@ -2001,7 +2011,7 @@ export default function App() {
               <span>Systems</span>
               <strong>
                 {upNodes}
-                <small>of {nodes.length} total</small>
+                <small>/ {nodes.length}</small>
               </strong>
               <div className="stat-meter"><i className={upNodes === nodes.length ? "ok" : upNodes / Math.max(1, nodes.length) > 0.5 ? "warn" : "alert"} style={{ width: `${nodes.length ? Math.round((upNodes / nodes.length) * 100) : 0}%` }} /></div>
             </div>
@@ -2009,7 +2019,7 @@ export default function App() {
               <span>Proofs</span>
               <strong>
                 {passed}
-                <small>of {checks.length} total</small>
+                <small>/ {checks.length}</small>
               </strong>
               <div className="stat-meter"><i className={percent === 100 ? "ok" : percent >= 60 ? "warn" : "alert"} style={{ width: `${percent}%` }} /></div>
             </div>

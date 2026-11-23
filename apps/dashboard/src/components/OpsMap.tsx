@@ -9,6 +9,10 @@ import { routePoint } from "../geometry";
 import { COMMS, REGIONS, SERVICE_HUBS, healthColor, outlines, type AirspaceProps } from "./MissionGlobe";
 export type { AirspaceProps, RegionId } from "./MissionGlobe";
 
+// Hub labels sit on the side with open map: NY/Boston and Chicago/Toronto are
+// close enough that same-side labels cover each other.
+const LABEL_SIDE: Record<string, "left" | "right" | "top" | "bottom"> = { notam: "right", dispatch: "bottom", "pax-connect": "top" };
+
 function planeIcon(heading: number, cls: string): L.DivIcon {
   return L.divIcon({ className: "", html: `<div class="plane ${cls}" style="transform: rotate(${Math.round(heading - 45)}deg)">✈</div>`, iconSize: [18, 18], iconAnchor: [9, 9] });
 }
@@ -46,7 +50,6 @@ export default function OpsMap({ flights, nodes, selected, onSelect, onSelectNod
     comms: COMMS.map(({ from, to }) => ({ id: `${from.id}-${to.id}`, to: to.id, pts: Array.from({ length: 65 }, (_, i) => { const [lon, lat] = routePoint(from, to, i / 64); return [lat, lon] as [number, number]; }) })),
   }), []);
   return <div className="map-wrap" style={{ position: "relative", background: "#061019" }}>
-    {flights.groundStop && <div className="map-banner stop">GROUND STOP</div>}
     {!flights.groundStop && flights.staleFeed && <div className="map-banner stale">FEED STALE — OPS-RADAR DOWN</div>}
     <MapContainer center={[home.lat, home.lon]} zoom={home.zoom} minZoom={2} maxZoom={18} style={{ height: "100%", background: "#061019" }} zoomControl={false} attributionControl={false} zoomSnap={0.25} wheelPxPerZoomLevel={90}>
       {graticule.lon.map((p, i) => <Polyline key={`lon${i}`} positions={p} pathOptions={{ color: "#244250", weight: 0.5, opacity: 0.4 }} />)}
@@ -56,7 +59,7 @@ export default function OpsMap({ flights, nodes, selected, onSelect, onSelectNod
       {routes.map(r => <Polyline key={`route${r.id}`} positions={r.pts} pathOptions={{ color: selected === r.id ? "#e7f3fb" : "#5d92ac", weight: selected === r.id ? 2 : 1, opacity: 0.45 }} />)}
       {comms && graticule.comms.map(c => <Polyline key={c.id} positions={c.pts} pathOptions={{ color: healthColor(nodes, c.to), weight: 2, opacity: 0.85, dashArray: nodes?.get(c.to)?.health === "down" ? "6 7" : undefined }} />)}
       {airports.filter(a => !SERVICE_HUBS.some(h => h.code === a.code)).map(a => <CircleMarker key={a.code} center={[a.lat, a.lon]} radius={3} pathOptions={{ color: "#38bdf8", weight: 1, fillOpacity: 0.5 }}><Tooltip permanent direction="right" className="ap">{a.code}</Tooltip></CircleMarker>)}
-      {SERVICE_HUBS.map(h => <CircleMarker key={h.id} center={[h.lat, h.lon]} radius={6} pathOptions={{ color: healthColor(nodes, h.id), fillColor: "#061019", fillOpacity: 1, weight: 2 }} eventHandlers={{ click: () => onSelectNode?.(h.id) }}><Tooltip permanent direction={h.id === "notam" || h.id === "dispatch" ? "right" : "left"} className="ap"><strong>{h.code} · {h.short}</strong><br />{h.city} · {nodes?.get(h.id)?.health ?? "undiscovered"}</Tooltip></CircleMarker>)}
+      {SERVICE_HUBS.map(h => <CircleMarker key={h.id} center={[h.lat, h.lon]} radius={6} pathOptions={{ color: healthColor(nodes, h.id), fillColor: "#061019", fillOpacity: 1, weight: 2 }} eventHandlers={{ click: () => onSelectNode?.(h.id) }}><Tooltip permanent direction={LABEL_SIDE[h.id] ?? "left"} className="ap"><strong>{h.code} · {h.short}</strong><br />{h.city} · {nodes?.get(h.id)?.health ?? "undiscovered"}</Tooltip></CircleMarker>)}
       {flights.flights.map(f => <Marker key={f.id} position={[f.position.lat, f.position.lon]} eventHandlers={{ click: () => onSelect?.(f.id) }} icon={planeIcon(f.heading, f.status === "enroute" ? "enroute" : flights.groundStop ? "held" : "ground")}><Tooltip className="ap" permanent={selected === f.id}>{f.callsign} · {f.from.code}→{f.to.code} · {f.status}</Tooltip></Marker>)}
     </MapContainer>
     <span className="earth-credit" style={{ zIndex: 1000, display: "block" }}>VECTOR RADAR · SIMULATED TRAFFIC</span>

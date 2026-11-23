@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "typecheck": "tsc -p tsconfig.json",
-    "test:layout": "node --import tsx tests/mobile-layout.browser.ts"
+    "test:layout": "node --import tsx tests/mobile-layout.browser.ts",
+    "test:stage": "node --import tsx tests/stage.browser.ts"
   },
   "dependencies": {
     "@arsu/core": "*",
