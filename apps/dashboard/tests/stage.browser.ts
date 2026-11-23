@@ -26,6 +26,14 @@ try {
   await expect.poll(async () => (await state()).rehearsal?.ready, { timeout: 120_000 }).toBe(true);
   const before = (await state()).rehearsal.runs.length as number;
 
+  // Icon rail: narrow, and no rail control spills text outside its box.
+  const rail = await page.locator('.app-sidebar').evaluate(aside => ({
+    width: aside.getBoundingClientRect().width,
+    spills: [...aside.querySelectorAll('button')].filter(b => { const r = b.getBoundingClientRect(); return r.width > 0 && (b.scrollWidth > b.clientWidth + 1 || b.scrollHeight > b.clientHeight + 1); }).map(b => b.getAttribute('aria-label') ?? b.textContent),
+  }));
+  assert(rail.width <= 90, `Icon rail is ${rail.width}px wide`);
+  assert.deepEqual(rail.spills, [], 'Rail controls spill text');
+
   // Topology: edge labels never sit on a tier title or a system card.
   await nav(page, 'Topology');
   await page.getByRole('button', { name: 'FIT' }).click().catch(() => undefined);
