@@ -53,6 +53,10 @@ it can launch the swarm and inject a local fault. `ARSU_UI_URL` overrides the
 loopback URL. Screenshots, video, and evidence go to the temporary artifact
 directory printed by the test, or `ARSU_UI_ARTIFACTS` when set.
 
+`npm run test:stage -w dashboard` drives the presenter's path on the aviation
+estate: launch, Inject fault (hub outage), verified recovery. It needs a
+separate `--recording` host with `ARSU_PORT=4783` and `ARSU_PROVIDER=sim`.
+
 ## Env
 
 Copy `.env.example` → `.env`. Nothing is required to run — the default

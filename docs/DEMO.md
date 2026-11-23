@@ -14,21 +14,35 @@
 
 ## Beats (live, on the control board)
 
-1. **Cold open** — map view: planes moving on real routes. "This is our
-   simulated airline — same topology United runs on."
-2. **LAUNCH SWARM** → agents register in SWARM panel; recon probes →
-   ONTOLOGY graph blooms live; FEED scrolls probe receipts.
-3. Verify agents author invariants → INVARIANTS board fills green, one spec
-   expandable. "Every block now has machine-checkable proofs — authored by
-   Gemini, stored on Firestore."
-4. **CHAOS → Kill `unimatic`.** Cascade: W&B, dispatch, crew, pax, radar go
-   red; `GROUND STOP` banner; planes hold at gates. "This is August 6th."
-5. Proofs fail → violations → orchestrator triage event ("SPOF: unimatic,
-   in-degree 5") → response agents load `hub-failover` skill →
-   `unimatic-standby` activates → board greens → planes resume.
-6. Close on SWARM panel: every decision receipted to the feed. "Imagine
-   this pointed at a real estate — a million-dollar swarm mapping a company
-   into proofs, and proofs into response."
+Run the stage host with `npm run dev:recording` (empty board, SIM unless
+`GEMINI_API_KEY` is set) and open http://localhost:4780. Left nav names are
+the views below.
+
+1. **Cold open — Swarm view** (opens by default in recording mode): 0/8
+   systems, "Discover. Stress. Prove recovery." Switch to **Airspace** for
+   the planes on real routes. "This is our simulated airline — same
+   topology United runs on."
+2. **LAUNCH ENVIRONMENT** (Swarm view) → agents register; recon writes nodes
+   and the dependency graph fills in live. ~12 s to fully mapped.
+3. **Verification** → 33/33 proofs passing, grouped by system; open a row
+   for the receipt. "Every block now has machine-checkable proofs."
+4. **Airspace → 2D radar → Inject fault → Take Unimatic hub offline.**
+   Cascade: hubs go red, comms links dash, single GROUND STOP banner,
+   tiles drop to 2/8 systems. "This is August 6th."
+5. **Topology** → SEVERED links out of Unimatic, ARTEX beacon triggers.
+   Proofs fail → orchestrator triage → response runs `hub-failover` →
+   `unimatic-standby` takes over (~10 s).
+6. **Swarm** → "Verified stress tests: 1" and a *VERIFIED* hub-outage
+   record with violations and actions counted. Click **Download evidence
+   JSON** — every decision receipted. Close: "Imagine this pointed at a
+   real estate."
+
+The menu fault runs as a tracked stress test only when the estate is
+ready (all proofs fresh and passing, no open work). Mid-recovery it falls
+back to a plain chaos injection that is not counted — wait for green.
+
+Rehearse the exact path headlessly: start a second recording host with
+`ARSU_PORT=4783 ARSU_PROVIDER=sim`, then `npm run test:stage -w dashboard`.
 
 ## Judge handles (what to say when asked)
 
