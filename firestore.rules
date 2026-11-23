@@ -1,0 +1,49 @@
+rules_version = '2';
+// Kin. A person can create and read only their own notes. Only accounts listed under
+// /clinicians can read notes and community counts. Nothing can be deleted from a client.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function clinician() { return signedIn() && exists(/databases/$(database)/documents/clinicians/$(request.auth.uid)); }
+    function shortText(value, max) { return value is string && value.size() <= max; }
+
+    match /notes/{id} {
+      allow create: if signedIn()
+        && request.resource.data.ownerId == request.auth.uid
+        && request.resource.data.level in ['routine', 'soon', 'urgent', 'emergency']
+        && request.resource.data.status == 'sent'
+        && shortText(request.resource.data.words, 600)
+        && shortText(request.resource.data.area, 60);
+      allow read: if signedIn() && (resource.data.ownerId == request.auth.uid || clinician());
+      // A clinician may mark a note as seen and change nothing else.
+      allow update: if clinician()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+        && request.resource.data.status == 'seen';
+      allow delete: if false;
+    }
+
+    // Anonymous community counts: an area, a group, a day and a rotating key. Nothing else fits.
+    match /signals/{id} {
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['area', 'group', 'day', 'key'])
+        && request.resource.data.group in ['respiratory', 'stomach', 'fever', 'skin', 'other']
+        && shortText(request.resource.data.area, 60) && shortText(request.resource.data.day, 10) && shortText(request.resource.data.key, 16);
+      allow read: if clinician();
+      allow update, delete: if false;
+    }
+    match /training/{id} {
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['area', 'skill', 'day', 'key'])
+        && request.resource.data.skill in ['cpr', 'naloxone', 'bleeding', 'choking']
+        && shortText(request.resource.data.area, 60) && shortText(request.resource.data.day, 10) && shortText(request.resource.data.key, 16);
+      allow read: if clinician();
+      allow update, delete: if false;
+    }
+
+    // The clinician list is managed in the Firebase console, never from the app.
+    match /clinicians/{uid} {
+      allow read: if signedIn() && request.auth.uid == uid;
+      allow write: if false;
+    }
+  }
+}

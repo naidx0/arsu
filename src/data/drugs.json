@@ -3,44 +3,6 @@
  "fetched": "2026-11-23",
  "drugs": [
   {
-   "din": "00437999",
-   "brand": "(20MMOL/L) POTASSIUM CHLORIDE IN 5% DEXTROSE AND 0.45% SODIUM CHLORIDE INJECTION USP",
-   "company": "BAXTER CORPORATION",
-   "ingredients": [
-    {
-     "name": "DEXTROSE",
-     "strength": "5 G"
-    },
-    {
-     "name": "SODIUM CHLORIDE",
-     "strength": "450 MG"
-    },
-    {
-     "name": "POTASSIUM CHLORIDE",
-     "strength": "150 MG"
-    }
-   ]
-  },
-  {
-   "din": "00438006",
-   "brand": "(40MMOL/L)POTASSIUM CHLORIDE IN 5% DEXTROSE AND 0.45% SODIUM CHLORIDE INJECTION USP",
-   "company": "BAXTER CORPORATION",
-   "ingredients": [
-    {
-     "name": "DEXTROSE",
-     "strength": "5 G"
-    },
-    {
-     "name": "SODIUM CHLORIDE",
-     "strength": "450 MG"
-    },
-    {
-     "name": "POTASSIUM CHLORIDE",
-     "strength": "300 MG"
-    }
-   ]
-  },
-  {
    "din": "02470780",
    "brand": "AA-LANSOPRAZOLE-AMOXICILLIN-CLARITHROMYCIN",
    "company": "AA PHARMA INC",
@@ -82,13 +44,24 @@
    ]
   },
   {
-   "din": "02519305",
-   "brand": "ACETAMINOPHEN INJECTION",
-   "company": "BAXTER CORPORATION",
+   "din": "02479826",
+   "brand": "ACCEL-SILDENAFIL",
+   "company": "ACCEL PHARMA INC",
+   "ingredients": [
+    {
+     "name": "SILDENAFIL (SILDENAFIL CITRATE)",
+     "strength": "100 MG"
+    }
+   ]
+  },
+  {
+   "din": "00605751",
+   "brand": "ACETAMINOPHEN TABLETS 325 MG",
+   "company": "VITA HEALTH PRODUCTS INC",
    "ingredients": [
     {
      "name": "ACETAMINOPHEN",
-     "strength": "10 MG"
+     "strength": "325 MG"
     }
    ]
   },
@@ -115,6 +88,17 @@
    ]
   },
   {
+   "din": "02419572",
+   "brand": "ACH-AMLODIPINE",
+   "company": "ACCORD HEALTHCARE INC",
+   "ingredients": [
+    {
+     "name": "AMLODIPINE (AMLODIPINE BESYLATE)",
+     "strength": "10 MG"
+    }
+   ]
+  },
+  {
    "din": "02457741",
    "brand": "ACH-ATORVASTATIN CALCIUM",
    "company": "ACCORD HEALTHCARE INC",
@@ -133,6 +117,17 @@
     {
      "name": "ATORVASTATIN (ATORVASTATIN CALCIUM)",
      "strength": "20 MG"
+    }
+   ]
+  },
+  {
+   "din": "02457776",
+   "brand": "ACH-ATORVASTATIN CALCIUM",
+   "company": "ACCORD HEALTHCARE INC",
+   "ingredients": [
+    {
+     "name": "ATORVASTATIN (ATORVASTATIN CALCIUM)",
+     "strength": "40 MG"
     }
    ]
   },
@@ -170,6 +165,17 @@
    ]
   },
   {
+   "din": "02449854",
+   "brand": "ACH-PREGABALIN",
+   "company": "ACCORD HEALTHCARE INC",
+   "ingredients": [
+    {
+     "name": "PREGABALIN",
+     "strength": "75 MG"
+    }
+   ]
+  },
+  {
    "din": "02515989",
    "brand": "ACH-TADALAFIL",
    "company": "ACCORD HEALTHCARE INC",
@@ -181,6 +187,17 @@
    ]
   },
   {
+   "din": "02515997",
+   "brand": "ACH-TADALAFIL",
+   "company": "ACCORD HEALTHCARE INC",
+   "ingredients": [
+    {
+     "name": "TADALAFIL",
+     "strength": "10 MG"
+    }
+   ]
+  },
+  {
    "din": "01933531",
    "brand": "ADVIL CAPLETS",
    "company": "HALEON CANADA ULC",
@@ -188,6 +205,21 @@
     {
      "name": "IBUPROFEN",
      "strength": "200 MG"
+    }
+   ]
+  },
+  {
+   "din": "02250705",
+   "brand": "ADVIL COLD & SINUS LIQUI-GELS",
+   "company": "HALEON CANADA ULC",
+   "ingredients": [
+    {
+     "name": "IBUPROFEN",
+     "strength": "200 MG"
+    },
+    {
+     "name": "PSEUDOEPHEDRINE HYDROCHLORIDE",
+     "strength": "30 MG"
     }
    ]
   },
@@ -226,6 +258,17 @@
    ]
   },
   {
+   "din": "02244577",
+   "brand": "ADVIL EXTRA STRENGTH CAPLETS",
+   "company": "HALEON CANADA ULC",
+   "ingredients": [
+    {
+     "name": "IBUPROFEN",
+     "strength": "400 MG"
+    }
+   ]
+  },
+  {
    "din": "01933558",
    "brand": "ADVIL TABLETS",
    "company": "HALEON CANADA ULC",
@@ -233,6 +276,28 @@
     {
      "name": "IBUPROFEN",
      "strength": "200 MG"
+    }
+   ]
+  },
+  {
+   "din": "02513676",
+   "brand": "AG-CITALOPRAM TABLETS",
+   "company": "ANGITA PHARMA INC.",
+   "ingredients": [
+    {
+     "name": "CITALOPRAM (CITALOPRAM HYDROBROMIDE)",
+     "strength": "10 MG"
+    }
+   ]
+  },
+  {
+   "din": "02555891",
+   "brand": "AG-FLUCONAZOLE",
+   "company": "ANGITA PHARMA INC.",
+   "ingredients": [
+    {
+     "name": "FLUCONAZOLE",
+     "strength": "150 MG"
     }
    ]
   },
@@ -259,13 +324,17 @@
    ]
   },
   {
-   "din": "02242325",
-   "brand": "AMIODARONE HYDROCHLORIDE FOR INJECTION",
-   "company": "SANDOZ CANADA INCORPORATED",
+   "din": "02444593",
+   "brand": "ALEVE NIGHTTIME",
+   "company": "BAYER INC",
    "ingredients": [
     {
-     "name": "AMIODARONE HYDROCHLORIDE",
-     "strength": "50 MG"
+     "name": "NAPROXEN SODIUM",
+     "strength": "220 MG"
+    },
+    {
+     "name": "DIPHENHYDRAMINE HYDROCHLORIDE",
+     "strength": "25 MG"
     }
    ]
   },
@@ -277,6 +346,28 @@
     {
      "name": "AMOXICILLIN (AMOXICILLIN TRIHYDRATE)",
      "strength": "250 MG"
+    }
+   ]
+  },
+  {
+   "din": "00312770",
+   "brand": "APO PREDNISONE TAB 5MG",
+   "company": "APOTEX INC",
+   "ingredients": [
+    {
+     "name": "PREDNISONE",
+     "strength": "5 MG"
+    }
+   ]
+  },
+  {
+   "din": "02246194",
+   "brand": "APO-AMIODARONE TABLETS",
+   "company": "APOTEX INC",
+   "ingredients": [
+    {
+     "name": "AMIODARONE HYDROCHLORIDE",
+     "strength": "200 MG"
     }
    ]
   },
@@ -327,6 +418,72 @@
    ]
   },
   {
+   "din": "02364115",
+   "brand": "APO-HYDROMORPHONE",
+   "company": "APOTEX INC",
+   "ingredients": [
+    {
+     "name": "HYDROMORPHONE HYDROCHLORIDE",
+     "strength": "1 MG"
+    }
+   ]
+  },
+  {
+   "din": "02364123",
+   "brand": "APO-HYDROMORPHONE",
+   "company": "APOTEX INC",
+   "ingredients": [
+    {
+     "name": "HYDROMORPHONE HYDROCHLORIDE",
+     "strength": "2 MG"
+    }
+   ]
+  },
+  {
+   "din": "02364131",
+   "brand": "APO-HYDROMORPHONE",
+   "company": "APOTEX INC",
+   "ingredients": [
+    {
+     "name": "HYDROMORPHONE HYDROCHLORIDE",
+     "strength": "4 MG"
+    }
+   ]
+  },
+  {
+   "din": "02534681",
+   "brand": "APO-LEVOTHYROXINE",
+   "company": "APOTEX INC",
+   "ingredients": [
+    {
+     "name": "LEVOTHYROXINE SODIUM",
+     "strength": "100 MCG"
+    }
+   ]
+  },
+  {
+   "din": "02534703",
+   "brand": "APO-LEVOTHYROXINE",
+   "company": "APOTEX INC",
+   "ingredients": [
+    {
+     "name": "LEVOTHYROXINE SODIUM",
+     "strength": "300 MCG"
+    }
+   ]
+  },
+  {
+   "din": "02550709",
+   "brand": "APO-LEVOTHYROXINE",
+   "company": "APOTEX INC",
+   "ingredients": [
+    {
+     "name": "LEVOTHYROXINE SODIUM",
+     "strength": "25 MCG"
+    }
+   ]
+  },
+  {
    "din": "02242837",
    "brand": "APO-LITHIUM CARBONATE",
    "company": "APOTEX INC",
@@ -334,6 +491,32 @@
     {
      "name": "LITHIUM CARBONATE",
      "strength": "150 MG"
+    }
+   ]
+  },
+  {
+   "din": "02248562",
+   "brand": "APO-METRONIDAZOLE",
+   "company": "APOTEX INC",
+   "ingredients": [
+    {
+     "name": "METRONIDAZOLE",
+     "strength": "500 MG"
+    }
+   ]
+  },
+  {
+   "din": "02564521",
+   "brand": "APO-NAPROXEN / ESOMEPRAZOLE",
+   "company": "APOTEX INC",
+   "ingredients": [
+    {
+     "name": "NAPROXEN",
+     "strength": "375 MG"
+    },
+    {
+     "name": "ESOMEPRAZOLE (ESOMEPRAZOLE MAGNESIUM TRIHYDRATE)",
+     "strength": "20 MG"
     }
    ]
   },
@@ -360,6 +543,17 @@
    ]
   },
   {
+   "din": "02366754",
+   "brand": "APO-OXYCODONE CR",
+   "company": "APOTEX INC",
+   "ingredients": [
+    {
+     "name": "OXYCODONE HYDROCHLORIDE",
+     "strength": "10 MG"
+    }
+   ]
+  },
+  {
    "din": "02240907",
    "brand": "APO-PAROXETINE",
    "company": "APOTEX INC",
@@ -367,6 +561,17 @@
     {
      "name": "PAROXETINE (PAROXETINE HYDROCHLORIDE)",
      "strength": "10 MG"
+    }
+   ]
+  },
+  {
+   "din": "02240908",
+   "brand": "APO-PAROXETINE",
+   "company": "APOTEX INC",
+   "ingredients": [
+    {
+     "name": "PAROXETINE (PAROXETINE HYDROCHLORIDE)",
+     "strength": "20 MG"
     }
    ]
   },
@@ -393,6 +598,17 @@
    ]
   },
   {
+   "din": "02238282",
+   "brand": "APO-SERTRALINE",
+   "company": "APOTEX INC",
+   "ingredients": [
+    {
+     "name": "SERTRALINE (SERTRALINE HYDROCHLORIDE)",
+     "strength": "100 MG"
+    }
+   ]
+  },
+  {
    "din": "02421933",
    "brand": "APO-TADALAFIL PAH",
    "company": "APOTEX INC",
@@ -400,6 +616,17 @@
     {
      "name": "TADALAFIL",
      "strength": "20 MG"
+    }
+   ]
+  },
+  {
+   "din": "02237726",
+   "brand": "ASPIRIN 81MG",
+   "company": "BAYER INC",
+   "ingredients": [
+    {
+     "name": "ACETYLSALICYLIC ACID",
+     "strength": "81 MG"
     }
    ]
   },
@@ -422,6 +649,28 @@
     {
      "name": "ACETYLSALICYLIC ACID",
      "strength": "325 MG"
+    }
+   ]
+  },
+  {
+   "din": "02554399",
+   "brand": "AURO-DIGOXIN",
+   "company": "AURO PHARMA INC",
+   "ingredients": [
+    {
+     "name": "DIGOXIN",
+     "strength": "0.0625 MG"
+    }
+   ]
+  },
+  {
+   "din": "02385627",
+   "brand": "AURO-FLUOXETINE",
+   "company": "AURO PHARMA INC",
+   "ingredients": [
+    {
+     "name": "FLUOXETINE (FLUOXETINE HYDROCHLORIDE)",
+     "strength": "10 MG"
     }
    ]
   },
@@ -551,10 +800,72 @@
    ]
   },
   {
+   "din": "02494027",
+   "brand": "BUCKLEY'S COMPLETE 24 HOUR PACK",
+   "company": "HALEON CANADA ULC",
+   "ingredients": [
+    {
+     "name": "ACETAMINOPHEN",
+     "strength": "250 MG"
+    },
+    {
+     "name": "PSEUDOEPHEDRINE HYDROCHLORIDE",
+     "strength": "30 MG"
+    },
+    {
+     "name": "DEXTROMETHORPHAN HYDROBROMIDE",
+     "strength": "10 MG"
+    },
+    {
+     "name": "GUAIFENESIN",
+     "strength": "100 MG"
+    },
+    {
+     "name": "ACETAMINOPHEN",
+     "strength": "325 MG"
+    },
+    {
+     "name": "PSEUDOEPHEDRINE HYDROCHLORIDE",
+     "strength": "30 MG"
+    },
+    {
+     "name": "DEXTROMETHORPHAN HYDROBROMIDE",
+     "strength": "15 MG"
+    },
+    {
+     "name": "DOXYLAMINE SUCCINATE",
+     "strength": "6.25 MG"
+    }
+   ]
+  },
+  {
    "din": "02486830",
    "brand": "CHILDREN'S ACETAMINOPHEN SUSPENSION",
    "company": "LSL MEDPLUS INC",
    "ingredients": [
+    {
+     "name": "ACETAMINOPHEN",
+     "strength": "160 MG"
+    }
+   ]
+  },
+  {
+   "din": "02039990",
+   "brand": "CHILDREN'S TYLENOL COLD AND COUGH",
+   "company": "KENVUE CANADA INC.",
+   "ingredients": [
+    {
+     "name": "CHLORPHENIRAMINE MALEATE",
+     "strength": "1 MG"
+    },
+    {
+     "name": "DEXTROMETHORPHAN HYDROBROMIDE",
+     "strength": "7.5 MG"
+    },
+    {
+     "name": "PSEUDOEPHEDRINE HYDROCHLORIDE",
+     "strength": "15 MG"
+    },
     {
      "name": "ACETAMINOPHEN",
      "strength": "160 MG"
@@ -615,12 +926,53 @@
    ]
   },
   {
+   "din": "02241523",
+   "brand": "CLARITIN KIDS",
+   "company": "BAYER INC",
+   "ingredients": [
+    {
+     "name": "LORATADINE",
+     "strength": "5 MG"
+    }
+   ]
+  },
+  {
    "din": "02237734",
    "brand": "CLARITIN RAPID DISSOLVE",
    "company": "BAYER INC",
    "ingredients": [
     {
      "name": "LORATADINE",
+     "strength": "10 MG"
+    }
+   ]
+  },
+  {
+   "din": "02163748",
+   "brand": "CODEINE CONTIN 100MG CONTROLLED RELEASE TAB",
+   "company": "PURDUE PHARMA",
+   "ingredients": [
+    {
+     "name": "CODEINE (CODEINE MONOHYDRATE, CODEINE SULFATE TRIHYDRATE)",
+     "strength": "100 MG"
+    }
+   ]
+  },
+  {
+   "din": "02300842",
+   "brand": "DAYQUIL COLD & FLU",
+   "company": "PROCTER & GAMBLE INC",
+   "ingredients": [
+    {
+     "name": "ACETAMINOPHEN",
+     "strength": "650 MG"
+    },
+    {
+     "name": "DEXTROMETHORPHAN HYDROBROMIDE",
+     "strength": "20 MG"
+    },
+    {
+     "name": "PHENYLEPHRINE HYDROCHLORIDE",
      "strength": "10 MG"
     }
    ]
@@ -667,13 +1019,35 @@
    ]
   },
   {
-   "din": "00399728",
-   "brand": "DIAZEPAM INJECTION USP",
-   "company": "SANDOZ CANADA INCORPORATED",
+   "din": "00405329",
+   "brand": "DIAZEPAM",
+   "company": "AA PHARMA INC",
    "ingredients": [
     {
      "name": "DIAZEPAM",
-     "strength": "5 MG"
+     "strength": "2 MG"
+    }
+   ]
+  },
+  {
+   "din": "00405337",
+   "brand": "DIAZEPAM",
+   "company": "AA PHARMA INC",
+   "ingredients": [
+    {
+     "name": "DIAZEPAM",
+     "strength": "10 MG"
+    }
+   ]
+  },
+  {
+   "din": "02490889",
+   "brand": "DULOXETINE",
+   "company": "SANIS HEALTH INC",
+   "ingredients": [
+    {
+     "name": "DULOXETINE (DULOXETINE HYDROCHLORIDE)",
+     "strength": "30 MG"
     }
    ]
   },
@@ -696,6 +1070,58 @@
     {
      "name": "APIXABAN",
      "strength": "5 MG"
+    }
+   ]
+  },
+  {
+   "din": "02430118",
+   "brand": "ESCITALOPRAM",
+   "company": "SANIS HEALTH INC",
+   "ingredients": [
+    {
+     "name": "ESCITALOPRAM (ESCITALOPRAM OXALATE)",
+     "strength": "10 MG"
+    }
+   ]
+  },
+  {
+   "din": "00605778",
+   "brand": "EXTRA STRENGTH ACETAMINOPHEN TABLETS 500 MG",
+   "company": "VITA HEALTH PRODUCTS INC",
+   "ingredients": [
+    {
+     "name": "ACETAMINOPHEN",
+     "strength": "500 MG"
+    }
+   ]
+  },
+  {
+   "din": "02239138",
+   "brand": "EXTRA STRENGTH BENADRYL ALLERGY NIGHTTIME",
+   "company": "KENVUE CANADA INC.",
+   "ingredients": [
+    {
+     "name": "DIPHENHYDRAMINE HYDROCHLORIDE",
+     "strength": "50 MG"
+    }
+   ]
+  },
+  {
+   "din": "01986988",
+   "brand": "EXTRA STRENGTH SINUTAB SINUS & ALLERGY",
+   "company": "KENVUE CANADA INC.",
+   "ingredients": [
+    {
+     "name": "ACETAMINOPHEN",
+     "strength": "500 MG"
+    },
+    {
+     "name": "PSEUDOEPHEDRINE HYDROCHLORIDE",
+     "strength": "30 MG"
+    },
+    {
+     "name": "CHLORPHENIRAMINE MALEATE",
+     "strength": "2 MG"
     }
    ]
   },
@@ -813,28 +1239,6 @@
    ]
   },
   {
-   "din": "02382539",
-   "brand": "FUROSEMIDE INJECTION SDZ",
-   "company": "SANDOZ CANADA INCORPORATED",
-   "ingredients": [
-    {
-     "name": "FUROSEMIDE",
-     "strength": "10 MG"
-    }
-   ]
-  },
-  {
-   "din": "02384094",
-   "brand": "FUROSEMIDE INJECTION USP",
-   "company": "HIKMA CANADA LIMITED",
-   "ingredients": [
-    {
-     "name": "FUROSEMIDE",
-     "strength": "20 MG"
-    }
-   ]
-  },
-  {
    "din": "02246314",
    "brand": "GABAPENTIN",
    "company": "SIVEM PHARMACEUTICALS ULC",
@@ -853,6 +1257,17 @@
     {
      "name": "GABAPENTIN",
      "strength": "300 MG"
+    }
+   ]
+  },
+  {
+   "din": "02246316",
+   "brand": "GABAPENTIN",
+   "company": "SIVEM PHARMACEUTICALS ULC",
+   "ingredients": [
+    {
+     "name": "GABAPENTIN",
+     "strength": "400 MG"
     }
    ]
   },
@@ -879,24 +1294,13 @@
    ]
   },
   {
-   "din": "02468468",
-   "brand": "HYDROMORPHONE HYDROCHLORIDE INJECTION HP FORTE",
-   "company": "STERIMAX INC",
+   "din": "00013803",
+   "brand": "GRAVOL TABLETS",
+   "company": "CHURCH & DWIGHT CANADA CORP",
    "ingredients": [
     {
-     "name": "HYDROMORPHONE HYDROCHLORIDE",
-     "strength": "100 MG"
-    }
-   ]
-  },
-  {
-   "din": "02491680",
-   "brand": "HYDROMORPHONE HYDROCHLORIDE INJECTION, USP",
-   "company": "FRESENIUS KABI CANADA LTD",
-   "ingredients": [
-    {
-     "name": "HYDROMORPHONE HYDROCHLORIDE",
-     "strength": "10 MG"
+     "name": "DIMENHYDRINATE",
+     "strength": "50 MG"
     }
    ]
   },
@@ -912,6 +1316,17 @@
    ]
   },
   {
+   "din": "02550954",
+   "brand": "IBUPROFEN ORAL SUSPENSION, 100 MG / 5 ML",
+   "company": "STRIDES PHARMA CANADA INC",
+   "ingredients": [
+    {
+     "name": "IBUPROFEN",
+     "strength": "100 MG"
+    }
+   ]
+  },
+  {
    "din": "02368072",
    "brand": "IBUPROFEN TABLETS",
    "company": "VITA HEALTH PRODUCTS INC",
@@ -919,6 +1334,17 @@
     {
      "name": "IBUPROFEN",
      "strength": "200 MG"
+    }
+   ]
+  },
+  {
+   "din": "02291800",
+   "brand": "IMODIUM CALMING LIQUID",
+   "company": "KENVUE CANADA INC.",
+   "ingredients": [
+    {
+     "name": "LOPERAMIDE HYDROCHLORIDE",
+     "strength": "2 MG"
     }
    ]
   },
@@ -941,6 +1367,21 @@
     {
      "name": "LOPERAMIDE HYDROCHLORIDE",
      "strength": "2 MG"
+    }
+   ]
+  },
+  {
+   "din": "02483394",
+   "brand": "IPRATROPIUM BROMIDE AND SALBUTAMOL SULPHATE INHALATION SOLUTION",
+   "company": "JUNO PHARMA CANADA INC.",
+   "ingredients": [
+    {
+     "name": "IPRATROPIUM BROMIDE (IPRATROPIUM BROMIDE MONOHYDRATE)",
+     "strength": "0.5 MG"
+    },
+    {
+     "name": "SALBUTAMOL (SALBUTAMOL SULFATE)",
+     "strength": "2.5 MG"
     }
    ]
   },
@@ -989,6 +1430,17 @@
    ]
   },
   {
+   "din": "02535793",
+   "brand": "JAMP-AMOXICILLIN",
+   "company": "JAMP PHARMA CORPORATION",
+   "ingredients": [
+    {
+     "name": "AMOXICILLIN (AMOXICILLIN TRIHYDRATE)",
+     "strength": "125 MG"
+    }
+   ]
+  },
+  {
    "din": "02361531",
    "brand": "JAMP-LISINOPRIL",
    "company": "JAMP PHARMA CORPORATION",
@@ -1011,6 +1463,17 @@
    ]
   },
   {
+   "din": "02361566",
+   "brand": "JAMP-LISINOPRIL",
+   "company": "JAMP PHARMA CORPORATION",
+   "ingredients": [
+    {
+     "name": "LISINOPRIL (LISINOPRIL DIHYDRATE)",
+     "strength": "20 MG"
+    }
+   ]
+  },
+  {
    "din": "02408414",
    "brand": "JAMP-PANTOPRAZOLE",
    "company": "JAMP PHARMA CORPORATION",
@@ -1018,28 +1481,6 @@
     {
      "name": "PANTOPRAZOLE (PANTOPRAZOLE SODIUM)",
      "strength": "20 MG"
-    }
-   ]
-  },
-  {
-   "din": "02245948",
-   "brand": "LEVOTHYROXINE SODIUM FOR INJECTION",
-   "company": "FRESENIUS KABI CANADA LTD",
-   "ingredients": [
-    {
-     "name": "LEVOTHYROXINE SODIUM",
-     "strength": "500 MCG"
-    }
-   ]
-  },
-  {
-   "din": "02461714",
-   "brand": "LEVOTHYROXINE SODIUM FOR INJECTION",
-   "company": "AVIR PHARMA INC.",
-   "ingredients": [
-    {
-     "name": "LEVOTHYROXINE SODIUM",
-     "strength": "200 MCG"
     }
    ]
   },
@@ -1066,24 +1507,84 @@
    ]
   },
   {
-   "din": "02550962",
-   "brand": "LORAZEPAM INJECTION, USP",
-   "company": "FRESENIUS KABI CANADA LTD",
+   "din": "02230714",
+   "brand": "LIPITOR",
+   "company": "BGP PHARMA ULC",
    "ingredients": [
     {
-     "name": "LORAZEPAM",
-     "strength": "4 MG"
+     "name": "ATORVASTATIN (ATORVASTATIN CALCIUM)",
+     "strength": "40 MG"
     }
    ]
   },
   {
-   "din": "02327236",
-   "brand": "METHOTREXATE INJECTION BP",
-   "company": "ACCORD HEALTHCARE INC",
+   "din": "02495465",
+   "brand": "M-CELECOXIB",
+   "company": "MANTRA PHARMA INC",
    "ingredients": [
     {
-     "name": "METHOTREXATE (METHOTREXATE SODIUM)",
+     "name": "CELECOXIB",
+     "strength": "100 MG"
+    }
+   ]
+  },
+  {
+   "din": "02353377",
+   "brand": "METFORMIN",
+   "company": "SANIS HEALTH INC",
+   "ingredients": [
+    {
+     "name": "METFORMIN HYDROCHLORIDE",
+     "strength": "500 MG"
+    }
+   ]
+  },
+  {
+   "din": "02275201",
+   "brand": "MIDOL COMPLETE",
+   "company": "BAYER INC",
+   "ingredients": [
+    {
+     "name": "ACETAMINOPHEN",
+     "strength": "500 MG"
+    },
+    {
+     "name": "CAFFEINE",
+     "strength": "60 MG"
+    },
+    {
+     "name": "PYRILAMINE MALEATE",
+     "strength": "15 MG"
+    }
+   ]
+  },
+  {
+   "din": "02275228",
+   "brand": "MIDOL PMS",
+   "company": "BAYER INC",
+   "ingredients": [
+    {
+     "name": "ACETAMINOPHEN",
+     "strength": "500 MG"
+    },
+    {
+     "name": "PAMABROM",
      "strength": "25 MG"
+    },
+    {
+     "name": "PYRILAMINE MALEATE",
+     "strength": "15 MG"
+    }
+   ]
+  },
+  {
+   "din": "02465612",
+   "brand": "MINT-BISOPROLOL",
+   "company": "MINT PHARMACEUTICALS INC",
+   "ingredients": [
+    {
+     "name": "BISOPROLOL FUMARATE",
+     "strength": "5 MG"
     }
    ]
   },
@@ -1110,6 +1611,17 @@
    ]
   },
   {
+   "din": "02417448",
+   "brand": "MINT-PANTOPRAZOLE",
+   "company": "MINT PHARMACEUTICALS INC",
+   "ingredients": [
+    {
+     "name": "PANTOPRAZOLE (PANTOPRAZOLE SODIUM)",
+     "strength": "40 MG"
+    }
+   ]
+  },
+  {
    "din": "02421305",
    "brand": "MINT-RAMIPRIL",
    "company": "MINT PHARMACEUTICALS INC",
@@ -1128,6 +1640,28 @@
     {
      "name": "RAMIPRIL",
      "strength": "5.0 MG"
+    }
+   ]
+  },
+  {
+   "din": "02421321",
+   "brand": "MINT-RAMIPRIL",
+   "company": "MINT PHARMACEUTICALS INC",
+   "ingredients": [
+    {
+     "name": "RAMIPRIL",
+     "strength": "10.0 MG"
+    }
+   ]
+  },
+  {
+   "din": "02488140",
+   "brand": "MINT-SPIRONOLACTONE",
+   "company": "MINT PHARMACEUTICALS INC",
+   "ingredients": [
+    {
+     "name": "SPIRONOLACTONE",
+     "strength": "25 MG"
     }
    ]
   },
@@ -1161,6 +1695,17 @@
     {
      "name": "IBUPROFEN",
      "strength": "200 MG"
+    }
+   ]
+  },
+  {
+   "din": "02242632",
+   "brand": "MOTRIN 300MG",
+   "company": "KENVUE CANADA INC.",
+   "ingredients": [
+    {
+     "name": "IBUPROFEN",
+     "strength": "300 MG"
     }
    ]
   },
@@ -1206,6 +1751,17 @@
    ]
   },
   {
+   "din": "02362430",
+   "brand": "NAPROXEN",
+   "company": "PHARMASCIENCE INC",
+   "ingredients": [
+    {
+     "name": "NAPROXEN SODIUM",
+     "strength": "220 MG"
+    }
+   ]
+  },
+  {
    "din": "02458187",
    "brand": "NARCAN NASAL SPRAY",
    "company": "EMERGENT OPERATIONS IRELAND LIMITED",
@@ -1235,6 +1791,36 @@
     {
      "name": "ROSUVASTATIN (ROSUVASTATIN CALCIUM)",
      "strength": "10 MG"
+    }
+   ]
+  },
+  {
+   "din": "02555514",
+   "brand": "NB-ROSUVASTATIN",
+   "company": "NB PHARMA INC.",
+   "ingredients": [
+    {
+     "name": "ROSUVASTATIN (ROSUVASTATIN CALCIUM)",
+     "strength": "20 MG"
+    }
+   ]
+  },
+  {
+   "din": "02215403",
+   "brand": "NEOCITRAN EXTRA STRENGTH COLD & SINUS NIGHT",
+   "company": "HALEON CANADA ULC",
+   "ingredients": [
+    {
+     "name": "ACETAMINOPHEN",
+     "strength": "650 MG"
+    },
+    {
+     "name": "PHENYLEPHRINE HYDROCHLORIDE",
+     "strength": "10 MG"
+    },
+    {
+     "name": "PHENIRAMINE MALEATE",
+     "strength": "20 MG"
     }
    ]
   },
@@ -1281,32 +1867,79 @@
    ]
   },
   {
-   "din": "02145308",
-   "brand": "NITROGLYCERIN IN 5% DEXTROSE INJ.-200MCG/ML",
-   "company": "BAXTER CORPORATION",
+   "din": "01911910",
+   "brand": "NITRO-DUR 0.2",
+   "company": "USPHARMA LTD",
    "ingredients": [
     {
      "name": "NITROGLYCERIN",
-     "strength": "20 MG"
-    },
-    {
-     "name": "DEXTROSE",
-     "strength": "5 G"
+     "strength": "0.2 MG"
     }
    ]
   },
   {
-   "din": "02145316",
-   "brand": "NITROGLYCERIN IN 5% DEXTROSE INJ.-400MCG/ML",
-   "company": "BAXTER CORPORATION",
+   "din": "01911902",
+   "brand": "NITRO-DUR 0.4",
+   "company": "USPHARMA LTD",
    "ingredients": [
     {
      "name": "NITROGLYCERIN",
-     "strength": "40 MG"
-    },
+     "strength": "0.4 MG"
+    }
+   ]
+  },
+  {
+   "din": "01911929",
+   "brand": "NITRO-DUR 0.6",
+   "company": "USPHARMA LTD",
+   "ingredients": [
     {
-     "name": "DEXTROSE",
-     "strength": "5 G"
+     "name": "NITROGLYCERIN",
+     "strength": "0.6 MG"
+    }
+   ]
+  },
+  {
+   "din": "02231441",
+   "brand": "NITROLINGUAL PUMPSPRAY",
+   "company": "G POHL-BOSKAMP GMBH & CO KG",
+   "ingredients": [
+    {
+     "name": "NITROGLYCERIN",
+     "strength": "0.4 MG"
+    }
+   ]
+  },
+  {
+   "din": "00037613",
+   "brand": "NITROSTAT",
+   "company": "BGP PHARMA ULC",
+   "ingredients": [
+    {
+     "name": "NITROGLYCERIN",
+     "strength": "0.3 MG"
+    }
+   ]
+  },
+  {
+   "din": "00037621",
+   "brand": "NITROSTAT",
+   "company": "BGP PHARMA ULC",
+   "ingredients": [
+    {
+     "name": "NITROGLYCERIN",
+     "strength": "0.6 MG"
+    }
+   ]
+  },
+  {
+   "din": "02471825",
+   "brand": "NRA-PANTOPRAZOLE",
+   "company": "NORA PHARMA INC",
+   "ingredients": [
+    {
+     "name": "PANTOPRAZOLE (PANTOPRAZOLE SODIUM)",
+     "strength": "40 MG"
     }
    ]
   },
@@ -1345,17 +1978,6 @@
    ]
   },
   {
-   "din": "02352214",
-   "brand": "PANTOPRAZOLE FOR INJECTION",
-   "company": "FRESENIUS KABI CANADA LTD",
-   "ingredients": [
-    {
-     "name": "PANTOPRAZOLE (PANTOPRAZOLE SODIUM)",
-     "strength": "40 MG"
-    }
-   ]
-  },
-  {
    "din": "02523035",
    "brand": "PERINDOPRIL ERBUMINE/INDAPAMIDE",
    "company": "PRO DOC LIMITEE",
@@ -1386,6 +2008,21 @@
    ]
   },
   {
+   "din": "02519720",
+   "brand": "PERINDOPRIL/INDAPAMIDE",
+   "company": "SANIS HEALTH INC",
+   "ingredients": [
+    {
+     "name": "PERINDOPRIL ERBUMINE",
+     "strength": "4 MG"
+    },
+    {
+     "name": "INDAPAMIDE",
+     "strength": "1.25 MG"
+    }
+   ]
+  },
+  {
    "din": "02242472",
    "brand": "PMS-AMIODARONE",
    "company": "PHARMASCIENCE INC",
@@ -1393,6 +2030,28 @@
     {
      "name": "AMIODARONE HYDROCHLORIDE",
      "strength": "200 MG"
+    }
+   ]
+  },
+  {
+   "din": "02048728",
+   "brand": "PMS-CLONAZEPAM",
+   "company": "PHARMASCIENCE INC",
+   "ingredients": [
+    {
+     "name": "CLONAZEPAM",
+     "strength": "1 MG"
+    }
+   ]
+  },
+  {
+   "din": "02048736",
+   "brand": "PMS-CLONAZEPAM",
+   "company": "PHARMASCIENCE INC",
+   "ingredients": [
+    {
+     "name": "CLONAZEPAM",
+     "strength": "2 MG"
     }
    ]
   },
@@ -1441,6 +2100,17 @@
    ]
   },
   {
+   "din": "02274086",
+   "brand": "PMS-HYDROCHLOROTHIAZIDE",
+   "company": "PHARMASCIENCE INC",
+   "ingredients": [
+    {
+     "name": "HYDROCHLOROTHIAZIDE",
+     "strength": "12.5 MG"
+    }
+   ]
+  },
+  {
    "din": "02216132",
    "brand": "PMS-LITHIUM CARBONATE - CAP 150MG",
    "company": "PHARMASCIENCE INC",
@@ -1448,6 +2118,17 @@
     {
      "name": "LITHIUM CARBONATE",
      "strength": "150 MG"
+    }
+   ]
+  },
+  {
+   "din": "02549794",
+   "brand": "PMS-MORPHINE SULFATE",
+   "company": "PHARMASCIENCE INC",
+   "ingredients": [
+    {
+     "name": "MORPHINE SULFATE",
+     "strength": "5 MG"
     }
    ]
   },
@@ -1478,6 +2159,21 @@
     {
      "name": "VALSARTAN (SACUBITRIL VALSARTAN SODIUM COMPLEX)",
      "strength": "51 MG"
+    }
+   ]
+  },
+  {
+   "din": "02564459",
+   "brand": "PMS-SACUBITRIL-VALSARTAN",
+   "company": "PHARMASCIENCE INC",
+   "ingredients": [
+    {
+     "name": "SACUBITRIL (SACUBITRIL VALSARTAN SODIUM COMPLEX)",
+     "strength": "97 MG"
+    },
+    {
+     "name": "VALSARTAN (SACUBITRIL VALSARTAN SODIUM COMPLEX)",
+     "strength": "103 MG"
     }
    ]
   },
@@ -1522,6 +2218,17 @@
     {
      "name": "DABIGATRAN ETEXILATE (DABIGATRAN ETEXILATE MESILATE)",
      "strength": "150 MG"
+    }
+   ]
+  },
+  {
+   "din": "02296713",
+   "brand": "PRO-METOPROLOL",
+   "company": "PRO DOC LIMITEE",
+   "ingredients": [
+    {
+     "name": "METOPROLOL TARTRATE",
+     "strength": "25 MG"
     }
    ]
   },
@@ -1581,6 +2288,17 @@
    ]
   },
   {
+   "din": "02313065",
+   "brand": "PRO-ZOPICLONE",
+   "company": "PRO DOC LIMITEE",
+   "ingredients": [
+    {
+     "name": "ZOPICLONE",
+     "strength": "5 MG"
+    }
+   ]
+  },
+  {
    "din": "02541394",
    "brand": "PRZ-BISOPROLOL",
    "company": "PHARMARIS CANADA INC",
@@ -1629,6 +2347,17 @@
    ]
   },
   {
+   "din": "02223554",
+   "brand": "REACTINE",
+   "company": "KENVUE CANADA INC.",
+   "ingredients": [
+    {
+     "name": "CETIRIZINE HYDROCHLORIDE",
+     "strength": "10 MG"
+    }
+   ]
+  },
+  {
    "din": "01900978",
    "brand": "REACTINE 20 MG TABLET",
    "company": "KENVUE CANADA INC.",
@@ -1662,6 +2391,17 @@
    ]
   },
   {
+   "din": "02566508",
+   "brand": "RIVA-CANDESARTAN",
+   "company": "LABORATOIRE RIVA INC.",
+   "ingredients": [
+    {
+     "name": "CANDESARTAN CILEXETIL",
+     "strength": "16 MG"
+    }
+   ]
+  },
+  {
    "din": "02305461",
    "brand": "RIVA-FLUOXETINE",
    "company": "LABORATOIRE RIVA INC.",
@@ -1680,6 +2420,21 @@
     {
      "name": "FLUOXETINE (FLUOXETINE HYDROCHLORIDE)",
      "strength": "20 MG"
+    }
+   ]
+  },
+  {
+   "din": "02026805",
+   "brand": "ROBAXACET",
+   "company": "HALEON CANADA ULC",
+   "ingredients": [
+    {
+     "name": "METHOCARBAMOL",
+     "strength": "400 MG"
+    },
+    {
+     "name": "ACETAMINOPHEN",
+     "strength": "325 MG"
     }
    ]
   },
@@ -1718,6 +2473,21 @@
    ]
   },
   {
+   "din": "01931024",
+   "brand": "ROBITUSSIN COUGH CONTROL",
+   "company": "HALEON CANADA ULC",
+   "ingredients": [
+    {
+     "name": "GUAIFENESIN",
+     "strength": "100 MG"
+    },
+    {
+     "name": "DEXTROMETHORPHAN HYDROBROMIDE",
+     "strength": "15 MG"
+    }
+   ]
+  },
+  {
    "din": "02172380",
    "brand": "ROBITUSSIN EXTRA STRENGTH COUGH & COLD",
    "company": "HALEON CANADA ULC",
@@ -1748,6 +2518,28 @@
    ]
   },
   {
+   "din": "02243836",
+   "brand": "SANDOZ AMIODARONE",
+   "company": "SANDOZ CANADA INCORPORATED",
+   "ingredients": [
+    {
+     "name": "AMIODARONE HYDROCHLORIDE",
+     "strength": "200 MG"
+    }
+   ]
+  },
+  {
+   "din": "02261774",
+   "brand": "SANDOZ DICLOFENAC RAPIDE",
+   "company": "SANDOZ CANADA INCORPORATED",
+   "ingredients": [
+    {
+     "name": "DICLOFENAC POTASSIUM",
+     "strength": "50 MG"
+    }
+   ]
+  },
+  {
    "din": "02478889",
    "brand": "SANDOZ MORPHINE SR",
    "company": "SANDOZ CANADA INCORPORATED",
@@ -1770,6 +2562,21 @@
    ]
   },
   {
+   "din": "02563495",
+   "brand": "SEPTRA PEDIATRIC ORAL SUSPENSION",
+   "company": "ASPEN PHARMACARE CANADA INC.",
+   "ingredients": [
+    {
+     "name": "SULFAMETHOXAZOLE",
+     "strength": "40 MG"
+    },
+    {
+     "name": "TRIMETHOPRIM",
+     "strength": "8 MG"
+    }
+   ]
+  },
+  {
    "din": "02390442",
    "brand": "SPC-CLARITHROMYCIN FOR ORAL SUSPENSION",
    "company": "SUN PHARMA CANADA INC",
@@ -1777,6 +2584,17 @@
     {
      "name": "CLARITHROMYCIN",
      "strength": "125 MG"
+    }
+   ]
+  },
+  {
+   "din": "02390450",
+   "brand": "SPC-CLARITHROMYCIN FOR ORAL SUSPENSION",
+   "company": "SUN PHARMA CANADA INC",
+   "ingredients": [
+    {
+     "name": "CLARITHROMYCIN",
+     "strength": "250 MG"
     }
    ]
   },
@@ -1840,32 +2658,47 @@
    ]
   },
   {
-   "din": "02534746",
-   "brand": "SULFAMETHOXAZOLE AND TRIMETHOPRIM FOR INJECTION, USP",
-   "company": "EUGIA PHARMA INC.",
+   "din": "00445274",
+   "brand": "SULFATRIM",
+   "company": "AA PHARMA INC",
    "ingredients": [
     {
      "name": "SULFAMETHOXAZOLE",
-     "strength": "80 MG"
+     "strength": "400 MG"
     },
     {
      "name": "TRIMETHOPRIM",
-     "strength": "16 MG"
+     "strength": "80 MG"
     }
    ]
   },
   {
-   "din": "02525917",
-   "brand": "SULFAMETHOXAZOLE AND TRIMETHOPRIM FOR INJECTION, USP",
-   "company": "AURO PHARMA INC",
+   "din": "00445282",
+   "brand": "SULFATRIM DS",
+   "company": "AA PHARMA INC",
    "ingredients": [
     {
      "name": "SULFAMETHOXAZOLE",
-     "strength": "80 MG"
+     "strength": "800 MG"
     },
     {
      "name": "TRIMETHOPRIM",
-     "strength": "16 MG"
+     "strength": "160 MG"
+    }
+   ]
+  },
+  {
+   "din": "00445266",
+   "brand": "SULFATRIM PEDIATRIC",
+   "company": "AA PHARMA INC",
+   "ingredients": [
+    {
+     "name": "SULFAMETHOXAZOLE",
+     "strength": "100 MG"
+    },
+    {
+     "name": "TRIMETHOPRIM",
+     "strength": "20 MG"
     }
    ]
   },
@@ -1892,6 +2725,17 @@
    ]
   },
   {
+   "din": "02172070",
+   "brand": "SYNTHROID",
+   "company": "BGP PHARMA ULC",
+   "ingredients": [
+    {
+     "name": "LEVOTHYROXINE SODIUM",
+     "strength": "50 MCG"
+    }
+   ]
+  },
+  {
    "din": "02567342",
    "brand": "TARO-METRONIDAZOLE GEL",
    "company": "TARO PHARMACEUTICALS INC",
@@ -1910,6 +2754,17 @@
     {
      "name": "METRONIDAZOLE",
      "strength": "1 %"
+    }
+   ]
+  },
+  {
+   "din": "02450429",
+   "brand": "TARO-TRAMADOL ER",
+   "company": "TARO PHARMACEUTICALS INC",
+   "ingredients": [
+    {
+     "name": "TRAMADOL HYDROCHLORIDE",
+     "strength": "100 MG"
     }
    ]
   },
@@ -1936,6 +2791,50 @@
    ]
   },
   {
+   "din": "02242682",
+   "brand": "TARO-WARFARIN",
+   "company": "TARO PHARMACEUTICALS INC",
+   "ingredients": [
+    {
+     "name": "WARFARIN SODIUM",
+     "strength": "2.5 MG"
+    }
+   ]
+  },
+  {
+   "din": "00337730",
+   "brand": "TEVA-FUROSEMIDE",
+   "company": "TEVA CANADA LIMITED",
+   "ingredients": [
+    {
+     "name": "FUROSEMIDE",
+     "strength": "20 MG"
+    }
+   ]
+  },
+  {
+   "din": "00337749",
+   "brand": "TEVA-FUROSEMIDE",
+   "company": "TEVA CANADA LIMITED",
+   "ingredients": [
+    {
+     "name": "FUROSEMIDE",
+     "strength": "40 MG"
+    }
+   ]
+  },
+  {
+   "din": "00765953",
+   "brand": "TEVA-FUROSEMIDE",
+   "company": "TEVA CANADA LIMITED",
+   "ingredients": [
+    {
+     "name": "FUROSEMIDE",
+     "strength": "80 MG"
+    }
+   ]
+  },
+  {
    "din": "00637742",
    "brand": "TEVA-LORAZEPAM",
    "company": "TEVA CANADA LIMITED",
@@ -1943,6 +2842,28 @@
     {
      "name": "LORAZEPAM",
      "strength": "1 MG"
+    }
+   ]
+  },
+  {
+   "din": "00637750",
+   "brand": "TEVA-LORAZEPAM",
+   "company": "TEVA CANADA LIMITED",
+   "ingredients": [
+    {
+     "name": "LORAZEPAM",
+     "strength": "2 MG"
+    }
+   ]
+  },
+  {
+   "din": "00711101",
+   "brand": "TEVA-LORAZEPAM",
+   "company": "TEVA CANADA LIMITED",
+   "ingredients": [
+    {
+     "name": "LORAZEPAM",
+     "strength": "0.5 MG"
     }
    ]
   },
@@ -2032,13 +2953,35 @@
    ]
   },
   {
-   "din": "02213451",
-   "brand": "VENTOLIN I.V. INFUSION SOLUTION 5.0MG SALBUTAMOL IN 5ML (1000MCG/ML)",
+   "din": "00723908",
+   "brand": "TYLENOL EXTRA STRENGTH CAPLETS",
+   "company": "KENVUE CANADA INC.",
+   "ingredients": [
+    {
+     "name": "ACETAMINOPHEN",
+     "strength": "500 MG"
+    }
+   ]
+  },
+  {
+   "din": "02243115",
+   "brand": "VENTOLIN DISKUS",
    "company": "GLAXOSMITHKLINE INC",
    "ingredients": [
     {
      "name": "SALBUTAMOL (SALBUTAMOL SULFATE)",
-     "strength": "1 MG"
+     "strength": "200 MCG"
+    }
+   ]
+  },
+  {
+   "din": "02241497",
+   "brand": "VENTOLIN HFA",
+   "company": "GLAXOSMITHKLINE INC",
+   "ingredients": [
+    {
+     "name": "SALBUTAMOL (SALBUTAMOL SULFATE)",
+     "strength": "100 MCG"
     }
    ]
   },
@@ -2076,6 +3019,40 @@
    ]
   },
   {
+   "din": "02239768",
+   "brand": "VIAGRA",
+   "company": "BGP PHARMA ULC",
+   "ingredients": [
+    {
+     "name": "SILDENAFIL (SILDENAFIL CITRATE)",
+     "strength": "100 MG"
+    }
+   ]
+  },
+  {
+   "din": "02409542",
+   "brand": "VICKS NYQUIL COMPLETE COLD & FLU",
+   "company": "PROCTER & GAMBLE INC",
+   "ingredients": [
+    {
+     "name": "ACETAMINOPHEN",
+     "strength": "650 MG"
+    },
+    {
+     "name": "DEXTROMETHORPHAN HYDROBROMIDE",
+     "strength": "20 MG"
+    },
+    {
+     "name": "DOXYLAMINE SUCCINATE",
+     "strength": "12.5 MG"
+    },
+    {
+     "name": "PHENYLEPHRINE HYDROCHLORIDE",
+     "strength": "10 MG"
+    }
+   ]
+  },
+  {
    "din": "02510162",
    "brand": "XARELTO",
    "company": "BAYER INC",
@@ -2094,6 +3071,17 @@
     {
      "name": "RIVAROXABAN",
      "strength": "103.4 MG"
+    }
+   ]
+  },
+  {
+   "din": "02316986",
+   "brand": "XARELTO",
+   "company": "BAYER INC",
+   "ingredients": [
+    {
+     "name": "RIVAROXABAN",
+     "strength": "10 MG"
     }
    ]
   }

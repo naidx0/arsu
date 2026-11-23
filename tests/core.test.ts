@@ -180,16 +180,10 @@ describe('medicines', () => {
     if (!drug) throw new Error(`DIN ${din} is not in the snapshot`);
     return { ...drug, id, times: [], addedAt: 0 };
   };
-  const byIngredient = (name: string, not: string[] = []) => {
-    const drug = drugs.find(item => item.ingredients.length === 1 && baseName(item.ingredients[0].name) === name && !not.includes(item.din!));
-    if (!drug) throw new Error(`no single-ingredient ${name} in the snapshot`);
-    return { ...drug, id: drug.din!, times: [], addedAt: 0 } as Medicine;
-  };
-  const withAll = (names: string[]) => {
-    const drug = drugs.find(item => names.every(name => item.ingredients.some(part => baseName(part.name) === name)));
-    if (!drug) throw new Error(`no product with ${names.join('+')}`);
-    return { ...drug, id: drug.din!, times: [], addedAt: 0 } as Medicine;
-  };
+  // Rule tests own their specimens: a medicine made from named ingredients, not borrowed from the snapshot.
+  const made = (...names: string[]): Medicine => ({ id: names.join('+'), brand: names.join(' / ').toUpperCase(), ingredients: names.map(name => ({ name: name.toUpperCase(), strength: '1 MG' })), times: [], addedAt: 0 });
+  const byIngredient = (name: string, _not: string[] = []) => made(name);
+  const withAll = (names: string[]) => made(...names);
 
   it('reduces salts to the base name', () => {
     expect(baseName('CODEINE PHOSPHATE')).toBe('codeine');
@@ -208,10 +202,10 @@ describe('medicines', () => {
     for (const pair of PAIRS) { expect(CLASSES[pair.a], pair.a).toBeTruthy(); expect(CLASSES[pair.b], pair.b).toBeTruthy(); }
     for (const rule of DOUBLE_UP) expect(CLASSES[rule.cls], rule.cls).toBeTruthy();
   });
-  it('flags acetaminophen in two products as high', () => {
-    const plain = byIngredient('acetaminophen');
-    const cold = drugs.find(item => item.ingredients.length > 1 && item.ingredients.some(part => baseName(part.name) === 'acetaminophen'))!;
-    const findings = checkMedicines([plain, { ...cold, id: 'cold', times: [], addedAt: 0 }]);
+  it('flags acetaminophen in two real products as high', () => {
+    const has = (item: Drug) => item.ingredients.some(part => baseName(part.name) === 'acetaminophen');
+    const plain = drugs.find(item => item.ingredients.length === 1 && has(item))!, cold = drugs.find(item => item.ingredients.length > 1 && has(item))!;
+    const findings = checkMedicines([med(plain.din!), med(cold.din!)]);
     expect(findings.find(finding => finding.kind === 'duplicate')).toMatchObject({ subject: 'acetaminophen', severity: 'high' });
   });
   it('flags a blood thinner with an anti-inflammatory', () => {
@@ -233,7 +227,7 @@ describe('medicines', () => {
     expect(checkMedicines([])).toEqual([]);
   });
   it('reports the same two products once per reason', () => {
-    const a = byIngredient('ibuprofen'), b = byIngredient('ibuprofen', [a.din!]);
+    const a = made('ibuprofen'), b = { ...made('ibuprofen sodium'), id: 'second' };
     const findings = checkMedicines([a, b]);
     expect(findings).toHaveLength(1);
     expect(findings[0]).toMatchObject({ kind: 'duplicate', subject: 'ibuprofen' });
