@@ -636,10 +636,10 @@ const TOPO_H = 66;
 const TIER_Y = [0, 85, 265, 435, 555];
 const TIER_LABELS = [
   "",
-  "TIER 1 · CORE DATA HUBS & EXTERNAL FEEDS",
-  "TIER 2 · OPERATIONAL PROCESSING & RADAR FEEDS",
-  "TIER 3 · FLIGHT RELEASE AUTHORITY",
-  "TIER 4 · PHYSICAL AIRSPACE & DISTRESS TRACKING",
+  "TIER 1 · Core data hubs & external feeds",
+  "TIER 2 · Operational processing & radar feeds",
+  "TIER 3 · Flight release authority",
+  "TIER 4 · Physical airspace & distress tracking",
 ];
 const TOPO: Record<string, { x: number; tier: number; title: string; sub: string }> = {
   unimatic: { x: 320, tier: 1, title: "Unimatic Primary Hub", sub: "KORD CHICAGO" },
@@ -817,7 +817,7 @@ function TopologyDag({
     const state = cut ? "severed" : affected ? "affected" : "ok";
     return { e, d, lx, ly, state, label: cut ? "SEVERED" : e.label };
   });
-  const stroke = { ok: "#3b4b5c", affected: "#fbbf24", severed: "#f87171" } as const;
+  const stroke = { ok: "rgba(240,240,250,0.30)", affected: "#fbbf24", severed: "#f87171" } as const;
 
   return (
     <>
@@ -834,34 +834,10 @@ function TopologyDag({
       onPointerLeave={onPointerUp}
     >
       <defs>
-        {(["ok", "affected", "severed"] as const).map((s) => (
-          <marker
-            key={s}
-            id={`dag-arrow-${s}`}
-            viewBox="0 0 10 10"
-            refX="9"
-            refY="5"
-            markerWidth="8"
-            markerHeight="8"
-            markerUnits="userSpaceOnUse"
-            orient="auto"
-          >
-            <path d="M0 0 L10 5 L0 10 z" fill={s === "ok" ? "#64748b" : stroke[s]} />
-          </marker>
-        ))}
+        <filter id="dag-glow" x="-30%" y="-100%" width="160%" height="300%">
+          <feGaussianBlur stdDeviation="9" />
+        </filter>
       </defs>
-      {[1, 2, 3, 4].map((tier) => {
-        const top = tier === 3 ? 388 : tier === 4 ? 510 : TIER_Y[tier] - 56;
-        const height = tier === 4 ? 98 : tier === 3 ? 100 : 112;
-        return (
-          <g key={tier} className="dag-tier">
-            <rect x="8" y={top} width="1064" height={height} rx="12" fill="rgba(148,163,184,0.035)" stroke="rgba(148,163,184,0.07)" />
-            <text x="22" y={top + 16} fill="#64748b" fontSize="9.5" letterSpacing="1.4" fontWeight="600">
-              {TIER_LABELS[tier]}
-            </text>
-          </g>
-        );
-      })}
       {paths.map(({ e, d, state }) => (
         <g key={e.id}>
           <path
@@ -869,40 +845,53 @@ function TopologyDag({
             d={d}
             fill="none"
             stroke={stroke[state as keyof typeof stroke]}
-            strokeWidth={state === "ok" ? 1.4 : 1.8}
-            strokeDasharray={state === "severed" ? "6 5" : undefined}
-            markerEnd={`url(#dag-arrow-${state})`}
+            strokeWidth={state === "ok" ? 1.1 : 1.6}
+            strokeDasharray={state === "severed" ? "5 5" : undefined}
+            strokeLinecap="round"
           />
           {state !== "severed" && (
             <path
               className="dag-edge-flow"
               d={d}
               fill="none"
-              stroke={state === "ok" ? "#38bdf8" : "#fbbf24"}
-              strokeOpacity={0.75}
-              strokeWidth="1.8"
-              strokeDasharray="3 15"
+              stroke={state === "ok" ? "#f0f0fa" : "#fbbf24"}
+              strokeOpacity={state === "ok" ? 0.55 : 0.85}
+              strokeWidth="1.6"
+              strokeDasharray="2 22"
               strokeLinecap="round"
             >
               <animate
                 attributeName="stroke-dashoffset"
-                from="18"
+                from="24"
                 to="0"
-                dur={state === "ok" ? "1.1s" : "2.4s"}
+                dur={state === "ok" ? "1.6s" : "2.8s"}
                 repeatCount="indefinite"
               />
             </path>
           )}
         </g>
       ))}
+      {[1, 2, 3, 4].map((tier) => {
+        const top = tier === 3 ? 388 : tier === 4 ? 510 : TIER_Y[tier] - 56;
+        const [name, detail] = TIER_LABELS[tier].split(" · ");
+        return (
+          <g key={tier} className="dag-tier">
+            <circle cx="26" cy={top + 12} r="3" fill="#f0f0fa" />
+            <text x="36" y={top + 16} fontSize="10.5" fontWeight="600">
+              {name}
+              <tspan className="dag-tier-detail" dx="8">{detail}</tspan>
+            </text>
+          </g>
+        );
+      })}
       {paths
         .filter((p) => p.label)
         .map(({ e, lx, ly, state, label }) => {
-          const w = label!.length * 5.4 + 12;
+          const w = label!.length * 5.6 + 16;
           return (
             <g key={`${e.id}-label`} className={`dag-edge-label ${state}`}>
-              <rect x={lx - w / 2} y={ly - 8} width={w} height="15" rx="4" fill="#0b1016" stroke={state === "severed" ? "#f87171" : "rgba(148,163,184,0.25)"} />
-              <text x={lx} y={ly + 3} textAnchor="middle" fontSize="8.5" letterSpacing="0.8" fontWeight="600" fill={state === "severed" ? "#fca5a5" : "#94a3b8"}>
+              <rect x={lx - w / 2} y={ly - 8} width={w} height="16" rx="8" />
+              <text x={lx} y={ly + 3.4} textAnchor="middle" fontSize="8.5" letterSpacing="0.6" fontWeight="600">
                 {label}
               </text>
             </g>
@@ -940,48 +929,65 @@ function TopologyDag({
             }}
             style={{ cursor: "pointer" }}
           >
+            {(health !== "up" || selected === id) && (
+              <rect
+                className="dag-node-glow"
+                x={-w / 2 + 14}
+                y={TOPO_H / 2 - 12}
+                width={w - 28}
+                height="10"
+                rx="5"
+                fill={selected === id && health === "up" ? "#f0f0fa" : HEALTH_COLOR[health]}
+                opacity={selected === id && health === "up" ? 0.22 : 0.55}
+                filter="url(#dag-glow)"
+              />
+            )}
             <rect
+              className="dag-node-card"
               x={-w / 2}
               y={-TOPO_H / 2}
               width={w}
               height={TOPO_H}
-              rx="10"
-              fill={selected === id ? "#152230" : "#0f151c"}
-              stroke={selected === id ? "#7dd3fc" : HEALTH_COLOR[health]}
-              strokeOpacity={selected === id ? 1 : health === "up" ? 0.45 : 0.95}
-              strokeWidth={selected === id || health !== "up" ? 2 : 1.2}
+              rx="12"
               strokeDasharray={virtualNode ? "4 3" : undefined}
             />
-            <circle className="dag-port dag-port-in" cx={-w / 2 + 20} cy={-TOPO_H / 2} r="3.4" fill={p.tier === 1 ? "#fbbf24" : "#38bdf8"} stroke="#0b0f14" strokeWidth="1.5" />
-            <circle className="dag-port dag-port-out" cx={w / 2 - 20} cy={TOPO_H / 2} r="3.4" fill={HEALTH_COLOR[health]} stroke="#0b0f14" strokeWidth="1.5" />
-            <circle cx={-w / 2 + 14} cy="-14" r="4" fill={HEALTH_COLOR[health]}>
-              {health !== "up" && <animate attributeName="opacity" values="1;0.25;1" dur="1s" repeatCount="indefinite" />}
-            </circle>
-            <text x={-w / 2 + 25} y="-10" fill="#e2e8f0" fontSize="11.5" fontWeight="600">
+            <rect className="dag-node-well" x={-w / 2 + 7} y="-4" width={w - 14} height="31" rx="8" />
+            <circle className="dag-head-dot" cx={-w / 2 + 15} cy="-17" r="3" />
+            <text className="dag-node-title" x={-w / 2 + 25} y="-13.4" fontSize="11.5" fontWeight="500">
               {id === "airspace-fleet" ? `North America Fleet` : p.title}
             </text>
-            <text x={-w / 2 + 14} y="7" fill="#7c8a99" fontSize="8.6" letterSpacing="0.7">
+            <text className="dag-node-sub" x={-w / 2 + 15} y="8" fontSize="8.4" letterSpacing="0.5">
               {sub}
             </text>
-            <text x={-w / 2 + 14} y="24" fill={HEALTH_COLOR[health]} fontSize="9" fontWeight="700" letterSpacing="1.1">
+            <circle cx={-w / 2 + 17} cy="17.5" r="2.6" fill={HEALTH_COLOR[health]}>
+              {health !== "up" && <animate attributeName="opacity" values="1;0.25;1" dur="1s" repeatCount="indefinite" />}
+            </circle>
+            <text className="dag-node-status" x={-w / 2 + 25} y="20.6" fill={HEALTH_COLOR[health]} fontSize="8.6" fontWeight="600" letterSpacing="0.9">
               {statusText}
             </text>
             {proof && (
               <g className="dag-proof-badge">
-                <rect x={w / 2 - 50} y="13" width="38" height="15" rx="4" fill={proof.pass === proof.total ? "rgba(52,211,153,0.12)" : "rgba(248,113,113,0.15)"} />
-                <text x={w / 2 - 31} y="24" textAnchor="middle" fontSize="9" fontWeight="700" fill={proof.pass === proof.total ? "#6ee7b7" : "#fca5a5"}>
-                  {proof.pass}/{proof.total}
+                <text x={w / 2 - 15} y="20.6" textAnchor="end" fontSize="8.6" fontWeight="600" fill={proof.pass === proof.total ? "#f0f0fa" : "#fca5a5"}>
+                  {proof.pass}<tspan fill="rgba(240,240,250,0.45)">/{proof.total} proofs</tspan>
                 </text>
               </g>
             )}
+            <circle className="dag-port dag-port-in" cx="0" cy={-TOPO_H / 2} r="3.2" fill={p.tier === 1 ? "#fbbf24" : "#3080ff"} />
+            <circle className="dag-port dag-port-out" cx="0" cy={TOPO_H / 2} r="3.2" fill={HEALTH_COLOR[health]} />
           </g>
         );
       })}
     </svg>
+    <div className="topology-readout" aria-hidden="true">
+      <span>N: {layout.size}</span>
+      <span>E: {drawable.length}</span>
+      <span>Z: {Math.round((HOME_VB.w / vb.w) * 100)}%</span>
+      <span>S: {paths.filter((p) => p.state !== "ok").length}</span>
+    </div>
     <div className="topology-hud">
-      <button aria-label="Zoom in" onClick={() => setVb((v) => ({ ...v, w: clampW(v.w / 1.25), h: v.h / 1.25 }))}>+</button>
       <button aria-label="Zoom out" onClick={() => setVb((v) => ({ ...v, w: clampW(v.w * 1.25), h: v.h * 1.25 }))}>−</button>
-      <button onClick={() => setVb(HOME_VB)}>FIT</button>
+      <button className="fit" onClick={() => setVb(HOME_VB)}>FIT</button>
+      <button aria-label="Zoom in" onClick={() => setVb((v) => ({ ...v, w: clampW(v.w / 1.25), h: v.h / 1.25 }))}>+</button>
     </div>
     </>
   );
@@ -1722,22 +1728,48 @@ export default function App() {
     </article>
   );
 
+  const tasksDone = [...board.tasks.values()].filter((t) => t.status === "done").length;
+  const kpis: { label: string; value: number; total: number; unit?: string; tone: "ok" | "info" | "warn" | "bad"; view: View }[] = [
+    { label: "Systems online", value: upNodes, total: nodes.length, tone: upNodes === nodes.length ? "ok" : "bad", view: "Topology" },
+    { label: "Proofs passing", value: passed, total: checks.length, tone: percent === 100 ? "ok" : percent >= 60 ? "warn" : "bad", view: "Verification" },
+    { label: "Open violations", value: open.length, total: Math.max(violations.length, open.length), unit: "raised this mission", tone: open.length ? "bad" : "ok", view: "Blackboard" },
+    { label: "Swarm actions", value: tasksDone, total: board.tasks.size, tone: "info", view: "Swarm" },
+  ];
   const missionControl = (
     <div className="mission-control">
+      <section className="kpi-row" aria-label="Mission impact counters">
+        {kpis.map((k) => {
+          const ticks = 36;
+          const lit = k.total ? Math.round((k.value / k.total) * ticks) : 0;
+          return (
+            <button key={k.label} className={`kpi-card ${k.tone}`} onClick={() => openView(k.view)}>
+              <span className="kpi-label">{k.label}</span>
+              <strong className="kpi-value">{k.value}</strong>
+              <span className="kpi-foot">
+                <span>of {k.total} {k.unit ?? "total"}</span>
+                {!k.unit && <span><b>{k.value}</b> /{k.total}</span>}
+              </span>
+              <span className="kpi-ticks" aria-hidden="true">
+                {Array.from({ length: ticks }, (_, i) => <i key={i} className={i < lit ? "on" : ""} />)}
+              </span>
+            </button>
+          );
+        })}
+      </section>
       <div className="mc-grid">
         <section className="mc-panel systems-matrix" aria-label="Aviation estate systems">
           <header className="mc-panel-header">
-            <h2>AVIATION ESTATE SYSTEMS & COMMS MATRIX</h2>
+            <h2>Estate systems</h2>
             <span>
-              {upNodes}/{nodes.length} ONLINE · {edgesList.length} COMMS LINKS
+              {upNodes}/{nodes.length} online · {edgesList.length} links
             </span>
           </header>
           <div className="systems-matrix-head" role="row">
-            <span>HUB</span>
-            <span>SYSTEM</span>
-            <span>STATUS</span>
-            <span>UPSTREAM</span>
-            <span>PROOFS</span>
+            <span>Hub</span>
+            <span>System</span>
+            <span>Status</span>
+            <span>Upstream</span>
+            <span>Proofs</span>
             <span />
           </div>
           {nodes.map((n) => {
@@ -1766,7 +1798,7 @@ export default function App() {
                     : <span className="dep-chip root">ROOT</span>}
                 </span>
                 <span className={`system-proofs ${pr.pass < pr.total ? "text-alert" : ""}`}>
-                  {pr.pass}/{pr.total} PROOFS
+                  {pr.pass}/{pr.total}
                 </span>
                 <span className="system-actions">
                   <button className="mini-btn" onClick={() => inspect(n.id)} aria-label={`Inspect ${n.name}`}>
@@ -1779,55 +1811,21 @@ export default function App() {
           {!nodes.length && <div className="content-empty">No systems discovered yet — launch the swarm.</div>}
         </section>
 
-        <section className="mc-impact-strip" aria-label="Mission impact counters">
-          <div className="impact-legend">
-            <span><i className="dot up" /> Protected</span>
-            <span><i className="dot down" /> Danger</span>
-            <span><i className="dot degraded" /> Alerts</span>
-            <span><i className="dot idle" /> Unknown</span>
-          </div>
-          <div className="impact-counters">
-            <div className="impact-stat">
-              <strong className={upNodes === nodes.length ? "ok" : ""}>{upNodes}<small>/{nodes.length}</small></strong>
-              <span>Systems online</span>
-            </div>
-            <div className="impact-stat">
-              <strong className={percent === 100 ? "ok" : percent >= 60 ? "" : "bad"}>{passed}<small>/{checks.length}</small></strong>
-              <span>Proofs passing</span>
-            </div>
-            <div className="impact-stat">
-              <strong className={open.length ? "bad" : "ok"}>{open.length}</strong>
-              <span>Open violations</span>
-            </div>
-            <div className="impact-stat">
-              <strong>{board.tasks.size}</strong>
-              <span>Response tasks</span>
-            </div>
-            <div className="impact-stat">
-              <strong>{board.agents.size}</strong>
-              <span>Swarm agents</span>
-            </div>
-            <div className="impact-stat">
-              <strong>{board.events.length}</strong>
-              <span>Board events</span>
-            </div>
-          </div>
-        </section>
 
         <section className="mc-panel triage-feed-panel" aria-label="Incident triage">
           <div className={`artex-panel ${artexTriggered ? "triggered" : "armed"}`}>
             <header className="mc-panel-header">
               <h2>
-                <HugeiconsIcon icon={Satellite01Icon} size={15} /> ARTEX AUTONOMOUS DISTRESS & GADSS
+                <HugeiconsIcon icon={Satellite01Icon} size={15} /> ARTEX distress & GADSS
               </h2>
               <span className={`status-pill ${artexTriggered ? "alert" : ""}`}>{artexTriggered ? "TRIGGERED" : "ARMED"}</span>
             </header>
             <dl className="artex-telemetry">
-              <div><dt>FREQUENCY</dt><dd>406.025 MHz · 121.5 MHz homing</dd></div>
-              <div><dt>GADSS MODE</dt><dd>{artexTriggered ? "Distress tracking · 1-min position" : "Normal tracking · 15-min position"}</dd></div>
-              <div><dt>COUPLED PROOFS</dt><dd className={coupledPass < coupled.length ? "text-alert" : ""}>{coupledPass}/{coupled.length} dispatch + ops-radar</dd></div>
+              <div><dt>Frequency</dt><dd>406.025 MHz · 121.5 MHz homing</dd></div>
+              <div><dt>GADSS mode</dt><dd>{artexTriggered ? "Distress tracking · 1-min position" : "Normal tracking · 15-min position"}</dd></div>
+              <div><dt>Coupled proofs</dt><dd className={coupledPass < coupled.length ? "text-alert" : ""}>{coupledPass}/{coupled.length} dispatch + ops-radar</dd></div>
               <div>
-                <dt>POSITION LOCK</dt>
+                <dt>Position lock</dt>
                 <dd>
                   {artexTriggered && lockFlight
                     ? `${lockFlight.callsign} · ${lockFlight.position.lat.toFixed(3)}, ${lockFlight.position.lon.toFixed(3)}`
@@ -1840,7 +1838,7 @@ export default function App() {
           <div className="blackboard-summary">
             <header className="mc-panel-header">
               <h2>
-                <HugeiconsIcon icon={Database01Icon} size={15} /> FIREBASE / BLACKBOARD NERVE CENTER
+                <HugeiconsIcon icon={Database01Icon} size={15} /> Blackboard
               </h2>
               <span>{dataMode}</span>
             </header>
@@ -1864,9 +1862,9 @@ export default function App() {
           <div className="remediation-feed">
             <header className="mc-panel-header">
               <h2>
-                <HugeiconsIcon icon={Activity01Icon} size={15} /> LIVE SWARM REMEDIATION & VIOLATIONS
+                <HugeiconsIcon icon={Activity01Icon} size={15} /> Live remediation
               </h2>
-              <span className={open.length ? "text-alert" : ""}>{open.length} OPEN</span>
+              <span className={open.length ? "text-alert" : ""}>{open.length} open</span>
             </header>
             <OperationalSummary enabled={live.connected && !localMode && !localOverride} />
             <ResponseTrace events={board.events} />
@@ -1897,7 +1895,7 @@ export default function App() {
               if (!active.length) return null;
               return (
                 <div className="response-strip">
-                  <span className="response-strip-label">ACTIVE RESPONSE</span>
+                  <span className="response-strip-label">Active response</span>
                   {active.map((t) => (
                     <div key={t.id} className={`response-task ${t.status}`}>
                       <span className={`health-dot ${t.status === "failed" ? "down" : t.status === "claimed" ? "degraded" : "idle"}`} />
@@ -2072,9 +2070,8 @@ export default function App() {
         <span><i className="health-dot up" />Online</span>
         <span><i className="health-dot degraded" />Degraded</span>
         <span><i className="health-dot down" />Offline</span>
-        <span>→ data flows from dependency to dependent</span>
-        <span className="text-alert">- - SEVERED link</span>
-        <span>n/n proofs passing</span>
+        <span><i className="legend-wire" />Dependency → dependent</span>
+        <span className="text-alert"><i className="legend-wire severed" />Severed</span>
       </div>
     </div>
   );

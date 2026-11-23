@@ -1,4 +1,4 @@
-import { useId, useState } from 'react';
+import { useState } from 'react';
 import { post, type Board } from '../api';
 import PracticeLayers from './PracticeLayers';
 
@@ -13,7 +13,6 @@ function edgePath(a: { x: number; y: number }, b: { x: number; y: number }) {
 export default function RehearsalConsole({ board, enabled, onLaunch, onInspect }: {
   board: Board; enabled: boolean; onLaunch: () => void; onInspect: (id: string) => void;
 }) {
-  const marker = useId();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const rehearsal = board.rehearsal;
@@ -45,13 +44,12 @@ export default function RehearsalConsole({ board, enabled, onLaunch, onInspect }
     </div>
     <div className="rehearsal-grid"><div className="rehearsal-map"><header><h3>Discovered dependency graph</h3><span>Click a component</span></header>
       {nodes.length ? <svg viewBox={`0 0 820 ${Math.max(280, (board.practice ? 3 : Math.ceil(nodes.length / 4)) * 140)}`} aria-label="Live discovered systems and dependency links">
-        <defs><marker id={marker} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="var(--muted)" /></marker></defs>
         {[...board.edges.values()].map(edge => {
           const a = points.get(edge.from), b = points.get(edge.to);
           const broken = board.nodes.get(edge.to)?.health !== 'up' || checks.some(i => i.node === edge.from && i.kind === 'dep_health' && i.params.dep === edge.to && i.lastResult === 'fail');
-          return a && b ? <path key={edge.id} markerEnd={`url(#${marker})`} d={edgePath(a, b)} className={broken ? 'link-down' : 'link-up'}><title>{edge.from} depends on {edge.to}</title></path> : null;
+          return a && b ? <path key={edge.id} d={edgePath(a, b)} className={broken ? 'link-down' : 'link-up'}><title>{edge.from} depends on {edge.to}</title></path> : null;
         })}
-        {nodes.map(n => { const p = points.get(n.id)!; return <g key={n.id} className={`rehearsal-node ${n.health}`} role="button" tabIndex={0} aria-label={`Inspect ${n.name}, ${n.health}`} onClick={() => onInspect(n.id)} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onInspect(n.id); } }} transform={`translate(${p.x},${p.y})`}><rect x={-88} y={-28} width={176} height={64} rx={10} /><text textAnchor="middle" y={-2}>{n.name}</text><text textAnchor="middle" y={20} className="node-meta">{n.kind} · {n.health}</text></g>; })}
+        {nodes.map(n => { const p = points.get(n.id)!; return <g key={n.id} className={`rehearsal-node ${n.health}`} role="button" tabIndex={0} aria-label={`Inspect ${n.name}, ${n.health}`} onClick={() => onInspect(n.id)} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onInspect(n.id); } }} transform={`translate(${p.x},${p.y})`}><rect x={-88} y={-28} width={176} height={64} rx={12} /><rect className="node-well" x={-81} y={-2} width={162} height={30} rx={8} /><circle className="node-head" cx={-74} cy={-13} r={3} /><text x={-64} y={-9.5}>{n.name}</text><circle className={`node-state ${n.health}`} cx={-70} cy={13} r={2.6} /><text x={-62} y={16} className="node-meta">{n.kind} · {n.health}</text><circle className="node-port" cx={0} cy={-28} r={3} /><circle className={`node-port out ${n.health}`} cx={0} cy={36} r={3} /></g>; })}
       </svg> : <div className="rehearsal-empty">Waiting for recon probes. Nodes appear only when the swarm writes them.</div>}
       <div className="rehearsal-roles">{(['recon', 'verify', 'runner', 'orchestrator', 'response'] as const).map(role => { const agents = [...board.agents.values()].filter(a => a.role === role); return <span key={role}><b>{role}</b>{agents.filter(a => a.state === 'working').length} working / {agents.length} units</span>; })}</div>
     </div><div className="rehearsal-stress"><h3>Stress scenarios</h3><p>{latest?.outcome === 'running' ? latest.detail : rehearsal?.ready ? 'Baseline verified. Choose one fault.' : 'Waiting for complete mapping and fresh passing checks.'}</p>

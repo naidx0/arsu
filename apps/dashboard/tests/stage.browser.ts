@@ -37,6 +37,17 @@ try {
   assert(boxes.labels.length >= 4, `expected topology edge labels, saw ${boxes.labels.length}`);
   const topologyClashes = boxes.labels.flatMap(l => boxes.blockers.filter(b => overlaps(l, b)).map(b => `${l.text} × ${b.text}`));
   assert.deepEqual(topologyClashes, [], 'Topology edge labels collide');
+  // Canvas overlays (zoom dock, legend, readout) never cover a system card.
+  const overlays = await page.locator('.topology-hud, .graph-legend, .topology-readout').evaluateAll(els => els.map(e => { const r = e.getBoundingClientRect(); return { text: e.className, left: r.left, right: r.right, top: r.top, bottom: r.bottom }; }));
+  const cards = boxes.blockers.filter(b => !b.text.startsWith('TIER'));
+  const overlayClashes = overlays.flatMap(o => cards.filter(c => overlaps(o, c)).map(c => `${o.text} × ${c.text}`));
+  assert.deepEqual(overlayClashes, [], 'Topology overlays cover system cards');
+
+  // Mission Control: four KPI cards whose meters stay inside the card.
+  await nav(page, 'Mission Control');
+  const kpis = await page.locator('.kpi-row .kpi-card').evaluateAll(cards => cards.map(card => { const c = card.getBoundingClientRect(); const t = card.querySelector('.kpi-ticks')!.getBoundingClientRect(); return { label: card.querySelector('.kpi-label')!.textContent, inside: t.left >= c.left && t.right <= c.right, ticks: card.querySelectorAll('.kpi-ticks i').length }; }));
+  assert.equal(kpis.length, 4, 'Mission Control shows four KPI cards');
+  assert(kpis.every(k => k.inside && k.ticks === 36), `KPI meters overflow: ${JSON.stringify(kpis)}`);
 
   // The menu fault runs as a tracked stress test.
   await nav(page, 'Airspace');
