@@ -50,9 +50,11 @@ it opens and works with no signal.
 | `device` | Chrome's built-in Gemini Nano is available | Symptoms from speech, note summary |
 | `rules` | Always | Symptoms by keyword match in English and French; note from a template |
 
-Cloud and device calls go through Firebase AI Logic hybrid inference
-(`InferenceMode.PREFER_IN_CLOUD` online, `ONLY_ON_DEVICE` offline). All
-requests ask for JSON against a schema.
+Cloud calls go through Firebase AI Logic (`firebase/ai`, Gemini Developer API
+backend). Device calls go straight to Chrome's built-in Prompt API
+(`LanguageModel`), so they need no project and no network. Every request asks
+for JSON against a schema, and the keyword matches are always merged in: a
+model can add a sign from the protocol but cannot remove one.
 
 ## Triage contract
 

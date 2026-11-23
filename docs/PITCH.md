@@ -56,7 +56,7 @@ Details: [SAFETY.md](SAFETY.md).
   own words and language, reads medicine labels from the camera, describes a
   photo for the nurse, and writes the handoff note.
 - **Gemini Nano on the device**: the same request runs on the phone when there
-  is no signal, through Firebase AI Logic hybrid inference.
+  is no signal, through Chrome's built-in Prompt API.
 - **Cloud Firestore**: offline-first sync. A note written in airplane mode is
   delivered when signal returns, with no code path of our own.
 - **Firebase Auth, Hosting and Security Rules**: anonymous by default, and

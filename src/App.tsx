@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import type { Skill } from './data/scripts';
 import { SCRIPT_BY_SKILL } from './data/scripts';
 import { Check } from './screens/Check';
@@ -55,19 +55,21 @@ export function App() {
       </main>
 
       {!live && (
-        <button type="button" className="sos-fab" onClick={() => go('/emergency')} aria-label={t('sos.open')}>
-          <Icon name="emergency" fill size={22} />
-          <span>{t('sos.short')}</span>
-        </button>
-      )}
-
-      {!live && (
         <nav className="nav" aria-label={t('nav.label')}>
-          {TABS.map(item => (
-            <button key={item.path} type="button" className={item.path === tab ? 'on' : ''} aria-current={item.path === tab ? 'page' : undefined} onClick={() => go(item.path)}>
-              <span className="nav-pill"><Icon name={item.icon} fill={item.path === tab} /></span>
-              <span className="nav-label">{t(item.key)}</span>
-            </button>
+          {TABS.map((item, index) => (
+            <Fragment key={item.path}>
+              {/* Emergency sits in the middle of the bar: one thumb away on every screen, covering nothing. */}
+              {index === 2 && (
+                <button type="button" className="nav-sos" onClick={() => go('/emergency')} aria-label={t('sos.open')}>
+                  <span className="nav-pill"><Icon name="emergency" fill /></span>
+                  <span className="nav-label">{t('sos.short')}</span>
+                </button>
+              )}
+              <button type="button" className={item.path === tab ? 'on' : ''} aria-current={item.path === tab ? 'page' : undefined} onClick={() => go(item.path)}>
+                <span className="nav-pill"><Icon name={item.icon} fill={item.path === tab} /></span>
+                <span className="nav-label">{t(item.key)}</span>
+              </button>
+            </Fragment>
           ))}
         </nav>
       )}

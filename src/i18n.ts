@@ -283,7 +283,7 @@ export const STRINGS: Record<string, [string, string]> = {
   'clinic.sample': ['Sample data', 'Données fictives'],
   'clinic.noSignals': ['No signals yet.', 'Aucun signal pour l’instant.'],
   'clinic.cluster': ['Cluster', 'Grappe'],
-  'clinic.households': ['{n} households this week. Usually {usual}.', '{n} foyers cette semaine. D’habitude {usual}.'],
+  'clinic.households': ['Households this week: {n}. A usual week: {usual}.', 'Foyers cette semaine : {n}. Une semaine habituelle : {usual}.'],
   'clinic.barsLabel': ['Households per day over 14 days: {values}', 'Foyers par jour sur 14 jours : {values}'],
   'clinic.barsCaption': ['Households a day, last 14 days', 'Foyers par jour, 14 derniers jours'],
   'clinic.readiness': ['Ready households', 'Foyers prêts'],
