@@ -2,7 +2,7 @@
 // Offline behaviour is Firestore's own: writes are kept in the device cache and delivered
 // when the connection returns.
 import { initializeApp, type FirebaseApp } from 'firebase/app';
-import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
+import { initializeAppCheck, ReCaptchaEnterpriseProvider } from 'firebase/app-check';
 import { GoogleAuthProvider, getAuth, onAuthStateChanged, signInAnonymously, signInWithPopup, type User } from 'firebase/auth';
 import { collection, doc, getDoc, initializeFirestore, limit, onSnapshot, orderBy, persistentLocalCache, persistentMultipleTabManager, query, setDoc, updateDoc, where } from 'firebase/firestore';
 import type { Signal, Training } from '../core/community';
@@ -10,7 +10,7 @@ import type { Note } from '../core/note';
 import { personal } from './personal';
 import { firebaseConfig, type Shared } from './shared';
 
-// reCAPTCHA v3 site key for Firebase App Check. A site key is public by design; App Check
+// reCAPTCHA Enterprise (Fraud Defense) site key for Firebase App Check. A site key is public by design; App Check
 // is enforced for Firebase AI Logic, so Gemini requests without a token are rejected.
 const RECAPTCHA_SITE_KEY = (import.meta.env.VITE_RECAPTCHA_SITE_KEY as string | undefined) || '6LfY8jUuAAAAAAPpgHTjxDM4cdkD99gL6d81k11b';
 
@@ -20,7 +20,7 @@ export function firebaseApp(): FirebaseApp {
     appInstance = initializeApp(firebaseConfig);
     if (RECAPTCHA_SITE_KEY) {
       try {
-        initializeAppCheck(appInstance, { provider: new ReCaptchaV3Provider(RECAPTCHA_SITE_KEY), isTokenAutoRefreshEnabled: true });
+        initializeAppCheck(appInstance, { provider: new ReCaptchaEnterpriseProvider(RECAPTCHA_SITE_KEY), isTokenAutoRefreshEnabled: true });
       } catch { /* App Check unavailable: Gemini falls back to the on-device tiers */ }
     }
   }
