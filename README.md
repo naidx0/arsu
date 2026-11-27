@@ -12,8 +12,8 @@ North / Place, Language & Culture, Community & People.
 
 ## Demo video
 
-[Watch the 72-second demo](docs/kin-demo.mp4). Every screen is the real app,
-captured from the demo journey test (`npm run test:e2e`), including the
+[Watch the 85-second demo](docs/kin-demo.mp4). A real screen recording of the app,
+driven by `scripts/record-demo.ts` against the built app, including the
 offline steps.
 
 ## What it does
