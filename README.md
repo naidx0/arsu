@@ -10,6 +10,12 @@ North / Place, Language & Culture, Community & People.
 > Kin is a demonstration. It is not a medical device and has not been
 > clinically reviewed. See [docs/SAFETY.md](docs/SAFETY.md).
 
+## Demo video
+
+[Watch the 72-second demo](docs/kin-demo.mp4). Every screen is the real app,
+captured from the demo journey test (`npm run test:e2e`), including the
+offline steps.
+
 ## What it does
 
 | Mode | What happens |
