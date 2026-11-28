@@ -12,7 +12,7 @@ import { firebaseConfig, type Shared } from './shared';
 
 // reCAPTCHA Enterprise (Fraud Defense) site key for Firebase App Check. A site key is public by design; App Check
 // is enforced for Firebase AI Logic, so Gemini requests without a token are rejected.
-const RECAPTCHA_SITE_KEY = (import.meta.env.VITE_RECAPTCHA_SITE_KEY as string | undefined) || '6LfY8jUuAAAAAAPpgHTjxDM4cdkD99gL6d81k11b';
+const RECAPTCHA_SITE_KEY = (import.meta.env.VITE_RECAPTCHA_SITE_KEY as string | undefined) || '6LckwTUuAAAAAFbK0-Mjldg5QwMZVfWEgI0Lzrm0';
 
 let appInstance: FirebaseApp | null = null;
 export function firebaseApp(): FirebaseApp {
